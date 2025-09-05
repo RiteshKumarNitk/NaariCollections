@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -100,8 +101,8 @@ function Sliders({ allProducts }: ProductSlidersProps) {
                                         </CarouselItem>
                                     ))}
                                 </CarouselContent>
-                                <CarouselPrevious className="hidden md:flex" />
-                                <CarouselNext className="hidden md:flex" />
+                                <CarouselPrevious className="left-0" />
+                                <CarouselNext className="right-0" />
                             </Carousel>
                          )}
                     </div>

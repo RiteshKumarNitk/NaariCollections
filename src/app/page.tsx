@@ -1,3 +1,4 @@
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, Gem, ShieldCheck, Truck } from 'lucide-react';
@@ -9,7 +10,7 @@ import { products } from '@/lib/products';
 export default function Home() {
   return (
     <div className="flex flex-col">
-      <section className="relative w-full h-[60vh] md:h-[70vh] bg-secondary/50">
+      <section className="relative w-full h-[60vh] md:h-[70vh] bg-secondary/50 -mx-4 sm:-mx-6 md:-mx-8 lg:-mx-10">
         <Image
           src="https://picsum.photos/1800/1000"
           alt="Woman in elegant ethnic wear"
@@ -39,7 +40,7 @@ export default function Home() {
         <ProductSliders allProducts={products} />
       </section>
 
-      <section className="bg-secondary/30 py-16 md:py-24">
+      <section className="bg-secondary/30 py-16 md:py-24 -mx-4 sm:-mx-6 md:-mx-8 lg:-mx-10">
         <div className="container">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-headline font-bold">Why Choose Naari?</h2>

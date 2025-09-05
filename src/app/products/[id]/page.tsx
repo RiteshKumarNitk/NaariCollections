@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState } from 'react';
@@ -57,7 +58,7 @@ export default function ProductPage() {
                             data-ai-hint="product photo"
                         />
                    </div>
-                   <Carousel opts={{align: 'start'}} className="w-full">
+                   <Carousel opts={{align: 'start'}} className="w-full max-w-full">
                         <CarouselContent>
                             {product.images.map((img, index) => (
                                 <CarouselItem key={index} className="basis-1/3 sm:basis-1/4">
@@ -89,7 +90,7 @@ export default function ProductPage() {
                                     <RadioGroupItem value={size} id={`size-${size}`} className="sr-only" />
                                     <Label 
                                         htmlFor={`size-${size}`}
-                                        className={`flex items-center justify-center rounded-md border-2 px-4 py-2 text-sm font-medium hover:bg-accent cursor-pointer data-[state=checked]:border-primary data-[state=checked]:bg-primary/10`}
+                                        className={`flex items-center justify-center rounded-md border-2 px-4 py-2 text-sm font-medium hover:bg-accent cursor-pointer ${selectedSize === size ? 'border-primary bg-primary/10' : ''}`}
                                     >
                                         {size}
                                     </Label>

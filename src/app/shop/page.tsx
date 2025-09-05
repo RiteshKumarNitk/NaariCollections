@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useState, useMemo } from 'react';
@@ -138,7 +139,7 @@ export default function ShopPage() {
       </div>
 
       <div className="flex flex-col md:flex-row gap-8">
-        <aside className="w-full md:w-64 lg:w-72 md:sticky top-20 h-fit">
+        <aside className="w-full md:w-64 lg:w-72 md:sticky top-20 h-fit shrink-0">
           <div className='hidden md:block'>
             <h2 className="text-xl font-headline mb-4">Filters</h2>
             <FilterAccordion />
