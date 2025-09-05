@@ -60,43 +60,9 @@ export function AddToCartDialog({ children }: { children: React.ReactNode }) {
     }
   }
 
-  // This is a bit of a hack to get the trigger from the child ProductCard
-  const childrenWithProps = React.Children.map(children, (child) => {
-      if (React.isValidElement(child)) {
-        // This will recursively find all ProductCard components and attach the click handler
-        const element = child as React.ReactElement<any>;
-         if (element.type.toString().includes('ProductCard')) {
-             return React.cloneElement(element, { onAddToCart: () => openDialog(element.props.product) });
-         }
-         if(element.props.children) {
-            return React.cloneElement(element, {
-                children: React.Children.map(element.props.children, (innerChild) => {
-                    if (React.isValidElement(innerChild)) {
-                         if (innerChild.type.toString().includes('ProductCard')) {
-                            return React.cloneElement(innerChild, { onAddToCart: () => openDialog(innerChild.props.product) });
-                         }
-                         if(innerChild.props.children) {
-                            return React.cloneElement(innerChild, {
-                                 children: React.Children.map(innerChild.props.children, (deepChild) => {
-                                      if (React.isValidElement(deepChild) && deepChild.type.toString().includes('ProductCard')) {
-                                          return React.cloneElement(deepChild, { onAddToCart: () => openDialog(deepChild.props.product) });
-                                      }
-                                      return deepChild
-                                 })
-                            })
-                         }
-                    }
-                    return innerChild;
-                })
-            })
-         }
-      }
-      return child;
-  });
-
   return (
-    <>
-      {childrenWithProps}
+    <AddToCartDialogContext.Provider value={{ openDialog }}>
+      {children}
       <Dialog open={!!product} onOpenChange={onOpenChange}>
         <DialogContent>
           <DialogHeader>
@@ -142,6 +108,6 @@ export function AddToCartDialog({ children }: { children: React.ReactNode }) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </>
+    </AddToCartDialogContext.Provider>
   );
 }

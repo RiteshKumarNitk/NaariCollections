@@ -5,15 +5,16 @@ import type { Product } from "@/lib/types";
 import { getNewArrivals } from "@/ai/flows/category-slider-new-arrivals";
 import { ProductCard } from "./ProductCard";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "./ui/carousel";
-import { AddToCartDialog } from "./AddToCartDialog";
+import { AddToCartDialog, useAddToCartDialog } from "./AddToCartDialog";
 import { Skeleton } from "./ui/skeleton";
 
 interface ProductSlidersProps {
     allProducts: Product[];
 }
 
-export function ProductSliders({ allProducts }: ProductSlidersProps) {
+function Sliders({ allProducts }: ProductSlidersProps) {
     const categories: Product['category'][] = ['suits', 'sarees', 'kurtis', 'dresses'];
+    const { openDialog } = useAddToCartDialog();
     
     const [newArrivals, setNewArrivals] = useState<Product[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -82,32 +83,38 @@ export function ProductSliders({ allProducts }: ProductSlidersProps) {
                  (slider.products.length > 0 || slider.loading) && (
                     <div key={slider.title}>
                         <h2 className="text-3xl font-headline mb-6 text-center">{slider.title}</h2>
-                         <AddToCartDialog>
-                             {slider.loading ? <SliderSkeleton /> : (
-                                 <Carousel
-                                    opts={{
-                                        align: "start",
-                                        loop: slider.products.length > 4,
-                                    }}
-                                    className="w-full"
-                                >
-                                    <CarouselContent>
-                                        {slider.products.map((product) => (
-                                            <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 lg:basis-1/4">
-                                                <div className="p-1">
-                                                    <ProductCard product={product} onAddToCart={() => {}} />
-                                                </div>
-                                            </CarouselItem>
-                                        ))}
-                                    </CarouselContent>
-                                    <CarouselPrevious className="hidden md:flex" />
-                                    <CarouselNext className="hidden md:flex" />
-                                </Carousel>
-                             )}
-                        </AddToCartDialog>
+                         {slider.loading ? <SliderSkeleton /> : (
+                             <Carousel
+                                opts={{
+                                    align: "start",
+                                    loop: slider.products.length > 4,
+                                }}
+                                className="w-full"
+                            >
+                                <CarouselContent>
+                                    {slider.products.map((product) => (
+                                        <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 lg:basis-1/4">
+                                            <div className="p-1">
+                                                <ProductCard product={product} onAddToCart={() => openDialog(product)} />
+                                            </div>
+                                        </CarouselItem>
+                                    ))}
+                                </CarouselContent>
+                                <CarouselPrevious className="hidden md:flex" />
+                                <CarouselNext className="hidden md:flex" />
+                            </Carousel>
+                         )}
                     </div>
                 )
             ))}
         </div>
     );
+}
+
+export function ProductSliders(props: ProductSlidersProps) {
+    return (
+        <AddToCartDialog>
+            <Sliders {...props} />
+        </AddToCartDialog>
+    )
 }
