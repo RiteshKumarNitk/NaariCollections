@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from 'next/link';
@@ -31,79 +32,29 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
-
-        {/* Mobile Menu */}
-        <div className="flex-1 md:hidden">
-          <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-            <SheetTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label="Open menu"
+        <Link href="/" className="mr-6 flex items-center space-x-2">
+          <Logo className="h-8 w-auto" />
+        </Link>
+        
+        <div className="flex-1 flex justify-center">
+           <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={cn(
+                  "transition-colors hover:text-foreground/80",
+                  pathname === link.href ? "text-foreground" : "text-foreground/60"
+                )}
               >
-                <Menu className="h-5 w-5" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="pr-0">
-               <Link href="/" className="mr-6 flex items-center space-x-2" onClick={() => setIsMobileMenuOpen(false)}>
-                  <Logo className="h-8 w-auto" />
-               </Link>
-               <div className="my-4 h-[calc(100vh-8rem)] pb-10 pl-6">
-                <div className="flex flex-col space-y-3">
-                  {navLinks.map((link) => (
-                      <Link
-                        key={link.href}
-                        href={link.href}
-                        onClick={() => setIsMobileMenuOpen(false)}
-                        className={cn(
-                           "text-lg font-medium",
-                           pathname === link.href ? "text-foreground" : "text-muted-foreground"
-                        )}
-                      >
-                        {link.label}
-                      </Link>
-                    ))}
-                </div>
-               </div>
-            </SheetContent>
-          </Sheet>
+                {link.label}
+              </Link>
+            ))}
+          </nav>
         </div>
 
-        {/* Desktop Logo */}
-        <div className="hidden flex-1 md:flex">
-           <Link href="/" className="flex items-center space-x-2">
-              <Logo className="h-8 w-auto" />
-            </Link>
-        </div>
-
-        {/* Centered Navigation (Mobile & Desktop) */}
-        <div className="flex justify-center md:flex-1">
-           {/* Mobile Logo */}
-            <div className="md:hidden">
-                <Link href="/" aria-label="Back to homepage">
-                    <Logo className="h-8 w-auto" />
-                </Link>
-            </div>
-            {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={cn(
-                    "transition-colors hover:text-foreground/80",
-                    pathname === link.href ? "text-foreground" : "text-foreground/60"
-                  )}
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </nav>
-        </div>
-
-        {/* Cart Icon */}
-        <div className="flex flex-1 justify-end">
-          <Sheet>
+        <div className="flex items-center justify-end space-x-2">
+           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" aria-label="Open cart">
                 <ShoppingCart className="h-5 w-5" />
@@ -117,8 +68,43 @@ export function Header() {
             </SheetTrigger>
             <CartSheet />
           </Sheet>
-        </div>
 
+          <div className="md:hidden">
+            <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+              <SheetTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label="Open menu"
+                >
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="pr-0">
+                 <Link href="/" className="mr-6 flex items-center space-x-2" onClick={() => setIsMobileMenuOpen(false)}>
+                    <Logo className="h-8 w-auto" />
+                 </Link>
+                 <div className="my-4 h-[calc(100vh-8rem)] pb-10 pl-6">
+                  <div className="flex flex-col space-y-3">
+                    {navLinks.map((link) => (
+                        <Link
+                          key={link.href}
+                          href={link.href}
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className={cn(
+                             "text-lg font-medium",
+                             pathname === link.href ? "text-foreground" : "text-muted-foreground"
+                          )}
+                        >
+                          {link.label}
+                        </Link>
+                      ))}
+                  </div>
+                 </div>
+              </SheetContent>
+            </Sheet>
+          </div>
+        </div>
       </div>
     </header>
   );
