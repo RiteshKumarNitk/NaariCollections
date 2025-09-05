@@ -32,9 +32,9 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased">
         <CartProvider>
-          <div className="flex min-h-dvh flex-col">
+          <div className="flex min-h-dvh border-1 border-zinc-800 flex-col">
             <Header />
-            <main className="flex-grow container">{children}</main>
+            <main className="flex-grow ">{children}</main>
             <Footer />
           </div>
           <Toaster />
