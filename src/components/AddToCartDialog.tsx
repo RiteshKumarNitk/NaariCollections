@@ -73,7 +73,7 @@ export function AddToCartDialog({ children }: { children: React.ReactNode }) {
           </DialogHeader>
           <div className="py-4">
             <RadioGroup
-              value={selectedSize || undefined}
+              value={selectedSize || ''}
               onValueChange={setSelectedSize}
               className="flex flex-wrap gap-2"
             >
@@ -83,6 +83,7 @@ export function AddToCartDialog({ children }: { children: React.ReactNode }) {
                     value={size}
                     id={`dialog-size-${size}`}
                     className="sr-only"
+                    checked={selectedSize === size}
                   />
                   <Label
                     htmlFor={`dialog-size-${size}`}
