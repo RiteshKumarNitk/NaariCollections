@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react';
+import { useState, use } from 'react';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 
@@ -27,7 +27,8 @@ type ProductPageProps = {
 
 
 export default function ProductPage({ params }: ProductPageProps) {
-    const product = products.find(p => p.id === params.id);
+    const { id } = params;
+    const product = products.find(p => p.id === id);
     const { addToCart } = useCart();
     
     if (!product) {
@@ -91,10 +92,10 @@ export default function ProductPage({ params }: ProductPageProps) {
                         <RadioGroup value={selectedSize} onValueChange={setSelectedSize} className="flex flex-wrap gap-2">
                             {product.sizes.map(size => (
                                 <div key={size}>
-                                    <RadioGroupItem value={size} id={`size-${size}`} className="sr-only" checked={selectedSize === size} />
+                                    <RadioGroupItem value={size} id={`size-${size}`} className="sr-only" />
                                     <Label 
                                         htmlFor={`size-${size}`}
-                                        className="flex items-center justify-center rounded-md border-2 px-4 py-2 text-sm font-medium hover:bg-accent cursor-pointer data-[state=checked]:border-primary data-[state=checked]:bg-primary/10"
+                                        className={`flex items-center justify-center rounded-md border-2 px-4 py-2 text-sm font-medium hover:bg-accent cursor-pointer ${selectedSize === size ? 'border-primary bg-primary/10' : ''}`}
                                     >
                                         {size}
                                     </Label>
