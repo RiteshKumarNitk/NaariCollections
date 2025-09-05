@@ -30,7 +30,7 @@ export function HeroSlider({ images, children, interval = 5000 }: HeroSliderProp
   }, [currentIndex, interval]);
 
   return (
-    <section className="relative w-full h-screen overflow-hidden">
+    <section className="relative w-full h-[calc(100vh-4rem)] overflow-hidden">
       <AnimatePresence initial={false}>
         <motion.div
           key={currentIndex}

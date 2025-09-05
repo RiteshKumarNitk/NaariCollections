@@ -41,41 +41,39 @@ export default function Home() {
       </section>
 
       <section className="bg-secondary/30 py-16 md:py-24">
-        <div className="container">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-headline font-bold">Why Choose Naari?</h2>
-            <p className="mt-3 text-muted-foreground text-lg">
-              Experience the difference with our commitment to quality and style.
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-headline font-bold">Why Choose Naari?</h2>
+          <p className="mt-3 text-muted-foreground text-lg">
+            Experience the difference with our commitment to quality and style.
+          </p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+          <div className="flex flex-col items-center text-center">
+            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/20 text-primary-foreground">
+              <Gem className="h-8 w-8 text-primary" />
+            </div>
+            <h3 className="text-xl font-headline font-semibold mb-2">Exquisite Quality</h3>
+            <p className="text-muted-foreground">
+              We use only the finest materials and artisanal techniques to craft each piece, ensuring longevity and a luxurious feel.
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
-            <div className="flex flex-col items-center text-center">
-              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/20 text-primary-foreground">
-                <Gem className="h-8 w-8 text-primary" />
-              </div>
-              <h3 className="text-xl font-headline font-semibold mb-2">Exquisite Quality</h3>
-              <p className="text-muted-foreground">
-                We use only the finest materials and artisanal techniques to craft each piece, ensuring longevity and a luxurious feel.
-              </p>
+          <div className="flex flex-col items-center text-center">
+            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/20 text-primary-foreground">
+              <Truck className="h-8 w-8 text-primary" />
             </div>
-            <div className="flex flex-col items-center text-center">
-              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/20 text-primary-foreground">
-                <Truck className="h-8 w-8 text-primary" />
-              </div>
-              <h3 className="text-xl font-headline font-semibold mb-2">Fast & Secure Shipping</h3>
-              <p className="text-muted-foreground">
-                Your new favorite outfit will be at your doorstep in no time, with tracked shipping and careful packaging.
-              </p>
+            <h3 className="text-xl font-headline font-semibold mb-2">Fast & Secure Shipping</h3>
+            <p className="text-muted-foreground">
+              Your new favorite outfit will be at your doorstep in no time, with tracked shipping and careful packaging.
+            </p>
+          </div>
+          <div className="flex flex-col items-center text-center">
+             <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/20 text-primary-foreground">
+               <ShieldCheck className="h-8 w-8 text-primary" />
             </div>
-            <div className="flex flex-col items-center text-center">
-               <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/20 text-primary-foreground">
-                 <ShieldCheck className="h-8 w-8 text-primary" />
-              </div>
-              <h3 className="text-xl font-headline font-semibold mb-2">Guaranteed Satisfaction</h3>
-              <p className="text-muted-foreground">
-                We stand by our products. If you&apos;re not completely in love with your purchase, our hassle-free return policy has you covered.
-              </p>
-            </div>
+            <h3 className="text-xl font-headline font-semibold mb-2">Guaranteed Satisfaction</h3>
+            <p className="text-muted-foreground">
+              We stand by our products. If you&apos;re not completely in love with your purchase, our hassle-free return policy has you covered.
+            </p>
           </div>
         </div>
       </section>
