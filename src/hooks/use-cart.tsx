@@ -4,7 +4,7 @@
 import type { ReactNode } from "react";
 import { createContext, useContext, useEffect, useState } from "react";
 import type { CartItem } from "@/lib/types";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 interface CartContextType {
   cartItems: CartItem[];
