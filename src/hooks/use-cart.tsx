@@ -6,6 +6,8 @@ import { createContext, useContext, useEffect, useState } from "react";
 import type { CartItem } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 
+const SHIPPING_COST = 100;
+
 interface CartContextType {
   cartItems: CartItem[];
   addToCart: (item: Omit<CartItem, "quantity">) => void;
@@ -13,6 +15,8 @@ interface CartContextType {
   updateQuantity: (id: string, size: string, quantity: number) => void;
   clearCart: () => void;
   cartCount: number;
+  subtotal: number;
+  shippingCost: number;
   totalPrice: number;
 }
 
@@ -93,10 +97,15 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
-  const totalPrice = cartItems.reduce(
+  const subtotal = cartItems.reduce(
     (acc, item) => acc + item.price * item.quantity,
     0
   );
+
+  const shippingCost = cartCount > 0 ? SHIPPING_COST : 0;
+  
+  const totalPrice = subtotal + shippingCost;
+
 
   return (
     <CartContext.Provider
@@ -107,6 +116,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         updateQuantity,
         clearCart,
         cartCount,
+        subtotal,
+        shippingCost,
         totalPrice,
       }}
     >

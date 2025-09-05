@@ -2,7 +2,7 @@
 "use client";
 
 import Image from 'next/image';
-import { Minus, Plus, Trash2, X } from 'lucide-react';
+import { Minus, Plus, Trash2 } from 'lucide-react';
 
 import { useCart } from '@/hooks/use-cart';
 import { Button } from '@/components/ui/button';
@@ -15,8 +15,7 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import type { SVGProps } from 'react';
-
-const WHATSAPP_NUMBER = "1234567890"; // Replace with a valid WhatsApp number
+import { CheckoutDialog } from './CheckoutDialog';
 
 const WhatsappIcon = (props: SVGProps<SVGSVGElement>) => (
     <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" {...props}>
@@ -25,19 +24,10 @@ const WhatsappIcon = (props: SVGProps<SVGSVGElement>) => (
     </svg>
 );
 
-export function CartSheet() {
-  const { cartItems, removeFromCart, updateQuantity, cartCount, totalPrice, clearCart } = useCart();
 
-  const handleWhatsAppCheckout = () => {
-    const header = "Hello Naari E-Shop, I'd like to place an order for the following items:\n\n";
-    const itemsText = cartItems.map(item => 
-      `- ${item.name} (Size: ${item.size}, Code: ${item.code}) x ${item.quantity}`
-    ).join('\n');
-    const footer = `\n\nTotal: ₹${totalPrice.toFixed(2)}`;
-    
-    const message = encodeURIComponent(header + itemsText + footer);
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, '_blank');
-  };
+export function CartSheet() {
+  const { cartItems, removeFromCart, updateQuantity, cartCount, subtotal, shippingCost, totalPrice, clearCart } = useCart();
+
 
   return (
     <SheetContent className="flex w-full flex-col pr-0 sm:max-w-lg">
@@ -86,14 +76,27 @@ export function CartSheet() {
           <Separator />
           <SheetFooter className="px-6 py-4 bg-secondary/50">
             <div className="w-full space-y-4">
+                <div className="space-y-1 text-sm">
+                    <div className="flex justify-between">
+                        <span>Subtotal</span>
+                        <span>₹{subtotal.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                        <span>Shipping</span>
+                        <span>₹{shippingCost.toFixed(2)}</span>
+                    </div>
+                </div>
+                 <Separator />
                 <div className="flex justify-between font-semibold text-lg">
                     <span>Total</span>
                     <span>₹{totalPrice.toFixed(2)}</span>
                 </div>
-                <Button onClick={handleWhatsAppCheckout} className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white">
-                    <WhatsappIcon className="mr-2 h-5 w-5" />
-                    Checkout via WhatsApp
-                </Button>
+                <CheckoutDialog>
+                    <Button className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white">
+                        <WhatsappIcon className="mr-2 h-5 w-5" />
+                        Checkout via WhatsApp
+                    </Button>
+                </CheckoutDialog>
                  <Button variant="outline" className="w-full" onClick={clearCart}>
                     Clear Cart
                 </Button>
