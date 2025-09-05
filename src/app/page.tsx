@@ -1,29 +1,29 @@
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, Gem, ShieldCheck, Truck } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { ProductSliders } from '@/components/ProductSliders';
 import { products } from '@/lib/products';
+import { HeroSlider } from '@/components/HeroSlider';
+
+const heroImages = [
+  products[0].images[0],
+  products[1].images[0],
+  products[3].images[0],
+  products[5].images[0],
+];
+
 
 export default function Home() {
   return (
     <>
-      <section className="relative w-full h-[60vh] md:h-[70vh] bg-secondary/50 -mx-4 sm:-mx-6 md:-mx-8 lg:-mx-10 xl:-mx-40">
-        <Image
-          src="https://picsum.photos/1800/1000"
-          alt="Woman in elegant ethnic wear"
-          data-ai-hint="elegant ethnic"
-          fill
-          className="object-cover object-top"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-background/70 to-transparent" />
-        <div className="relative z-10 flex flex-col items-center justify-center h-full text-center text-foreground p-4">
-          <h1 className="font-headline text-4xl md:text-6xl lg:text-7xl font-bold drop-shadow-md">
+      <HeroSlider images={heroImages}>
+         <div className="relative z-10 flex flex-col items-center justify-center h-full text-center text-foreground p-4">
+          <h1 className="font-headline text-4xl md:text-6xl lg:text-7xl font-bold drop-shadow-md text-white">
             Elegance Redefined
           </h1>
-          <p className="mt-4 max-w-2xl text-lg md:text-xl">
+          <p className="mt-4 max-w-2xl text-lg md:text-xl text-white/90">
             Discover our curated collection of exquisite women&apos;s ethnic wear.
             Handcrafted with passion, designed for you.
           </p>
@@ -34,13 +34,13 @@ export default function Home() {
             </Link>
           </Button>
         </div>
-      </section>
+      </HeroSlider>
 
       <section className="py-12 md:py-20">
         <ProductSliders allProducts={products} />
       </section>
 
-      <section className="bg-secondary/30 py-16 md:py-24 -mx-4 sm:-mx-6 md:-mx-8 lg:-mx-10 xl:-mx-40">
+      <section className="bg-secondary/30 py-16 md:py-24">
         <div className="container">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-headline font-bold">Why Choose Naari?</h2>
