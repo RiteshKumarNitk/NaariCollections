@@ -1,12 +1,14 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { MoreHorizontal, PlusCircle } from 'lucide-react';
+import { MoreHorizontal, PlusCircle, LogOut } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 import { products as initialProducts } from '@/lib/products';
 import type { Product } from '@/lib/types';
+import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -28,21 +30,46 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 
 export default function AdminPage() {
   const [products, setProducts] = useState<Product[]>(initialProducts);
+  const { user, logout } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    // If no user is logged in, redirect to the login page.
+    if (!user) {
+      router.push('/login');
+    }
+  }, [user, router]);
+  
+  // If there's no user, we can return null or a loading spinner
+  // while the redirect happens.
+  if (!user) {
+      return null;
+  }
+
+  const handleLogout = () => {
+    logout();
+    router.push('/login');
+  };
 
   return (
-    <div className="container py-8">
+    <div className="py-8">
        <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
               <CardTitle>Products</CardTitle>
               <CardDescription>
-                Manage your products here.
+                Manage your products here. Welcome, {user.email}!
               </CardDescription>
             </div>
-            <Button>
-              <PlusCircle className="mr-2 h-4 w-4" /> Add Product
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button>
+                <PlusCircle className="mr-2 h-4 w-4" /> Add Product
+              </Button>
+              <Button variant="outline" onClick={handleLogout}>
+                <LogOut className="mr-2 h-4 w-4" /> Logout
+              </Button>
+            </div>
           </div>
         </CardHeader>
         <CardContent>

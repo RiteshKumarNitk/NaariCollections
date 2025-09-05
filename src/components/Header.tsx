@@ -1,7 +1,8 @@
+
 "use client";
 
 import Link from "next/link";
-import { Menu, ShoppingCart } from "lucide-react";
+import { Menu, ShoppingCart, User } from "lucide-react";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 
@@ -11,6 +12,7 @@ import { useCart } from "@/hooks/use-cart";
 import { CartSheet } from "./CartSheet";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/use-auth";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -21,75 +23,14 @@ const navLinks = [
 
 export function Header() {
   const { cartCount } = useCart();
+  const { user } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
-        <Link href="/" className="mr-6 flex items-center space-x-2">
-          <Logo className="h-8 w-auto" />
-        </Link>
-
-        <div className="flex-1 flex justify-center">
-          <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={cn(
-                  "transition-colors hover:text-foreground/80",
-                  pathname === link.href
-                    ? "text-foreground"
-                    : "text-foreground/60"
-                )}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
-        </div>
-
-        <div className="flex items-center justify-end space-x-2">
-          {/* <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" aria-label="Open cart">
-                <ShoppingCart className="h-5 w-5" />
-                {cartCount > 0 && (
-                  <span className="absolute top-2 right-2 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
-                    {cartCount}
-                  </span>
-                )}
-                 <span className="sr-only">Cart</span>
-              </Button>
-            </SheetTrigger>
-            <CartSheet />
-          </Sheet> */}
-
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label="Open cart"
-                className="relative"
-              >
-                {/* Icon */}
-                <ShoppingCart className="h-5 w-5" />
-
-                {/* Badge */}
-                {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
-                    {cartCount}
-                  </span>
-                )}
-
-                <span className="sr-only">Cart</span>
-              </Button>
-            </SheetTrigger>
-            <CartSheet />
-          </Sheet>
-          <div className="md:hidden">
+        <div className="md:hidden">
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon" aria-label="Open menu">
@@ -99,7 +40,7 @@ export function Header() {
               <SheetContent side="left" className="pr-0">
                 <Link
                   href="/"
-                  className="mr-6 flex items-center space-x-2"
+                  className="mr-6 flex items-center space-x-2 p-6"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   <Logo className="h-8 w-auto" />
@@ -121,11 +62,71 @@ export function Header() {
                         {link.label}
                       </Link>
                     ))}
+                     <Link
+                        href={user ? "/admin" : "/login"}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className={cn(
+                          "text-lg font-medium",
+                          pathname === (user ? "/admin" : "/login")
+                            ? "text-foreground"
+                            : "text-muted-foreground"
+                        )}
+                      >
+                        {user ? 'Admin' : 'Login'}
+                      </Link>
                   </div>
                 </div>
               </SheetContent>
             </Sheet>
           </div>
+        <Link href="/" className="mr-6 flex items-center space-x-2">
+          <Logo className="h-8 w-auto" />
+        </Link>
+
+        <nav className="hidden md:flex flex-1 items-center justify-center space-x-6 text-sm font-medium">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={cn(
+                  "transition-colors hover:text-foreground/80",
+                  pathname === link.href
+                    ? "text-foreground"
+                    : "text-foreground/60"
+                )}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+
+        <div className="flex flex-1 items-center justify-end space-x-2">
+          <Button variant="ghost" size="icon" className="hidden md:inline-flex" asChild>
+            <Link href={user ? '/admin' : '/login'}>
+              <User className="h-5 w-5" />
+              <span className="sr-only">{user ? 'Admin' : 'Login'}</span>
+            </Link>
+          </Button>
+
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label="Open cart"
+                className="relative"
+              >
+                <ShoppingCart className="h-5 w-5" />
+                {cartCount > 0 && (
+                  <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+                    {cartCount}
+                  </span>
+                )}
+                <span className="sr-only">Cart</span>
+              </Button>
+            </SheetTrigger>
+            <CartSheet />
+          </Sheet>
         </div>
       </div>
     </header>

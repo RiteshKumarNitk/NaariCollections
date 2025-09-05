@@ -1,3 +1,4 @@
+
 export type Product = {
   id: string;
   name: string;
@@ -20,4 +21,14 @@ export type CartItem = {
   quantity: number;
   size: string;
   code: string;
+};
+
+// For simulated authentication
+export type User = {
+  email: string;
+};
+
+export type AdminUser = {
+  email: string;
+  password?: string; // This should not exist in a real User type
 };
