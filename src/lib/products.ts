@@ -11,8 +11,8 @@ export const products: Product[] = [
     sizes: ['38', '40', '42', '44'],
     fabric: 'Voil Cotton',
     code: '27H93',
-    creationDate: new Date().toISOString(),
-    bestseller: false,
+    creationDate: '2024-07-22T10:00:00Z',
+    bestseller: true,
   },
   {
     id: '2',
@@ -24,7 +24,7 @@ export const products: Product[] = [
     sizes: ['38', '40', '42', '44'],
     fabric: 'Voil Cotton',
     code: '27H92',
-    creationDate: new Date().toISOString(),
+    creationDate: '2024-07-21T10:00:00Z',
     bestseller: false,
   },
   {
@@ -37,7 +37,7 @@ export const products: Product[] = [
     sizes: ['38', '40', '42', '44'],
     fabric: 'Pure Crepe',
     code: '27H91',
-    creationDate: new Date().toISOString(),
+    creationDate: '2024-07-20T10:00:00Z',
     bestseller: false,
   },
   {
@@ -50,7 +50,7 @@ export const products: Product[] = [
     sizes: ['38', '40', '42', '44'],
     fabric: 'Voil Cotton',
     code: '27H90',
-    creationDate: new Date().toISOString(),
+    creationDate: '2024-07-19T10:00:00Z',
     bestseller: false,
   },
   {
@@ -63,8 +63,8 @@ export const products: Product[] = [
     sizes: ['38', '44'],
     fabric: 'Silk with Organza Dupatta',
     code: '27H81',
-    creationDate: new Date().toISOString(),
-    bestseller: false,
+    creationDate: '2024-07-18T10:00:00Z',
+    bestseller: true,
   },
   {
     id: '6',
@@ -76,7 +76,7 @@ export const products: Product[] = [
     sizes: ['40', '42', '44'],
     fabric: 'Cotton Slub',
     code: '27H88',
-    creationDate: new Date().toISOString(),
+    creationDate: '2024-07-17T10:00:00Z',
     bestseller: false,
   },
   {
@@ -89,7 +89,7 @@ export const products: Product[] = [
     sizes: ['38', '44'],
     fabric: 'Pure Crepe',
     code: '27H83',
-    creationDate: new Date().toISOString(),
+    creationDate: '2024-07-16T10:00:00Z',
     bestseller: false,
   },
   {
@@ -102,7 +102,7 @@ export const products: Product[] = [
     sizes: ['Free Size'],
     fabric: 'Chanderi Silk',
     code: '27H84',
-    creationDate: new Date().toISOString(),
+    creationDate: '2024-07-15T10:00:00Z',
     bestseller: false,
   },
   {
@@ -115,7 +115,7 @@ export const products: Product[] = [
     sizes: ['40', '42', '44'],
     fabric: 'Georgette',
     code: '27H85',
-    creationDate: new Date().toISOString(),
+    creationDate: '2024-07-14T10:00:00Z',
     bestseller: false,
   },
   {
@@ -128,8 +128,8 @@ export const products: Product[] = [
     sizes: ['38', '40', '42', '44'],
     fabric: 'Chinon',
     code: '27H86',
-    creationDate: new Date().toISOString(),
-    bestseller: false,
+    creationDate: '2024-07-13T10:00:00Z',
+    bestseller: true,
   },
   {
     id: '11',
@@ -141,7 +141,7 @@ export const products: Product[] = [
     sizes: ['38', '40', '42', '44'],
     fabric: 'Pure Crepe',
     code: '27H87',
-    creationDate: new Date().toISOString(),
+    creationDate: '2024-07-12T10:00:00Z',
     bestseller: false,
   },
   {
@@ -154,7 +154,7 @@ export const products: Product[] = [
     sizes: ['38', '40', '42', '44', '46'],
     fabric: 'Pure Cotton',
     code: '25H130',
-    creationDate: new Date().toISOString(),
+    creationDate: '2024-07-11T10:00:00Z',
     bestseller: false,
   },
   {
@@ -167,8 +167,8 @@ export const products: Product[] = [
     sizes: ['38', '40', '42', '44'],
     fabric: 'Pure Cotton',
     code: '25H56',
-    creationDate: new Date().toISOString(),
-    bestseller: false,
+    creationDate: '2024-07-10T10:00:00Z',
+    bestseller: true,
   },
   {
     id: '14',
@@ -180,7 +180,7 @@ export const products: Product[] = [
     sizes: ['38', '40', '42', '44'],
     fabric: 'Pure Cotton',
     code: '25H65',
-    creationDate: new Date().toISOString(),
+    creationDate: '2024-07-09T10:00:00Z',
     bestseller: false,
   },
   {
@@ -193,7 +193,7 @@ export const products: Product[] = [
     sizes: ['38', '40', '42', '44', '46'],
     fabric: 'Pure Cotton',
     code: '25H66',
-    creationDate: new Date().toISOString(),
+    creationDate: '2024-07-08T10:00:00Z',
     bestseller: false,
   },
   {
@@ -206,7 +206,7 @@ export const products: Product[] = [
     sizes: ['38', '40', '42', '44'],
     fabric: '60-60 Cotton',
     code: '25H64',
-    creationDate: new Date().toISOString(),
+    creationDate: '2024-07-07T10:00:00Z',
     bestseller: false,
   },
   {
@@ -219,7 +219,7 @@ export const products: Product[] = [
     sizes: ['38', '40', '42', '44'],
     fabric: 'Mul Cotton',
     code: '25H62',
-    creationDate: new Date().toISOString(),
+    creationDate: '2024-07-06T10:00:00Z',
     bestseller: false,
   },
   {
@@ -232,7 +232,7 @@ export const products: Product[] = [
     sizes: ['38', '40', '42', '44', '46'],
     fabric: 'Pure Cotton',
     code: '25H61',
-    creationDate: new Date().toISOString(),
+    creationDate: '2024-07-05T10:00:00Z',
     bestseller: false,
   },
   {
@@ -245,8 +245,8 @@ export const products: Product[] = [
     sizes: ['38', '40', '42', '44', '46'],
     fabric: 'Pure Cotton',
     code: '25H60',
-    creationDate: new Date().toISOString(),
-    bestseller: false,
+    creationDate: '2024-07-04T10:00:00Z',
+    bestseller: true,
   },
   {
     id: '20',
@@ -258,7 +258,7 @@ export const products: Product[] = [
     sizes: ['38', '40', '42', '44', '46'],
     fabric: 'Mul Cotton',
     code: '25H59',
-    creationDate: new Date().toISOString(),
+    creationDate: '2024-07-03T10:00:00Z',
     bestseller: false,
   },
   {
@@ -271,7 +271,7 @@ export const products: Product[] = [
     sizes: ['38', '40', '42', '44', '46'],
     fabric: 'Mul Cotton',
     code: '25H58',
-    creationDate: new Date().toISOString(),
+    creationDate: '2024-07-02T10:00:00Z',
     bestseller: false,
   },
   {
@@ -284,7 +284,7 @@ export const products: Product[] = [
     sizes: ['38', '40', '42', '44', '46'],
     fabric: 'Pure Cotton',
     code: '25H57',
-    creationDate: new Date().toISOString(),
-    bestseller: false,
+    creationDate: '2024-07-01T10:00:00Z',
+    bestseller: true,
   },
 ];

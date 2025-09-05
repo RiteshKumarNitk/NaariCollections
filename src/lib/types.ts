@@ -4,7 +4,7 @@ export type Product = {
   description: string;
   price: number;
   images: string[];
-  category: 'suits' | 'sarees' | 'kurtis' | 'dresses';
+  category: 'suits' | 'sarees' | 'kurtis' | 'dresses' | 'kaftans' | 'anarkali' | 'indo-western' | 'coord-sets';
   sizes: string[];
   fabric: string;
   code: string;

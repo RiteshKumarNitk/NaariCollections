@@ -30,7 +30,7 @@ export default function AdminPage() {
   const [products, setProducts] = useState<Product[]>(initialProducts);
 
   return (
-    <div className="py-8">
+    <div className="container py-8">
        <Card>
         <CardHeader>
           <div className="flex items-center justify-between">

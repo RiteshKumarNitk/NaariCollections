@@ -16,8 +16,10 @@ import { Slider } from '@/components/ui/slider';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Filter } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import type { Product } from '@/lib/types';
 
 
+const CATEGORIES: Product['category'][] = ['suits', 'sarees', 'kurtis', 'dresses', 'kaftans', 'anarkali', 'indo-western', 'coord-sets'];
 const FABRICS = [...new Set(allProducts.map(p => p.fabric))];
 const SIZES = [...new Set(allProducts.flatMap(p => p.sizes))];
 
@@ -31,7 +33,7 @@ export default function ShopPage() {
     category: initialCategory ? [initialCategory] : [],
     size: [] as string[],
     fabric: [] as string[],
-    price: [0, 20000],
+    price: [0, 4000],
   });
 
   const handleFilterChange = (type: 'category' | 'size' | 'fabric', value: string) => {
@@ -47,6 +49,16 @@ export default function ShopPage() {
   const handlePriceChange = (newPrice: number[]) => {
     setFilters(prev => ({ ...prev, price: newPrice }));
   };
+  
+  const clearFilters = () => {
+    setFilters({
+      category: [],
+      size: [],
+      fabric: [],
+      price: [0, 4000],
+    });
+  };
+
 
   const filteredAndSortedProducts = useMemo(() => {
     let filtered = allProducts.filter(product => {
@@ -82,10 +94,10 @@ export default function ShopPage() {
       <AccordionItem value="category">
         <AccordionTrigger>Category</AccordionTrigger>
         <AccordionContent className="space-y-2">
-          {['suits', 'sarees', 'kurtis', 'dresses'].map(cat => (
+          {CATEGORIES.map(cat => (
             <div key={cat} className="flex items-center space-x-2">
               <Checkbox id={`cat-${cat}`} onCheckedChange={() => handleFilterChange('category', cat)} checked={filters.category.includes(cat)} />
-              <Label htmlFor={`cat-${cat}`} className="font-normal capitalize">{cat}</Label>
+              <Label htmlFor={`cat-${cat}`} className="font-normal capitalize">{cat.replace('-', ' ')}</Label>
             </div>
           ))}
         </AccordionContent>
@@ -95,8 +107,8 @@ export default function ShopPage() {
         <AccordionContent className="px-1 pt-2">
           <Slider
             min={0}
-            max={20000}
-            step={500}
+            max={4000}
+            step={100}
             value={filters.price}
             onValueChange={handlePriceChange}
           />
@@ -132,16 +144,19 @@ export default function ShopPage() {
   );
 
   return (
-    <div className="py-8">
+    <div className="container py-8">
       <div className="mb-8 text-center">
         <h1 className="text-4xl font-headline">Our Collection</h1>
         <p className="mt-2 text-muted-foreground">Browse our handpicked selection of the finest ethnic wear.</p>
       </div>
 
       <div className="flex flex-col md:flex-row gap-8">
-        <aside className="w-full md:w-64 lg:w-72 md:sticky top-20 h-fit shrink-0">
+        <aside className="w-full md:w-64 lg:w-72 md:sticky top-24 h-fit shrink-0">
           <div className='hidden md:block'>
-            <h2 className="text-xl font-headline mb-4">Filters</h2>
+            <div className="flex justify-between items-center mb-4">
+               <h2 className="text-xl font-headline">Filters</h2>
+               <Button variant="link" onClick={clearFilters} className="p-0 h-auto text-sm">Clear all</Button>
+            </div>
             <FilterAccordion />
           </div>
         </aside>
@@ -158,8 +173,9 @@ export default function ShopPage() {
                     </Button>
                   </SheetTrigger>
                   <SheetContent side="left" className="w-full max-w-sm">
-                    <SheetHeader className="px-6 pt-6">
+                    <SheetHeader className="px-6 pt-6 flex flex-row justify-between items-center">
                       <SheetTitle>Filters</SheetTitle>
+                       <Button variant="link" onClick={clearFilters} className="p-0 h-auto text-sm">Clear all</Button>
                     </SheetHeader>
                     <div className="p-6">
                       <FilterAccordion />
@@ -185,9 +201,15 @@ export default function ShopPage() {
           </div>
            <AddToCartDialog>
               <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-                {filteredAndSortedProducts.map(product => (
-                  <ProductCard key={product.id} product={product} onAddToCart={() => {}}/>
-                ))}
+                {filteredAndSortedProducts.length > 0 ? (
+                    filteredAndSortedProducts.map(product => (
+                      <ProductCard key={product.id} product={product} onAddToCart={() => {}}/>
+                    ))
+                ) : (
+                    <div className="col-span-full text-center py-12">
+                        <p className="text-muted-foreground">No products found matching your criteria.</p>
+                    </div>
+                )}
               </div>
           </AddToCartDialog>
         </main>
