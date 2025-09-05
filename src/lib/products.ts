@@ -5,7 +5,7 @@ export const products: Product[] = [
     id: '1',
     name: 'Beautiful Suit Set with Adda Handwork',
     description: 'Elegant suit set with adda handwork. Perfect festive wear.',
-    price: 1345,
+    price: 1555,
     images: ['https://picsum.photos/id/1011/800/1200'],
     category: 'suits',
     sizes: ['38', '40', '42', '44'],

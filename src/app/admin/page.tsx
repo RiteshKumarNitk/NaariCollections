@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { MoreHorizontal, PlusCircle, LogOut } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { format } from 'date-fns';
 
 import { products as initialProducts } from '@/lib/products';
 import type { Product } from '@/lib/types';
@@ -81,11 +82,9 @@ export default function AdminPage() {
                   <span className="sr-only">Image</span>
                 </TableHead>
                 <TableHead>Name</TableHead>
-                <TableHead>Category</TableHead>
+                <TableHead>Code</TableHead>
                 <TableHead className="hidden md:table-cell">Price</TableHead>
-                <TableHead className="hidden md:table-cell">
-                  Bestseller
-                </TableHead>
+                <TableHead className="hidden md:table-cell">Date</TableHead>
                  <TableHead>
                   <span className="sr-only">Actions</span>
                 </TableHead>
@@ -106,13 +105,13 @@ export default function AdminPage() {
                   </TableCell>
                   <TableCell className="font-medium">{product.name}</TableCell>
                   <TableCell>
-                    <Badge variant="outline" className="capitalize">{product.category}</Badge>
+                    <Badge variant="outline">{product.code}</Badge>
                   </TableCell>
                   <TableCell className="hidden md:table-cell">
                     ₹{product.price.toLocaleString()}
                   </TableCell>
-                  <TableCell className="hidden md:table-cell">
-                    {product.bestseller ? 'Yes' : 'No'}
+                   <TableCell className="hidden md:table-cell">
+                    {format(new Date(product.creationDate), 'dd MMM yyyy')}
                   </TableCell>
                   <TableCell>
                     <DropdownMenu>
