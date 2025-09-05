@@ -1,8 +1,9 @@
 "use client";
 
 import Link from 'next/link';
-import { BaggageClaim, Menu, Search, ShoppingCart, X } from 'lucide-react';
+import { Menu, ShoppingCart } from 'lucide-react';
 import { useState } from 'react';
+import { usePathname } from 'next/navigation';
 
 import { Logo } from '@/components/icons';
 import { Button } from '@/components/ui/button';
@@ -14,7 +15,6 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { cn } from '@/lib/utils';
-import { usePathname } from 'next/navigation';
 
 const navLinks = [
   { href: '/', label: 'Home' },
@@ -29,34 +29,15 @@ export function Header() {
   const pathname = usePathname();
 
   return (
-    <>
-      <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center">
-          <div className="mr-4 hidden md:flex">
-            <Link href="/" className="mr-6 flex items-center space-x-2">
-              <Logo className="h-8 w-auto" />
-            </Link>
-            <nav className="flex items-center space-x-6 text-sm font-medium">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={cn(
-                    "transition-colors hover:text-foreground/80",
-                    pathname === link.href ? "text-foreground" : "text-foreground/60"
-                  )}
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </nav>
-          </div>
-          
+    <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-16 items-center">
+
+        {/* Mobile Menu */}
+        <div className="flex-1 md:hidden">
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
             <SheetTrigger asChild>
               <Button
                 variant="ghost"
-                className="md:hidden"
                 size="icon"
                 aria-label="Open menu"
               >
@@ -86,35 +67,59 @@ export function Header() {
                </div>
             </SheetContent>
           </Sheet>
-
-
-          <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
-             <div className="w-full flex-1 md:w-auto md:flex-none">
-                {/* Mobile logo centered */}
-                <div className="md:hidden flex-1 flex justify-center">
-                    <Link href="/" aria-label="Back to homepage" onClick={() => setIsMobileMenuOpen(false)}>
-                        <Logo className="h-8 w-auto" />
-                    </Link>
-                </div>
-             </div>
-            <nav className="flex items-center">
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon" aria-label="Open cart">
-                    <ShoppingCart className="h-5 w-5" />
-                    {cartCount > 0 && (
-                      <span className="absolute top-2 right-2 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-xs font-bold text-accent-foreground">
-                        {cartCount}
-                      </span>
-                    )}
-                  </Button>
-                </SheetTrigger>
-                <CartSheet />
-              </Sheet>
-            </nav>
-          </div>
         </div>
-      </header>
-    </>
+
+        {/* Desktop Logo */}
+        <div className="hidden flex-1 md:flex">
+           <Link href="/" className="flex items-center space-x-2">
+              <Logo className="h-8 w-auto" />
+            </Link>
+        </div>
+
+        {/* Centered Navigation (Mobile & Desktop) */}
+        <div className="flex justify-center md:flex-1">
+           {/* Mobile Logo */}
+            <div className="md:hidden">
+                <Link href="/" aria-label="Back to homepage">
+                    <Logo className="h-8 w-auto" />
+                </Link>
+            </div>
+            {/* Desktop Navigation */}
+            <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={cn(
+                    "transition-colors hover:text-foreground/80",
+                    pathname === link.href ? "text-foreground" : "text-foreground/60"
+                  )}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+        </div>
+
+        {/* Cart Icon */}
+        <div className="flex flex-1 justify-end">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" aria-label="Open cart">
+                <ShoppingCart className="h-5 w-5" />
+                {cartCount > 0 && (
+                  <span className="absolute top-2 right-2 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+                    {cartCount}
+                  </span>
+                )}
+                 <span className="sr-only">Cart</span>
+              </Button>
+            </SheetTrigger>
+            <CartSheet />
+          </Sheet>
+        </div>
+
+      </div>
+    </header>
   );
 }
