@@ -73,7 +73,7 @@ export function AddToCartDialog({ children }: { children: React.ReactNode }) {
           </DialogHeader>
           <div className="py-4">
             <RadioGroup
-              value={selectedSize ?? undefined}
+              value={selectedSize || undefined}
               onValueChange={setSelectedSize}
               className="flex flex-wrap gap-2"
             >
