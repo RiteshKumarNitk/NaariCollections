@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from 'react';
-import { notFound } from 'next/navigation';
+import { notFound, useParams } from 'next/navigation';
 import Image from 'next/image';
 
 import { products } from '@/lib/products';
@@ -19,15 +19,9 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel"
 
-type ProductPageProps = {
-  params: {
-    id: string;
-  };
-};
-
-
-export default function ProductPage({ params }: ProductPageProps) {
-    const { id } = params;
+export default function ProductPage() {
+    const params = useParams();
+    const id = Array.isArray(params.id) ? params.id[0] : params.id;
     const product = products.find(p => p.id === id);
     const { addToCart } = useCart();
     
@@ -50,7 +44,7 @@ export default function ProductPage({ params }: ProductPageProps) {
     };
 
     return (
-        <div className="container py-10">
+        <div className="py-10">
             <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
                 <div>
                    <div className="aspect-[3/4] w-full overflow-hidden rounded-lg mb-4 border">

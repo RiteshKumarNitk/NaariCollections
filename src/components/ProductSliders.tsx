@@ -78,7 +78,7 @@ function Sliders({ allProducts }: ProductSlidersProps) {
     );
 
     return (
-        <div className="container space-y-16">
+        <div className="space-y-16">
             {sliders.map(slider => (
                  (slider.products.length > 0 || slider.loading) && (
                     <div key={slider.title}>

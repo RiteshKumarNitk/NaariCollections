@@ -1,13 +1,10 @@
 export default function TermsAndConditionsPage() {
   return (
-    <div className="container py-12 md:py-16">
+    <div className="py-12 md:py-16">
       <div className="max-w-4xl mx-auto prose prose-lg lg:prose-xl prose-stone">
         <h1 className="font-headline text-4xl md:text-5xl">Terms and Conditions</h1>
         
         <p>Welcome to Naari E-Shop. These terms and conditions outline the rules and regulations for the use of our website.</p>
-
-        <h2 className="font-headline">1. Introduction</h2>
-        <p>By accessing this website we assume you accept these terms and conditions. Do not continue to use Naari E-Shop if you do not agree to take all of the terms and conditions stated on this page.</p>
 
         <h2 className="font-headline">2. Intellectual Property Rights</h2>
         <p>Other than the content you own, under these Terms, Naari E-Shop and/or its licensors own all the intellectual property rights and materials contained in this Website. You are granted limited license only for purposes of viewing the material contained on this Website.</p>
