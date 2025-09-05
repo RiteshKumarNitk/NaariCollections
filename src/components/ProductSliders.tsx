@@ -25,7 +25,7 @@ export async function ProductSliders({ allProducts }: ProductSlidersProps) {
             .filter(p => newArrivalsSet.has(p.code))
             .sort((a, b) => newArrivalProductCodes.indexOf(a.code) - newArrivalProductCodes.indexOf(b.code));
     } catch (error) {
-        console.error("Failed to fetch new arrivals from AI flow, falling back to sorted dates:", error);
+        console.error("Failed to fetch new arrivals from AI flow, falling back to sorted dates:", error instanceof Error ? error.message : error);
         newArrivals = [...allProducts].sort((a, b) => new Date(b.creationDate).getTime() - new Date(a.creationDate).getTime()).slice(0, 8);
     }
     

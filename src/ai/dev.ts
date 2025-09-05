@@ -1,4 +1,11 @@
 import { config } from 'dotenv';
 config();
 
-import '@/ai/flows/category-slider-new-arrivals.ts';
+import {dev} from '@genkit-ai/next';
+import {googleAI} from '@genkit-ai/googleai';
+
+import './flows/category-slider-new-arrivals.ts';
+
+dev({
+  plugins: [googleAI()],
+});
