@@ -6,6 +6,7 @@ import { Footer } from '@/components/Footer';
 import { Toaster } from '@/components/ui/toaster';
 import { CartProvider } from '@/hooks/use-cart';
 import { AuthProvider } from '@/hooks/use-auth';
+import { ProductsProvider } from '@/hooks/use-products';
 
 export const metadata: Metadata = {
   title: 'Naari E-Shop',
@@ -33,14 +34,16 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased">
         <AuthProvider>
-          <CartProvider>
-            <div className="flex min-h-dvh flex-col">
-              <Header />
-              <main className="flex-grow container">{children}</main>
-              <Footer />
-            </div>
-            <Toaster />
-          </CartProvider>
+          <ProductsProvider>
+            <CartProvider>
+              <div className="flex min-h-dvh flex-col">
+                <Header />
+                <main className="flex-grow container">{children}</main>
+                <Footer />
+              </div>
+              <Toaster />
+            </CartProvider>
+          </ProductsProvider>
         </AuthProvider>
       </body>
     </html>

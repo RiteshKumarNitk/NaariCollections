@@ -1,14 +1,13 @@
 
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import Image from 'next/image';
 import { MoreHorizontal, PlusCircle, LogOut } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { format } from 'date-fns';
 
-import { products as initialProducts } from '@/lib/products';
 import type { Product } from '@/lib/types';
 import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
@@ -29,9 +28,10 @@ import {
   DropdownMenuLabel,
 } from '@/components/ui/dropdown-menu';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useProducts } from '@/hooks/use-products';
 
 export default function AdminPage() {
-  const [products, setProducts] = useState<Product[]>(initialProducts);
+  const { products } = useProducts();
   const { user, logout } = useAuth();
   const router = useRouter();
 

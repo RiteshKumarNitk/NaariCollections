@@ -21,6 +21,11 @@ function Sliders({ allProducts }: ProductSlidersProps) {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
+        if (!allProducts || allProducts.length === 0) {
+            setIsLoading(false);
+            return;
+        }
+
         const fetchNewArrivals = async () => {
             setIsLoading(true);
             try {

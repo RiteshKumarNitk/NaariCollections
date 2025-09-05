@@ -5,7 +5,6 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useParams, useRouter } from 'next/navigation';
-import { products } from '@/lib/products';
 import { notFound } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,6 +17,7 @@ import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import type { Product } from '@/lib/types';
+import { useProducts } from '@/hooks/use-products';
 
 
 const productSchema = z.object({
@@ -38,6 +38,7 @@ export default function EditProductPage() {
     const router = useRouter();
     const params = useParams();
     const { toast } = useToast();
+    const { products, updateProduct } = useProducts();
     const id = Array.isArray(params.id) ? params.id[0] : params.id;
     const product = products.find(p => p.id === id);
 
@@ -54,13 +55,16 @@ export default function EditProductPage() {
     });
 
     if (!product) {
-        notFound();
+        return notFound();
     }
 
     const onSubmit = (data: ProductFormValues) => {
-        // In a real application, you would send this data to your API to update the product.
-        // For this prototype, we'll just show a success message.
-        console.log('Updated product data:', data);
+        const updatedProduct: Product = {
+            ...product,
+            ...data,
+        };
+        updateProduct(updatedProduct);
+
         toast({
             title: 'Product Updated',
             description: `"${data.name}" has been successfully updated.`,

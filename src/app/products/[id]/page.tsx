@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { notFound, useParams } from 'next/navigation';
 import Image from 'next/image';
 
-import { products } from '@/lib/products';
+import { useProducts } from '@/hooks/use-products';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from '@/components/ui/label';
@@ -22,16 +22,19 @@ import {
 
 export default function ProductPage() {
     const params = useParams();
+    const { products } = useProducts();
     const id = Array.isArray(params.id) ? params.id[0] : params.id;
     const product = products.find(p => p.id === id);
     const { addToCart } = useCart();
     
+    // Initialize mainImage with the first image of the product, if it exists.
+    const [mainImage, setMainImage] = useState(product?.images[0] || '');
+
     if (!product) {
         notFound();
     }
     
     const [selectedSize, setSelectedSize] = useState(product.sizes[0]);
-    const [mainImage, setMainImage] = useState(product.images[0]);
 
     const handleAddToCart = () => {
         addToCart({
@@ -43,6 +46,13 @@ export default function ProductPage() {
             code: product.code,
         });
     };
+    
+    // Effect to update the main image if the product changes (e.g., due to state updates).
+    useState(() => {
+        if (product) {
+            setMainImage(product.images[0]);
+        }
+    });
 
     return (
         <div className="py-10 grid md:grid-cols-2 gap-8 lg:gap-12">

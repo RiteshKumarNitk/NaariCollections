@@ -6,7 +6,7 @@ import { useState, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 import { ProductCard } from '@/components/ProductCard';
-import { products as allProducts } from '@/lib/products';
+import { useProducts } from '@/hooks/use-products';
 import { AddToCartDialog } from '@/components/AddToCartDialog';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -20,12 +20,15 @@ import type { Product } from '@/lib/types';
 
 
 const CATEGORIES: Product['category'][] = ['suits', 'sarees', 'kurtis', 'dresses', 'kaftans', 'anarkali', 'indo-western', 'coord-sets'];
-const FABRICS = [...new Set(allProducts.map(p => p.fabric))];
-const SIZES = [...new Set(allProducts.flatMap(p => p.sizes))];
+
 
 export default function ShopPage() {
+  const { products: allProducts } = useProducts();
   const searchParams = useSearchParams();
   const initialCategory = searchParams.get('category');
+
+  const FABRICS = useMemo(() => [...new Set(allProducts.map(p => p.fabric))], [allProducts]);
+  const SIZES = useMemo(() => [...new Set(allProducts.flatMap(p => p.sizes))], [allProducts]);
   
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [sortOrder, setSortOrder] = useState('newest');
@@ -87,7 +90,7 @@ export default function ShopPage() {
     }
 
     return filtered;
-  }, [filters, sortOrder]);
+  }, [allProducts, filters, sortOrder]);
 
   const FilterAccordion = () => (
      <Accordion type="multiple" defaultValue={['category', 'price']} className="w-full">

@@ -1,21 +1,24 @@
 
+"use client";
+
 import Link from 'next/link';
 import { ArrowRight, Gem, ShieldCheck, Truck } from 'lucide-react';
+import { useProducts } from '@/hooks/use-products';
 
 import { Button } from '@/components/ui/button';
 import { ProductSliders } from '@/components/ProductSliders';
-import { products } from '@/lib/products';
 import { HeroSlider } from '@/components/HeroSlider';
 
-const heroImages = [
-  products[0].images[0],
-  products[1].images[0],
-  products[3].images[0],
-  products[5].images[0],
-];
-
-
 export default function Home() {
+  const { products } = useProducts();
+
+  const heroImages = [
+    products[0].images[0],
+    products[1].images[0],
+    products[3].images[0],
+    products[5].images[0],
+  ];
+
   return (
     <>
       <HeroSlider images={heroImages}>
