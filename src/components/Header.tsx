@@ -14,16 +14,19 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { cn } from '@/lib/utils';
+import { usePathname } from 'next/navigation';
 
 const navLinks = [
   { href: '/', label: 'Home' },
   { href: '/shop', label: 'Shop' },
   { href: '/gallery', label: 'Gallery' },
+  { href: '/about-us', label: 'About Us' },
 ];
 
 export function Header() {
   const { cartCount } = useCart();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
 
   return (
     <>
@@ -38,7 +41,10 @@ export function Header() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="transition-colors hover:text-foreground/80 text-foreground/60"
+                  className={cn(
+                    "transition-colors hover:text-foreground/80",
+                    pathname === link.href ? "text-foreground" : "text-foreground/60"
+                  )}
                 >
                   {link.label}
                 </Link>
@@ -68,7 +74,10 @@ export function Header() {
                         key={link.href}
                         href={link.href}
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className="text-foreground"
+                        className={cn(
+                           "text-lg font-medium",
+                           pathname === link.href ? "text-foreground" : "text-muted-foreground"
+                        )}
                       >
                         {link.label}
                       </Link>
@@ -83,7 +92,7 @@ export function Header() {
              <div className="w-full flex-1 md:w-auto md:flex-none">
                 {/* Mobile logo centered */}
                 <div className="md:hidden flex-1 flex justify-center">
-                    <Link href="/" aria-label="Back to homepage">
+                    <Link href="/" aria-label="Back to homepage" onClick={() => setIsMobileMenuOpen(false)}>
                         <Logo className="h-8 w-auto" />
                     </Link>
                 </div>
@@ -92,7 +101,7 @@ export function Header() {
               <Sheet>
                 <SheetTrigger asChild>
                   <Button variant="ghost" size="icon" aria-label="Open cart">
-                    <ShoppingCart className="h-5 w-5 text-gold" />
+                    <ShoppingCart className="h-5 w-5" />
                     {cartCount > 0 && (
                       <span className="absolute top-2 right-2 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-xs font-bold text-accent-foreground">
                         {cartCount}

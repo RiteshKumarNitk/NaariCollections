@@ -11,8 +11,8 @@ const socialLinks = [
 
 const footerLinks = [
   { title: 'Shop', links: [{ href: '/shop', label: 'All Products' }, { href: '/shop?category=sarees', label: 'Sarees' }, { href: '/shop?category=suits', label: 'Suits' }, { href: '/shop?category=kurtis', label: 'Kurtis' }] },
-  { title: 'About Us', links: [{ href: '#', label: 'Our Story' }, { href: '#', label: 'Contact Us' }, { href: '/gallery', label: 'Gallery' }] },
-  { title: 'Support', links: [{ href: '#', label: 'FAQ' }, { href: '#', label: 'Shipping & Returns' }, { href: '#', label: 'Privacy Policy' }] },
+  { title: 'About Us', links: [{ href: '/about-us', label: 'Our Story' }, { href: '#', label: 'Contact Us' }, { href: '/gallery', label: 'Gallery' }] },
+  { title: 'Support', links: [{ href: '#', label: 'FAQ' }, { href: '#', label: 'Shipping & Returns' }, { href: '/terms-and-conditions', label: 'Terms & Conditions' }, { href: '#', label: 'Privacy Policy' }] },
 ];
 
 export function Footer() {

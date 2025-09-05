@@ -6,7 +6,7 @@ import { useSearchParams } from 'next/navigation';
 
 import { ProductCard } from '@/components/ProductCard';
 import { products as allProducts } from '@/lib/products';
-import type { Product } from '@/lib/types';
+import { AddToCartDialog } from '@/components/AddToCartDialog';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
@@ -137,10 +137,12 @@ export default function ShopPage() {
         <p className="mt-2 text-muted-foreground">Browse our handpicked selection of the finest ethnic wear.</p>
       </div>
 
-      <div className="flex gap-8">
-        <aside className="w-64 hidden md:block space-y-6">
-          <h2 className="text-xl font-headline">Filters</h2>
-          <FilterAccordion />
+      <div className="flex flex-col md:flex-row gap-8">
+        <aside className="w-full md:w-64 lg:w-72 md:sticky top-20 h-fit">
+          <div className='hidden md:block'>
+            <h2 className="text-xl font-headline mb-4">Filters</h2>
+            <FilterAccordion />
+          </div>
         </aside>
 
         <main className="flex-1">
@@ -154,7 +156,7 @@ export default function ShopPage() {
                        <span className="sr-only">Filters</span>
                     </Button>
                   </SheetTrigger>
-                  <SheetContent side="left" className="w-3/4">
+                  <SheetContent side="left" className="w-full max-w-sm">
                     <SheetHeader className="px-6 pt-6">
                       <SheetTitle>Filters</SheetTitle>
                     </SheetHeader>
@@ -180,11 +182,13 @@ export default function ShopPage() {
               </SelectContent>
             </Select>
           </div>
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-            {filteredAndSortedProducts.map(product => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+           <AddToCartDialog>
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                {filteredAndSortedProducts.map(product => (
+                  <ProductCard key={product.id} product={product} onAddToCart={() => {}}/>
+                ))}
+              </div>
+          </AddToCartDialog>
         </main>
       </div>
     </div>

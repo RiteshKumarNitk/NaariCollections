@@ -52,12 +52,12 @@ export default function ProductPage({ params }: ProductPageProps) {
         <div className="container py-10">
             <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
                 <div>
-                   <div className="aspect-square w-full overflow-hidden rounded-lg mb-4 border">
+                   <div className="aspect-[3/4] w-full overflow-hidden rounded-lg mb-4 border">
                         <Image 
                             src={mainImage} 
                             alt={product.name}
                             width={1000}
-                            height={1000}
+                            height={1200}
                             className="w-full h-full object-cover"
                             data-ai-hint="product photo"
                         />
@@ -65,7 +65,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                    <Carousel opts={{align: 'start'}} className="w-full">
                         <CarouselContent>
                             {product.images.map((img, index) => (
-                                <CarouselItem key={index} className="basis-1/4">
+                                <CarouselItem key={index} className="basis-1/3 sm:basis-1/4">
                                      <div 
                                         onClick={() => setMainImage(img)}
                                         className={`aspect-square w-full overflow-hidden rounded-md border cursor-pointer ${mainImage === img ? 'border-primary ring-2 ring-primary' : ''}`}

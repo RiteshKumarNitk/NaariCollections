@@ -6,26 +6,18 @@ import { ShoppingBag } from 'lucide-react';
 import type { Product } from '@/lib/types';
 import { Button } from './ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from './ui/card';
-import { useCart } from '@/hooks/use-cart';
 
 interface ProductCardProps {
   product: Product;
+  onAddToCart: () => void;
 }
 
-export function ProductCard({ product }: ProductCardProps) {
-  const { addToCart } = useCart();
+export function ProductCard({ product, onAddToCart }: ProductCardProps) {
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    addToCart({
-      id: product.id,
-      name: product.name,
-      image: product.images[0],
-      price: product.price,
-      size: product.sizes[0], // Default to first available size
-      code: product.code,
-    });
+    onAddToCart();
   };
 
   return (
