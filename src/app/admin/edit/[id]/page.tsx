@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -16,9 +16,10 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Sparkles, Loader2 } from 'lucide-react';
 import type { Product } from '@/lib/types';
 import { useProducts } from '@/hooks/use-products';
+import { generateDescription } from '@/ai/flows/generate-description-flow';
 
 
 const productSchema = z.object({
@@ -41,6 +42,7 @@ export default function EditProductPage() {
     const { toast } = useToast();
     const { products, updateProduct, forceRerender } = useProducts();
     const id = Array.isArray(params.id) ? params.id[0] : params.id;
+    const [isGenerating, setIsGenerating] = useState(false);
     
     const product = products.find(p => p.id === id);
 
@@ -74,6 +76,34 @@ export default function EditProductPage() {
         // This can happen briefly on load, so we show a loading state.
         return <div>Loading...</div>;
     }
+
+    const handleGenerateDescription = async () => {
+        setIsGenerating(true);
+        try {
+            const currentValues = form.getValues();
+            const result = await generateDescription({
+                name: currentValues.name,
+                category: currentValues.category,
+                fabric: currentValues.fabric,
+            });
+            if (result.description) {
+                form.setValue('description', result.description, { shouldValidate: true });
+                toast({
+                    title: 'Description Generated',
+                    description: 'The AI-powered description has been added.',
+                });
+            }
+        } catch (error) {
+            console.error('Failed to generate description', error);
+            toast({
+                title: 'Error',
+                description: 'Could not generate description. Please try again.',
+                variant: 'destructive',
+            });
+        } finally {
+            setIsGenerating(false);
+        }
+    };
 
     const onSubmit = async (data: ProductFormValues) => {
         try {
@@ -144,7 +174,17 @@ export default function EditProductPage() {
                         </div>
                         
                         <div className="space-y-2">
-                            <Label htmlFor="description">Description</Label>
+                             <div className="flex justify-between items-center">
+                                <Label htmlFor="description">Description</Label>
+                                 <Button type="button" variant="outline" size="sm" onClick={handleGenerateDescription} disabled={isGenerating}>
+                                    {isGenerating ? (
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    ) : (
+                                        <Sparkles className="mr-2 h-4 w-4" />
+                                    )}
+                                    Generate with AI
+                                </Button>
+                            </div>
                             <Textarea id="description" {...form.register('description')} rows={5} />
                             {form.formState.errors.description && <p className="text-sm text-destructive">{form.formState.errors.description.message}</p>}
                         </div>

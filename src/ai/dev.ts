@@ -5,6 +5,7 @@ import {dev} from '@genkit-ai/next';
 import {googleAI} from '@genkit-ai/googleai';
 
 import './flows/category-slider-new-arrivals.ts';
+import './flows/generate-description-flow.ts';
 
 dev({
   plugins: [googleAI()],
