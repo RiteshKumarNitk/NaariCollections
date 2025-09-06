@@ -15,7 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Loader2, ImagePlus, X } from 'lucide-react';
+import { ArrowLeft, Loader2, ImagePlus, X, Check } from 'lucide-react';
 import type { Product } from '@/lib/types';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
