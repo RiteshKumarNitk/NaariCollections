@@ -81,7 +81,7 @@ export default function AdminDashboardPage() {
               <CardDescription>
                 Get suggestions for bestsellers and product recommendations. (Coming Soon)
               </CardDescription>
-            </Header>
+            </CardHeader>
             <CardContent>
                <div className="flex items-center justify-end text-sm font-medium text-muted-foreground">
                 Coming Soon <ArrowRight className="ml-2 h-4 w-4" />
