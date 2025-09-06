@@ -1,15 +1,15 @@
 
 "use client";
 
-import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
 import type { Product } from '@/lib/types';
 import initialProducts from '@/data/products.json';
 
 interface ProductsContextType {
   products: Product[];
   updateProduct: (updatedProduct: Product) => void;
-  // This function will be used to signal that the data has been updated
-  // and components should refetch or re-render.
+  addProduct: (newProduct: Product) => void;
+  removeProduct: (productId: string) => void;
   forceRerender: () => void;
 }
 
@@ -17,39 +17,53 @@ const ProductsContext = createContext<ProductsContextType | undefined>(undefined
 
 export const ProductsProvider = ({ children }: { children: ReactNode }) => {
   const [products, setProducts] = useState<Product[]>(initialProducts);
-  const [version, setVersion] = useState(0); // Add a version state
+  const [version, setVersion] = useState(0);
 
-  useEffect(() => {
-    // This effect will run when `version` changes, fetching the latest data.
-    const fetchProducts = async () => {
-      // The cache-busting query parameter ensures we get the latest version.
+  const fetchProducts = useCallback(async () => {
+    try {
       const response = await fetch(`/data/products.json?v=${new Date().getTime()}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch products');
+      }
       const data = await response.json();
       setProducts(data);
-    };
-    
-    // We don't want to fetch on initial load, only on subsequent updates.
+    } catch (error) {
+        // In case of error (e.g. 404 during build), stick with initial data
+        console.warn("Could not fetch updated products.json, using initial data.", error)
+        setProducts(initialProducts);
+    }
+  }, []);
+
+
+  useEffect(() => {
     if (version > 0) {
       fetchProducts();
     }
-  }, [version]);
+  }, [version, fetchProducts]);
 
 
   const updateProduct = (updatedProduct: Product) => {
     setProducts(prevProducts =>
       prevProducts.map(p => (p.id === updatedProduct.id ? updatedProduct : p))
     );
-    // Note: The API call is now responsible for persistence.
-    // This state update provides immediate UI feedback.
+  };
+  
+  const addProduct = (newProduct: Product) => {
+    setProducts(prevProducts => [...prevProducts, newProduct]);
   };
 
-  const forceRerender = () => {
-    setVersion(v => v + 1);
+  const removeProduct = (productId: string) => {
+    setProducts(prevProducts => prevProducts.filter(p => p.id !== productId));
   };
+
+
+  const forceRerender = useCallback(() => {
+    setVersion(v => v + 1);
+  }, []);
 
 
   return (
-    <ProductsContext.Provider value={{ products, updateProduct, forceRerender }}>
+    <ProductsContext.Provider value={{ products, updateProduct, addProduct, removeProduct, forceRerender }}>
       {children}
     </ProductsContext.Provider>
   );

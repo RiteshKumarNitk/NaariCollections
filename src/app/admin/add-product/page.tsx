@@ -1,12 +1,11 @@
 
 "use client";
 
-import { useEffect, useState } from 'react';
-import { useForm, Controller, useFieldArray } from 'react-hook-form';
+import { useState } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useParams, useRouter } from 'next/navigation';
-import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -16,11 +15,10 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
-import { ArrowLeft, Sparkles, Loader2, Trash2, PlusCircle } from 'lucide-react';
+import { ArrowLeft, Sparkles, Loader2 } from 'lucide-react';
 import type { Product } from '@/lib/types';
 import { useProducts } from '@/hooks/use-products';
 import { generateDescription } from '@/ai/flows/generate-description-flow';
-
 
 const productSchema = z.object({
   name: z.string().min(3, 'Name must be at least 3 characters.'),
@@ -29,23 +27,21 @@ const productSchema = z.object({
   category: z.enum(['suits', 'sarees', 'kurtis', 'dresses', 'kaftans', 'anarkali', 'indo-western', 'coord-sets']),
   fabric: z.string().min(3, 'Fabric is required.'),
   bestseller: z.boolean(),
-  images: z.array(z.string().url("Must be a valid URL")).min(1, "At least one image is required."),
+  images: z.array(z.string().url()).min(1, "At least one image URL is required."),
+  sizes: z.array(z.string()).min(1, "At least one size is required."),
+  code: z.string().min(1, "Product code is required"),
 });
 
 type ProductFormValues = z.infer<typeof productSchema>;
 
 const CATEGORIES: Product['category'][] = ['suits', 'sarees', 'kurtis', 'dresses', 'kaftans', 'anarkali', 'indo-western', 'coord-sets'];
+const ALL_SIZES = ["38", "40", "42", "44", "46", "Free Size"];
 
-
-export default function EditProductPage() {
+export default function AddProductPage() {
     const router = useRouter();
-    const params = useParams();
     const { toast } = useToast();
-    const { products, updateProduct, forceRerender } = useProducts();
-    const id = Array.isArray(params.id) ? params.id[0] : params.id;
+    const { addProduct, forceRerender } = useProducts();
     const [isGenerating, setIsGenerating] = useState(false);
-    
-    const product = products.find(p => p.id === id);
 
     const form = useForm<ProductFormValues>({
         resolver: zodResolver(productSchema),
@@ -56,34 +52,11 @@ export default function EditProductPage() {
             category: 'suits',
             fabric: '',
             bestseller: false,
-            images: [],
+            images: [''],
+            sizes: [],
+            code: ''
         },
     });
-
-    const { fields, append, remove } = useFieldArray({
-        control: form.control,
-        name: "images"
-    });
-
-    useEffect(() => {
-        if (product) {
-            form.reset({
-                 name: product.name,
-                 price: product.price,
-                 description: product.description,
-                 category: product.category,
-                 fabric: product.fabric,
-                 bestseller: product.bestseller,
-                 images: product.images
-            });
-        }
-    }, [product, form]);
-
-
-    if (!product) {
-        // This can happen briefly on load, so we show a loading state.
-        return <div>Loading...</div>;
-    }
 
     const handleGenerateDescription = async () => {
         setIsGenerating(true);
@@ -115,37 +88,41 @@ export default function EditProductPage() {
 
     const onSubmit = async (data: ProductFormValues) => {
         try {
-            const response = await fetch(`/api/products/${id}`, {
+            const response = await fetch('/api/products', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data),
             });
 
             if (!response.ok) {
-                throw new Error('Failed to update product');
+                throw new Error('Failed to create product');
             }
 
-            const updatedProductFromServer = await response.json();
-            
-            updateProduct(updatedProductFromServer);
+            const newProduct = await response.json();
+            addProduct(newProduct);
             forceRerender();
 
             toast({
-                title: 'Product Updated',
-                description: `"${data.name}" has been successfully updated.`,
+                title: 'Product Created',
+                description: `"${data.name}" has been successfully added.`,
             });
             router.push('/admin/products');
-
         } catch (error) {
              toast({
                 title: 'Error',
-                description: 'Could not update the product. Please try again.',
+                description: 'Could not create the product. Please try again.',
                 variant: 'destructive',
             });
-            console.error('Failed to update product:', error);
+            console.error('Failed to create product:', error);
         }
+    };
+    
+    const handleSizeChange = (size: string) => {
+        const currentSizes = form.getValues('sizes');
+        const newSizes = currentSizes.includes(size)
+            ? currentSizes.filter(s => s !== size)
+            : [...currentSizes, size];
+        form.setValue('sizes', newSizes, { shouldValidate: true });
     };
 
     return (
@@ -160,12 +137,11 @@ export default function EditProductPage() {
             </div>
             <Card>
                 <CardHeader>
-                    <CardTitle>Edit Product</CardTitle>
-                    <CardDescription>Update the details for "{product.name}".</CardDescription>
+                    <CardTitle>Add New Product</CardTitle>
+                    <CardDescription>Fill in the details for the new product.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                        {/* Basic Details */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                              <div className="space-y-2">
                                 <Label htmlFor="name">Product Name</Label>
@@ -178,8 +154,7 @@ export default function EditProductPage() {
                                 {form.formState.errors.price && <p className="text-sm text-destructive">{form.formState.errors.price.message}</p>}
                             </div>
                         </div>
-                        
-                        {/* Description */}
+
                         <div className="space-y-2">
                              <div className="flex justify-between items-center">
                                 <Label htmlFor="description">Description</Label>
@@ -192,18 +167,17 @@ export default function EditProductPage() {
                             {form.formState.errors.description && <p className="text-sm text-destructive">{form.formState.errors.description.message}</p>}
                         </div>
 
-                        {/* Category and Fabric */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                              <div className="space-y-2">
                                 <Label>Category</Label>
-                                <Controller control={form.control} name="category"
+                                <Controller
+                                    control={form.control}
+                                    name="category"
                                     render={({ field }) => (
                                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                                             <SelectTrigger><SelectValue placeholder="Select a category" /></SelectTrigger>
                                             <SelectContent>
-                                                {CATEGORIES.map(cat => (
-                                                    <SelectItem key={cat} value={cat} className="capitalize">{cat.replace('-', ' ')}</SelectItem>
-                                                ))}
+                                                {CATEGORIES.map(cat => ( <SelectItem key={cat} value={cat} className="capitalize">{cat.replace('-', ' ')}</SelectItem> ))}
                                             </SelectContent>
                                         </Select>
                                     )}
@@ -216,44 +190,45 @@ export default function EditProductPage() {
                                 {form.formState.errors.fabric && <p className="text-sm text-destructive">{form.formState.errors.fabric.message}</p>}
                             </div>
                         </div>
+                        
+                         <div className="space-y-2">
+                            <Label htmlFor="code">Product Code</Label>
+                            <Input id="code" {...form.register('code')} />
+                            {form.formState.errors.code && <p className="text-sm text-destructive">{form.formState.errors.code.message}</p>}
+                        </div>
 
-                        {/* Image Management */}
-                        <div className="space-y-4">
-                            <Label>Product Images</Label>
-                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                                {fields.map((field, index) => (
-                                    <div key={field.id} className="relative group">
-                                        <div className="aspect-square w-full rounded-md overflow-hidden border">
-                                           <Image src={field.value} alt={`Product image ${index + 1}`} fill className="object-cover" />
-                                        </div>
-                                        <Input {...form.register(`images.${index}`)} className="hidden" />
-                                        <Button type="button" variant="destructive" size="icon" className="absolute top-1 right-1 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => remove(index)}>
-                                            <Trash2 className="h-4 w-4" />
-                                        </Button>
+                        <div className="space-y-2">
+                            <Label>Image URL</Label>
+                            <Input id="images" {...form.register('images.0')} placeholder="https://example.com/image.jpg" />
+                            {form.formState.errors.images && <p className="text-sm text-destructive">{form.formState.errors.images.message}</p>}
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label>Sizes</Label>
+                            <div className="flex flex-wrap gap-2">
+                                {ALL_SIZES.map(size => (
+                                    <div key={size} className="flex items-center">
+                                        <Checkbox
+                                            id={`size-${size}`}
+                                            onCheckedChange={() => handleSizeChange(size)}
+                                            checked={form.watch('sizes').includes(size)}
+                                        />
+                                        <Label htmlFor={`size-${size}`} className="ml-2 font-normal">{size}</Label>
                                     </div>
                                 ))}
-                                <Button type="button" variant="outline" className="aspect-square w-full flex-col gap-2" onClick={() => append("")}>
-                                    <PlusCircle className="h-8 w-8 text-muted-foreground" />
-                                    <span className="text-xs text-muted-foreground">Add Image URL</span>
-                                </Button>
                             </div>
-                            {form.formState.errors.images && <p className="text-sm text-destructive">{form.formState.errors.images.message}</p>}
-                             {form.formState.errors.images?.root && <p className="text-sm text-destructive">{form.formState.errors.images.root.message}</p>}
+                             {form.formState.errors.sizes && <p className="text-sm text-destructive">{form.formState.errors.sizes.message}</p>}
                         </div>
-                        
-                        {/* Bestseller Checkbox */}
+
                         <div className="flex items-center space-x-2">
-                             <Controller name="bestseller" control={form.control}
-                                render={({ field }) => ( <Checkbox id="bestseller" checked={field.value} onCheckedChange={field.onChange} /> )}
-                            />
+                            <Controller name="bestseller" control={form.control} render={({ field }) => ( <Checkbox id="bestseller" checked={field.value} onCheckedChange={field.onChange} /> )}/>
                             <Label htmlFor="bestseller" className="font-normal">Mark as bestseller</Label>
                         </div>
                         
-                        {/* Action Buttons */}
                         <div className="flex justify-end gap-2">
                             <Button type="button" variant="outline" onClick={() => router.push('/admin/products')}>Cancel</Button>
                             <Button type="submit" disabled={form.formState.isSubmitting}>
-                                {form.formState.isSubmitting ? 'Saving...' : 'Save Changes'}
+                                {form.formState.isSubmitting ? 'Creating...' : 'Create Product'}
                             </Button>
                         </div>
                     </form>

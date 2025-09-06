@@ -71,3 +71,35 @@ export async function POST(
     return NextResponse.json({ message: 'An unknown error occurred' }, { status: 500 });
   }
 }
+
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  const productId = params.id;
+
+  if (!productId) {
+    return NextResponse.json({ message: 'Product ID is required' }, { status: 400 });
+  }
+
+  try {
+    const allProducts = await getProducts();
+    const updatedProducts = allProducts.filter(p => p.id !== productId);
+
+    if (allProducts.length === updatedProducts.length) {
+      return NextResponse.json({ message: `Product with ID ${productId} not found` }, { status: 404 });
+    }
+
+    await saveProducts(updatedProducts);
+
+    return NextResponse.json({ message: 'Product deleted successfully' }, { status: 200 });
+
+  } catch (error) {
+    console.error('API DELETE Error:', error);
+    if (error instanceof Error) {
+      return NextResponse.json({ message: 'Failed to delete product', error: error.message }, { status: 500 });
+    }
+    return NextResponse.json({ message: 'An unknown error occurred' }, { status: 500 });
+  }
+}
