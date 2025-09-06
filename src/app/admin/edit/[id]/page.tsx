@@ -101,7 +101,7 @@ export default function EditProductPage() {
                 title: 'Product Updated',
                 description: `"${data.name}" has been successfully updated.`,
             });
-            router.push('/admin');
+            router.push('/admin/products');
 
         } catch (error) {
              toast({
@@ -117,7 +117,7 @@ export default function EditProductPage() {
         <div className="py-8">
             <div className="mb-4">
                  <Button variant="outline" asChild>
-                    <Link href="/admin">
+                    <Link href="/admin/products">
                         <ArrowLeft className="mr-2 h-4 w-4" />
                         Back to Products
                     </Link>
@@ -193,7 +193,7 @@ export default function EditProductPage() {
                         </div>
                         
                         <div className="flex justify-end gap-2">
-                            <Button type="button" variant="outline" onClick={() => router.push('/admin')}>Cancel</Button>
+                            <Button type="button" variant="outline" onClick={() => router.push('/admin/products')}>Cancel</Button>
                             <Button type="submit" disabled={form.formState.isSubmitting}>
                                 {form.formState.isSubmitting ? 'Saving...' : 'Save Changes'}
                             </Button>

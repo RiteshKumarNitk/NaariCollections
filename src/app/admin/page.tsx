@@ -2,52 +2,27 @@
 "use client";
 
 import { useEffect } from 'react';
-import Image from 'next/image';
-import { MoreHorizontal, PlusCircle, LogOut } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { format } from 'date-fns';
-
-import type { Product } from '@/lib/types';
 import { useAuth } from '@/hooks/use-auth';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import {
-  Table,
-  TableHeader,
-  TableRow,
-  TableHead,
-  TableBody,
-  TableCell,
-} from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-} from '@/components/ui/dropdown-menu';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useProducts } from '@/hooks/use-products';
+import { ArrowRight, LogOut } from 'lucide-react';
 
-export default function AdminPage() {
-  const { products } = useProducts();
+export default function AdminDashboardPage() {
   const { user, logout } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    // If no user is logged in, redirect to the login page.
     if (!user) {
       router.push('/login');
     }
   }, [user, router]);
-  
-  // If there's no user, we can return null or a loading spinner
-  // while the redirect happens.
-  if (!user) {
-      return null;
-  }
 
+  if (!user) {
+    return null; // or a loading spinner
+  }
+  
   const handleLogout = () => {
     logout();
     router.push('/login');
@@ -55,91 +30,33 @@ export default function AdminPage() {
 
   return (
     <div className="py-8">
-       <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>Products</CardTitle>
+      <header className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+          <p className="text-muted-foreground">Welcome back, {user.email}!</p>
+        </div>
+        <Button variant="outline" onClick={handleLogout}>
+          <LogOut className="mr-2 h-4 w-4" /> Logout
+        </Button>
+      </header>
+
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <Link href="/admin/products">
+          <Card className="hover:bg-muted/50 transition-colors">
+            <CardHeader>
+              <CardTitle>Product Management</CardTitle>
               <CardDescription>
-                Manage your products here. Welcome, {user.email}!
+                View, add, edit, and delete products.
               </CardDescription>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button>
-                <PlusCircle className="mr-2 h-4 w-4" /> Add Product
-              </Button>
-              <Button variant="outline" onClick={handleLogout}>
-                <LogOut className="mr-2 h-4 w-4" /> Logout
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="hidden w-[100px] sm:table-cell">
-                  <span className="sr-only">Image</span>
-                </TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Code</TableHead>
-                <TableHead className="hidden md:table-cell">Price</TableHead>
-                <TableHead className="hidden md:table-cell">Date</TableHead>
-                 <TableHead>
-                  <span className="sr-only">Actions</span>
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {products.map((product) => (
-                <TableRow key={product.id}>
-                  <TableCell className="hidden sm:table-cell">
-                    <Image
-                      alt={product.name}
-                      className="aspect-square rounded-md object-cover"
-                      height="64"
-                      src={product.images[0]}
-                      width="64"
-                      data-ai-hint="product photo"
-                    />
-                  </TableCell>
-                  <TableCell className="font-medium">{product.name}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline">{product.code}</Badge>
-                  </TableCell>
-                  <TableCell className="hidden md:table-cell">
-                    ₹{product.price.toLocaleString()}
-                  </TableCell>
-                   <TableCell className="hidden md:table-cell">
-                    {format(new Date(product.creationDate), 'dd MMM yyyy')}
-                  </TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          aria-haspopup="true"
-                          size="icon"
-                          variant="ghost"
-                        >
-                          <MoreHorizontal className="h-4 w-4" />
-                          <span className="sr-only">Toggle menu</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem asChild>
-                          <Link href={`/admin/edit/${product.id}`}>Edit</Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>Delete</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-end text-sm font-medium text-primary">
+                Go to Products <ArrowRight className="ml-2 h-4 w-4" />
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
+      </div>
     </div>
   );
 }
