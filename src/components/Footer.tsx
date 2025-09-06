@@ -21,7 +21,7 @@ export function Footer() {
     <footer className="border-t bg-background">
       <div className="container py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-8">
-          <div className="lg:col-span-2 px-8">
+          <div className="md:col-span-4 lg:col-span-2">
             <Link href="/" className="flex items-center space-x-2 mb-4">
               <Logo className="h-10 w-auto" />
             </Link>

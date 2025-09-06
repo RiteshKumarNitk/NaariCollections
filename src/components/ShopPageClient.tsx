@@ -147,7 +147,7 @@ export function ShopPageClient() {
   );
 
   return (
-    <div className="container py-8">
+    <div className="py-8">
       <div className="mb-8 text-center">
         <h1 className="text-4xl font-headline">Our Collection</h1>
         <p className="mt-2 text-muted-foreground">Browse our handpicked selection of the finest ethnic wear.</p>
