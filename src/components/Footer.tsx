@@ -18,7 +18,7 @@ const footerLinks = [
 
 export function Footer() {
   return (
-    <footer className="border-t bg-background">
+    <footer className="border-t bg-foreground text-background">
       <div className="container py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-8">
           <div className="md:col-span-4 lg:col-span-2">
@@ -30,7 +30,7 @@ export function Footer() {
             </p>
             <div className="flex space-x-4 mt-6">
               {socialLinks.map((social) => (
-                <Link key={social.name} href={social.href} className="text-muted-foreground hover:text-foreground">
+                <Link key={social.name} href={social.href} className="text-muted-foreground hover:text-background">
                   <social.icon className="h-5 w-5" />
                   <span className="sr-only">{social.name}</span>
                 </Link>
@@ -39,11 +39,11 @@ export function Footer() {
           </div>
           {footerLinks.map((section) => (
             <div key={section.title}>
-              <h3 className="font-headline text-sm font-semibold mb-4">{section.title}</h3>
+              <h3 className="font-headline text-sm font-semibold mb-4 text-background/90">{section.title}</h3>
               <ul className="space-y-3">
                 {section.links.map((link) => (
                   <li key={link.label}>
-                    <Link href={link.href} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                    <Link href={link.href} className="text-sm text-muted-foreground hover:text-background/80 transition-colors">
                       {link.label}
                     </Link>
                   </li>
@@ -52,7 +52,7 @@ export function Footer() {
             </div>
           ))}
         </div>
-        <div className="mt-12 pt-8 border-t">
+        <div className="mt-12 pt-8 border-t border-border/20">
           <p className="text-center text-sm text-muted-foreground">
             © {new Date().getFullYear()} Naari E-Shop. All Rights Reserved.
           </p>
