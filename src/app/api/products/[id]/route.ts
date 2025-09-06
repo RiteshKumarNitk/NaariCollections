@@ -3,6 +3,9 @@ import { NextResponse } from 'next/server';
 import { db } from '@/lib/firebase-admin';
 
 async function getProductById(productId: string) {
+  if (!db) {
+    throw new Error("Firestore is not initialized.");
+  }
   try {
     const docRef = db.collection('products').doc(productId);
     const doc = await docRef.get();
@@ -36,7 +39,8 @@ export async function GET(
     return NextResponse.json(product);
   } catch (error) {
     console.error('API GET Error:', error);
-    return NextResponse.json({ message: 'Failed to retrieve product data' }, { status: 500 });
+    const message = error instanceof Error ? error.message : 'Failed to retrieve product data';
+    return NextResponse.json({ message }, { status: 500 });
   }
 }
 
@@ -48,6 +52,9 @@ export async function POST(
   
   if (!productId) {
     return NextResponse.json({ message: 'Product ID is required' }, { status: 400 });
+  }
+  if (!db) {
+     return NextResponse.json({ message: 'Database not initialized' }, { status: 500 });
   }
 
   try {
@@ -79,6 +86,9 @@ export async function DELETE(
 
   if (!productId) {
     return NextResponse.json({ message: 'Product ID is required' }, { status: 400 });
+  }
+   if (!db) {
+     return NextResponse.json({ message: 'Database not initialized' }, { status: 500 });
   }
 
   try {

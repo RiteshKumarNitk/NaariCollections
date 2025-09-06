@@ -1,31 +1,46 @@
 
 import * as admin from 'firebase-admin';
 
-// Ensure the environment variable is loaded
-const serviceAccountKey = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
+// This function checks for the required Firebase environment variables
+// and returns a service account object if they exist.
+function getServiceAccount() {
+  const projectId = process.env.FIREBASE_PROJECT_ID;
+  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+  // The private key needs to have its escaped newlines replaced with actual newlines.
+  const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
 
-if (!admin.apps.length) {
-  if (!serviceAccountKey) {
-    throw new Error('FIREBASE_SERVICE_ACCOUNT_KEY environment variable is not set. Please check your .env file.');
+  if (!projectId || !clientEmail || !privateKey) {
+    console.error("Firebase Admin SDK environment variables are not set. Please check your .env file for FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, and FIREBASE_PRIVATE_KEY.");
+    return null;
   }
 
-  try {
-    // Un-escape the newline characters in the private key
-    const parsedServiceAccount = JSON.parse(serviceAccountKey);
-    const privateKey = parsedServiceAccount.private_key.replace(/\\n/g, '\n');
+  return {
+    projectId,
+    clientEmail,
+    privateKey,
+  };
+}
 
-    // Initialize the app with the corrected credentials
-    admin.initializeApp({
-      credential: admin.credential.cert({
-        ...parsedServiceAccount,
-        private_key: privateKey,
-      }),
-    });
-  } catch (error: any) {
-    console.error('Firebase admin initialization error:', error.message);
-    // Provide a more helpful error message.
-    throw new Error('Failed to initialize Firebase Admin SDK. The service account key is likely malformed. Please verify the JSON in your .env file.');
+
+// Initialize Firebase Admin SDK only if it hasn't been initialized yet.
+if (!admin.apps.length) {
+  const serviceAccount = getServiceAccount();
+
+  if (serviceAccount) {
+    try {
+      admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount),
+      });
+    } catch (error: any) {
+      console.error('Firebase admin initialization error:', error.message);
+      // We throw a more user-friendly error to guide them.
+      throw new Error('Failed to initialize Firebase Admin SDK. The service account key is likely malformed or the environment variables are not set correctly.');
+    }
+  } else {
+    // This case will be hit if the env vars are not set.
+    // It's useful for some build environments where credentials are not needed.
+    console.warn("Firebase Admin SDK is not initialized because environment variables are missing.");
   }
 }
 
-export const db = admin.firestore();
+export const db = admin.apps.length > 0 ? admin.firestore() : null;

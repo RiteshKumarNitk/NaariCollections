@@ -2,9 +2,11 @@
 import { db } from '@/lib/firebase-admin';
 import { NextResponse } from 'next/server';
 
-const homepageDocRef = db.collection('content').doc('homepage');
-
 async function getHomepageData() {
+  if (!db) {
+    throw new Error("Firestore is not initialized.");
+  }
+  const homepageDocRef = db.collection('content').doc('homepage');
   try {
     const doc = await homepageDocRef.get();
     if (!doc.exists) {
@@ -28,6 +30,10 @@ async function getHomepageData() {
 }
 
 async function saveHomepageData(data: any) {
+  if (!db) {
+    throw new Error("Firestore is not initialized.");
+  }
+  const homepageDocRef = db.collection('content').doc('homepage');
   try {
     await homepageDocRef.set(data, { merge: true });
   } catch (error) {
@@ -42,7 +48,8 @@ export async function GET() {
     return NextResponse.json(data);
   } catch (error) {
     console.error('API GET Error:', error);
-    return NextResponse.json({ message: 'Failed to retrieve homepage data' }, { status: 500 });
+    const message = error instanceof Error ? error.message : 'Failed to retrieve homepage data';
+    return NextResponse.json({ message }, { status: 500 });
   }
 }
 
@@ -60,6 +67,7 @@ export async function POST(request: Request) {
     return NextResponse.json(updatedData, { status: 200 });
   } catch (error) {
     console.error('API POST Error:', error);
-    return NextResponse.json({ message: 'Failed to update homepage data' }, { status: 500 });
+    const message = error instanceof Error ? error.message : 'Failed to update homepage data';
+    return NextResponse.json({ message }, { status: 500 });
   }
 }

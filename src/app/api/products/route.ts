@@ -4,6 +4,9 @@ import { db } from '@/lib/firebase-admin';
 import type { Product } from '@/lib/types';
 
 export async function GET() {
+  if (!db) {
+    return NextResponse.json({ message: 'Database not initialized' }, { status: 500 });
+  }
   try {
     const productsSnapshot = await db.collection('products').orderBy('creationDate', 'desc').get();
     const products = productsSnapshot.docs.map(doc => ({
@@ -18,6 +21,9 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  if (!db) {
+    return NextResponse.json({ message: 'Database not initialized' }, { status: 500 });
+  }
   try {
     const newProductData = await request.json();
     

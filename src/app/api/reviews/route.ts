@@ -4,6 +4,9 @@ import { db } from '@/lib/firebase-admin';
 import type { Review } from '@/lib/types';
 
 export async function GET() {
+  if (!db) {
+    return NextResponse.json({ message: 'Database not initialized' }, { status: 500 });
+  }
   try {
     const reviewsSnapshot = await db.collection('reviews').orderBy('date', 'desc').get();
     const reviews = reviewsSnapshot.docs.map(doc => ({
@@ -19,6 +22,9 @@ export async function GET() {
 
 
 export async function POST(request: Request) {
+  if (!db) {
+    return NextResponse.json({ message: 'Database not initialized' }, { status: 500 });
+  }
   try {
     const newReviewData = await request.json();
 

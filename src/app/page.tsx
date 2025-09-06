@@ -45,6 +45,14 @@ const ourPromise = [
 ]
 
 async function getHomepageContent(): Promise<HomepageContent> {
+  if (!db) {
+      console.error("Firestore is not initialized. Cannot fetch homepage content.");
+      return {
+        headline: 'Elegance Redefined',
+        subheadline: "Discover our curated collection of exquisite women's ethnic wear. Handcrafted with passion, designed for you.",
+        heroProductIds: [],
+      }
+  }
   try {
     const doc = await db.collection('content').doc('homepage').get();
     if (!doc.exists) {

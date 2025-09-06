@@ -8,6 +8,10 @@ import { unstable_noStore as noStore } from 'next/cache';
 // which is appropriate for dynamic data like a product list.
 export async function getProducts(): Promise<Product[]> {
   noStore();
+  if (!db) {
+    console.error("Firestore is not initialized. Cannot fetch products.");
+    return [];
+  }
   try {
     const productsSnapshot = await db.collection('products').orderBy('creationDate', 'desc').get();
     if (productsSnapshot.empty) {
