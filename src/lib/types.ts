@@ -32,3 +32,12 @@ export type AdminUser = {
   email: string;
   password?: string; // This should not exist in a real User type
 };
+
+export type Review = {
+  id: string;
+  productId: string;
+  name: string;
+  rating: number;
+  review: string;
+  date: string; // ISO 8601 date string
+}

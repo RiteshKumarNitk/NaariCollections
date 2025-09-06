@@ -19,6 +19,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel"
+import { ReviewForm } from '@/components/ReviewForm';
 
 export default function ProductPage() {
     const params = useParams();
@@ -55,73 +56,77 @@ export default function ProductPage() {
     });
 
     return (
-        <div className="py-10 grid md:grid-cols-2 gap-8 lg:gap-12">
-            <div>
-               <div className="aspect-[3/4] w-full overflow-hidden rounded-lg mb-4 border">
-                    <Image 
-                        src={mainImage} 
-                        alt={product.name}
-                        width={800}
-                        height={1200}
-                        className="w-full h-full object-cover"
-                        data-ai-hint="product photo"
-                        priority
-                    />
-               </div>
-               <Carousel opts={{align: 'start'}} className="w-full max-w-full">
-                    <CarouselContent className="-ml-2">
-                        {product.images.map((img, index) => (
-                            <CarouselItem key={index} className="basis-1/3 sm:basis-1/4 pl-2">
-                                 <div 
-                                    onClick={() => setMainImage(img)}
-                                    className={`aspect-square w-full overflow-hidden rounded-md border cursor-pointer ${mainImage === img ? 'border-primary ring-2 ring-primary' : ''}`}
-                                 >
-                                    <Image src={img} alt={`${product.name} thumbnail ${index + 1}`} width={200} height={200} className="w-full h-full object-cover" data-ai-hint="product photo"/>
-                                 </div>
-                            </CarouselItem>
-                        ))}
-                    </CarouselContent>
-                    <CarouselPrevious className="ml-12" />
-                    <CarouselNext className="mr-12" />
-               </Carousel>
-            </div>
-
-            <div className="space-y-6">
-                <h1 className="text-3xl lg:text-4xl font-headline font-bold">{product.name}</h1>
-                <p className="text-3xl font-semibold text-foreground">₹{product.price.toLocaleString()}</p>
-                
-                <Separator />
-                
+        <div className="py-10">
+            <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
                 <div>
-                    <h3 className="text-lg font-medium mb-2">Select Size</h3>
-                    <RadioGroup value={selectedSize} onValueChange={setSelectedSize} className="flex flex-wrap gap-2">
-                        {product.sizes.map(size => (
-                            <div key={size}>
-                                <RadioGroupItem value={size} id={`size-${size}`} className="sr-only" />
-                                <Label 
-                                    htmlFor={`size-${size}`}
-                                    className={`flex items-center justify-center rounded-md border-2 px-4 py-2 text-sm font-medium hover:bg-accent cursor-pointer ${selectedSize === size ? 'border-primary bg-primary/10' : ''}`}
-                                >
-                                    {size}
-                                </Label>
-                            </div>
-                        ))}
-                    </RadioGroup>
+                   <div className="aspect-[3/4] w-full overflow-hidden rounded-lg mb-4 border">
+                        <Image 
+                            src={mainImage} 
+                            alt={product.name}
+                            width={800}
+                            height={1200}
+                            className="w-full h-full object-cover"
+                            data-ai-hint="product photo"
+                            priority
+                        />
+                   </div>
+                   <Carousel opts={{align: 'start'}} className="w-full max-w-full">
+                        <CarouselContent className="-ml-2">
+                            {product.images.map((img, index) => (
+                                <CarouselItem key={index} className="basis-1/3 sm:basis-1/4 pl-2">
+                                     <div 
+                                        onClick={() => setMainImage(img)}
+                                        className={`aspect-square w-full overflow-hidden rounded-md border cursor-pointer ${mainImage === img ? 'border-primary ring-2 ring-primary' : ''}`}
+                                     >
+                                        <Image src={img} alt={`${product.name} thumbnail ${index + 1}`} width={200} height={200} className="w-full h-full object-cover" data-ai-hint="product photo"/>
+                                     </div>
+                                </CarouselItem>
+                            ))}
+                        </CarouselContent>
+                        <CarouselPrevious className="ml-12" />
+                        <CarouselNext className="mr-12" />
+                   </Carousel>
                 </div>
 
-                <Button size="lg" className="w-full" onClick={handleAddToCart}>
-                   <ShoppingBag className="mr-2 h-5 w-5"/> Add to Cart
-                </Button>
+                <div className="space-y-6">
+                    <h1 className="text-3xl lg:text-4xl font-headline font-bold">{product.name}</h1>
+                    <p className="text-3xl font-semibold text-foreground">₹{product.price.toLocaleString()}</p>
+                    
+                    <Separator />
+                    
+                    <div>
+                        <h3 className="text-lg font-medium mb-2">Select Size</h3>
+                        <RadioGroup value={selectedSize} onValueChange={setSelectedSize} className="flex flex-wrap gap-2">
+                            {product.sizes.map(size => (
+                                <div key={size}>
+                                    <RadioGroupItem value={size} id={`size-${size}`} className="sr-only" />
+                                    <Label 
+                                        htmlFor={`size-${size}`}
+                                        className={`flex items-center justify-center rounded-md border-2 px-4 py-2 text-sm font-medium hover:bg-accent cursor-pointer ${selectedSize === size ? 'border-primary bg-primary/10' : ''}`}
+                                    >
+                                        {size}
+                                    </Label>
+                                </div>
+                            ))}
+                        </RadioGroup>
+                    </div>
 
-                <div className="text-sm text-muted-foreground space-y-4 pt-4">
-                    <p>{product.description}</p>
-                    <div className="grid grid-cols-2 gap-2">
-                        <p><strong className="font-medium text-foreground">Fabric:</strong> {product.fabric}</p>
-                        <p><strong className="font-medium text-foreground">Product Code:</strong> {product.code}</p>
-                         <p><strong className="font-medium text-foreground">Category:</strong> <span className="capitalize">{product.category}</span></p>
+                    <Button size="lg" className="w-full" onClick={handleAddToCart}>
+                       <ShoppingBag className="mr-2 h-5 w-5"/> Add to Cart
+                    </Button>
+
+                    <div className="text-sm text-muted-foreground space-y-4 pt-4">
+                        <p>{product.description}</p>
+                        <div className="grid grid-cols-2 gap-2">
+                            <p><strong className="font-medium text-foreground">Fabric:</strong> {product.fabric}</p>
+                            <p><strong className="font-medium text-foreground">Product Code:</strong> {product.code}</p>
+                             <p><strong className="font-medium text-foreground">Category:</strong> <span className="capitalize">{product.category}</span></p>
+                        </div>
                     </div>
                 </div>
             </div>
+            <Separator className="my-12" />
+            <ReviewForm productId={product.id} />
         </div>
     );
 }

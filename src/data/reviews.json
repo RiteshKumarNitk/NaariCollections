@@ -1,0 +1,34 @@
+[
+  {
+    "id": "1",
+    "productId": "1",
+    "rating": 5,
+    "name": "Priya Sharma",
+    "review": "Absolutely stunning suit set! The handwork is even more beautiful in person. I received so many compliments. The fabric is comfortable and perfect for festive occasions. Highly recommend!",
+    "date": "2024-07-28T10:00:00Z"
+  },
+  {
+    "id": "2",
+    "productId": "5",
+    "rating": 5,
+    "name": "Anjali Mehta",
+    "review": "This Anarkali set is a dream. The fit is perfect and the organza dupatta adds such an elegant touch. It's my new favorite outfit for weddings.",
+    "date": "2024-07-27T14:30:00Z"
+  },
+  {
+    "id": "3",
+    "productId": "22",
+    "rating": 4,
+    "name": "Simran Kaur",
+    "review": "The Chikankari work on this coord set is lovely. It's very stylish and comfortable for casual outings. I wish it came in more colors!",
+    "date": "2024-07-26T18:45:00Z"
+  },
+  {
+    "id": "4",
+    "productId": "3",
+    "rating": 5,
+    "name": "Neha Gupta",
+    "review": "I love this kaftan! The mirror work is so chic and it's incredibly comfortable. Perfect for a relaxed yet stylish look. The pure crepe fabric feels luxurious.",
+    "date": "2024-07-25T09:15:00Z"
+  }
+]

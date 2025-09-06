@@ -11,6 +11,7 @@ import { ProductSliders } from '@/components/ProductSliders';
 import { HeroSlider } from '@/components/HeroSlider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DealsOfTheDay } from '@/components/DealsOfTheDay';
+import { Testimonials } from '@/components/Testimonials';
 
 interface HomepageContent {
   headline: string;
@@ -149,6 +150,8 @@ export default function Home() {
             ))}
         </div>
       </section>
+      
+      <Testimonials allProducts={products} />
     </>
   );
 }
