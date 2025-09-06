@@ -1,6 +1,7 @@
 
 "use client";
 
+import { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -38,38 +39,78 @@ export default function EditProductPage() {
     const router = useRouter();
     const params = useParams();
     const { toast } = useToast();
-    const { products, updateProduct } = useProducts();
+    const { products, updateProduct, forceRerender } = useProducts();
     const id = Array.isArray(params.id) ? params.id[0] : params.id;
+    
     const product = products.find(p => p.id === id);
 
     const form = useForm<ProductFormValues>({
         resolver: zodResolver(productSchema),
         defaultValues: {
-            name: product?.name || '',
-            price: product?.price || 0,
-            description: product?.description || '',
-            category: product?.category || 'suits',
-            fabric: product?.fabric || '',
-            bestseller: product?.bestseller || false,
+            name: '',
+            price: 0,
+            description: '',
+            category: 'suits',
+            fabric: '',
+            bestseller: false,
         },
     });
 
+    useEffect(() => {
+        if (product) {
+            form.reset({
+                 name: product.name,
+                 price: product.price,
+                 description: product.description,
+                 category: product.category,
+                 fabric: product.fabric,
+                 bestseller: product.bestseller,
+            });
+        }
+    }, [product, form]);
+
+
     if (!product) {
-        return notFound();
+        // This can happen briefly on load, so we show a loading state.
+        return <div>Loading...</div>;
     }
 
-    const onSubmit = (data: ProductFormValues) => {
-        const updatedProduct: Product = {
-            ...product,
-            ...data,
-        };
-        updateProduct(updatedProduct);
+    const onSubmit = async (data: ProductFormValues) => {
+        try {
+            const response = await fetch(`/api/products/${id}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
 
-        toast({
-            title: 'Product Updated',
-            description: `"${data.name}" has been successfully updated.`,
-        });
-        router.push('/admin');
+            if (!response.ok) {
+                throw new Error('Failed to update product');
+            }
+
+            const updatedProductFromServer = await response.json();
+            
+            // Update the local state for immediate feedback
+            updateProduct(updatedProductFromServer);
+
+            // Force other components to refetch data
+            forceRerender();
+
+            toast({
+                title: 'Product Updated',
+                description: `"${data.name}" has been successfully updated.`,
+            });
+            router.push('/admin');
+
+        } catch (error) {
+             toast({
+                title: 'Error',
+                description: 'Could not update the product. Please try again.',
+                variant: 'destructive',
+            });
+            console.error('Failed to update product:', error);
+        }
     };
 
     return (
@@ -153,7 +194,9 @@ export default function EditProductPage() {
                         
                         <div className="flex justify-end gap-2">
                             <Button type="button" variant="outline" onClick={() => router.push('/admin')}>Cancel</Button>
-                            <Button type="submit">Save Changes</Button>
+                            <Button type="submit" disabled={form.formState.isSubmitting}>
+                                {form.formState.isSubmitting ? 'Saving...' : 'Save Changes'}
+                            </Button>
                         </div>
                     </form>
                 </CardContent>
