@@ -1,17 +1,14 @@
 
-"use client";
-
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Gem, ShieldCheck, Truck, Loader2, Leaf, HeartHandshake, Scissors, Ruler, Shirt } from 'lucide-react';
-import { useProducts } from '@/hooks/use-products';
+import { ArrowRight, Leaf, HeartHandshake, Scissors, Ruler, Shirt } from 'lucide-react';
 
+import { getProducts } from '@/lib/data';
 import { Button } from '@/components/ui/button';
 import { ProductSliders } from '@/components/ProductSliders';
 import { HeroSlider } from '@/components/HeroSlider';
-import { Skeleton } from '@/components/ui/skeleton';
 import { DealsOfTheDay } from '@/components/DealsOfTheDay';
 import { Testimonials } from '@/components/Testimonials';
+import { getDb } from '@/lib/firebase-admin';
 
 interface HomepageContent {
   headline: string;
@@ -47,60 +44,37 @@ const ourPromise = [
     }
 ]
 
-export default function Home() {
-  const { products, loading: productsLoading } = useProducts();
-  const [content, setContent] = useState<HomepageContent | null>(null);
-  const [contentLoading, setContentLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchHomepageContent = async () => {
-      try {
-        const response = await fetch('/api/homepage');
-        if (!response.ok) {
-          throw new Error('Failed to fetch homepage content');
-        }
-        const data = await response.json();
-        setContent(data);
-      } catch (error) {
-        console.error(error);
-        // Fallback content in case of error
-        setContent({
-          headline: 'Elegance Redefined',
-          subheadline: 'Discover our curated collection of exquisite women\'s ethnic wear. Handcrafted with passion, designed for you.',
-          heroProductIds: [],
-        });
-      } finally {
-        setContentLoading(false);
+async function getHomepageContent(): Promise<HomepageContent> {
+  const db = getDb();
+  try {
+    const doc = await db.collection('content').doc('homepage').get();
+    if (!doc.exists) {
+      // Fallback content
+      return {
+        headline: 'Elegance Redefined',
+        subheadline: "Discover our curated collection of exquisite women's ethnic wear. Handcrafted with passion, designed for you.",
+        heroProductIds: [],
       }
-    };
+    }
+    return doc.data() as HomepageContent;
+  } catch (error) {
+    console.error("Failed to fetch homepage content from Firestore:", error);
+    // Return fallback content on error
+     return {
+        headline: 'Elegance Redefined',
+        subheadline: "Discover our curated collection of exquisite women's ethnic wear. Handcrafted with passion, designed for you.",
+        heroProductIds: [],
+      }
+  }
+}
 
-    fetchHomepageContent();
-  }, []);
+export default async function Home() {
+  const allProducts = await getProducts();
+  const content = await getHomepageContent();
 
   const heroImages = content?.heroProductIds
-    .map(id => products.find(p => p.id === id)?.images[0])
+    .map(id => allProducts.find(p => p.id === id)?.images[0])
     .filter((img): img is string => !!img) || [];
-
-  if (productsLoading || contentLoading) {
-    return (
-       <div className="container py-8">
-        <Skeleton className="h-[calc(80vh)] w-full" />
-        <section className="py-12 md:py-20">
-           <div className="space-y-16">
-              <div className="space-y-6">
-                <Skeleton className="h-8 w-1/3 mx-auto" />
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <Skeleton className="h-[350px] w-full" />
-                  <Skeleton className="h-[350px] w-full" />
-                  <Skeleton className="h-[350px] w-full" />
-                  <Skeleton className="h-[350px] w-full" />
-                </div>
-              </div>
-           </div>
-        </section>
-      </div>
-    )
-  }
 
   return (
     <>
@@ -122,12 +96,12 @@ export default function Home() {
       </HeroSlider>
 
       <section className="py-12 md:py-20 container">
-        <ProductSliders allProducts={products} />
+        <ProductSliders allProducts={allProducts} />
       </section>
       
       <section className="bg-muted/30 py-16 md:py-24">
         <div className="container">
-          <DealsOfTheDay allProducts={products} />
+          <DealsOfTheDay allProducts={allProducts} />
         </div>
       </section>
 
@@ -153,7 +127,7 @@ export default function Home() {
         </div>
       </section>
       
-      <Testimonials allProducts={products} />
+      <Testimonials allProducts={allProducts} />
     </>
   );
 }

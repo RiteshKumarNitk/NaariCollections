@@ -2,39 +2,60 @@
 import * as admin from 'firebase-admin';
 import { config } from 'dotenv';
 
-// Load environment variables from .env file
 config();
 
-let serviceAccount: admin.ServiceAccount | undefined;
-
-try {
-  let key = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
-
-  if (key) {
-    // This is the critical fix: It robustly handles a key that might be
-    // wrapped in single quotes, which is a common copy-paste error.
-    if (key.startsWith("'") && key.endsWith("'")) {
-      key = key.substring(1, key.length - 1);
-    }
-    serviceAccount = JSON.parse(key);
+function getServiceAccount(): admin.ServiceAccount | undefined {
+  const key = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
+  if (!key) {
+    console.warn("FIREBASE_SERVICE_ACCOUNT_KEY is not set in .env file. Firebase Admin SDK not initialized.");
+    return undefined;
   }
-} catch (e) {
-  console.error("CRITICAL ERROR: Could not parse the FIREBASE_SERVICE_ACCOUNT_KEY. Please ensure it's a valid JSON object in your .env file and does NOT have surrounding quotes.", e);
+  try {
+    // This robustly handles a key that might be wrapped in single quotes,
+    // which is a common copy-paste error.
+    const sanitizedKey = key.trim().startsWith("'") && key.trim().endsWith("'")
+      ? key.trim().substring(1, key.length - 1)
+      : key;
+    return JSON.parse(sanitizedKey);
+  } catch (e) {
+    console.error("CRITICAL ERROR: Could not parse FIREBASE_SERVICE_ACCOUNT_KEY. Ensure it's valid JSON.", e);
+    return undefined;
+  }
 }
 
+function initializeAdmin() {
+  const serviceAccount = getServiceAccount();
 
-if (!admin.apps.length) {
+  if (admin.apps.length > 0) {
+    return admin.app();
+  }
+
   if (serviceAccount) {
     try {
-      admin.initializeApp({
+      return admin.initializeApp({
         credential: admin.credential.cert(serviceAccount),
       });
     } catch (e) {
       console.error('Firebase admin initialization error', e);
+      throw new Error('Failed to initialize Firebase Admin SDK.');
     }
   } else {
-    console.warn("Firebase service account key not found or is invalid. Firebase Admin SDK not initialized.");
+    // Return a dummy object if initialization is not possible.
+    // This allows the app to build but will fail at runtime if Firebase is accessed.
+    console.warn("Firebase Admin SDK not initialized due to missing credentials.");
+    return null;
   }
 }
 
-export const db = admin.firestore();
+const firebaseAdmin = initializeAdmin();
+
+// Export a getter function for the db instance
+export const getDb = () => {
+    if (!firebaseAdmin) {
+        throw new Error('Firebase Admin SDK is not initialized. Check your environment variables.');
+    }
+    return admin.firestore();
+};
+
+// For backward compatibility or direct use
+export const db = getDb();

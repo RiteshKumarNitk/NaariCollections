@@ -1,5 +1,46 @@
+
 import { NextResponse } from 'next/server';
-import { db } from '@/lib/firebase-admin';
+import { getDb } from '@/lib/firebase-admin';
+
+const db = getDb();
+
+async function getProductById(productId: string) {
+  try {
+    const docRef = db.collection('products').doc(productId);
+    const doc = await docRef.get();
+
+    if (!doc.exists) {
+      return null;
+    }
+
+    return { id: doc.id, ...doc.data() };
+  } catch (error) {
+    console.error(`Error fetching product ${productId}:`, error);
+    throw new Error('Failed to retrieve product data');
+  }
+}
+
+export async function GET(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  const productId = params.id;
+  
+  if (!productId) {
+    return NextResponse.json({ message: 'Product ID is required' }, { status: 400 });
+  }
+
+  try {
+    const product = await getProductById(productId);
+    if (!product) {
+      return NextResponse.json({ message: 'Product not found' }, { status: 404 });
+    }
+    return NextResponse.json(product);
+  } catch (error) {
+    console.error('API GET Error:', error);
+    return NextResponse.json({ message: 'Failed to retrieve product data' }, { status: 500 });
+  }
+}
 
 export async function POST(
   request: Request,

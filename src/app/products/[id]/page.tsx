@@ -1,11 +1,10 @@
 
 "use client"
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { notFound, useParams } from 'next/navigation';
 import Image from 'next/image';
 
-import { useProducts } from '@/hooks/use-products';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from '@/components/ui/label';
@@ -20,41 +19,102 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel"
 import { ReviewForm } from '@/components/ReviewForm';
+import type { Product } from '@/lib/types';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function ProductPage() {
     const params = useParams();
-    const { products } = useProducts();
-    const id = Array.isArray(params.id) ? params.id[0] : params.id;
-    const product = products.find(p => p.id === id);
     const { addToCart } = useCart();
+    const id = Array.isArray(params.id) ? params.id[0] : params.id;
     
-    // Initialize mainImage with the first image of the product, if it exists.
-    const [mainImage, setMainImage] = useState(product?.images[0] || '');
+    const [product, setProduct] = useState<Product | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [mainImage, setMainImage] = useState('');
+    const [selectedSize, setSelectedSize] = useState<string | null>(null);
 
+    useEffect(() => {
+      if (!id) return;
+
+      const fetchProduct = async () => {
+        setLoading(true);
+        try {
+          const res = await fetch(`/api/products/${id}`);
+          if (!res.ok) {
+            throw new Error('Product not found');
+          }
+          const data: Product = await res.json();
+          setProduct(data);
+          if (data.images && data.images.length > 0) {
+            setMainImage(data.images[0]);
+          }
+          if (data.sizes && data.sizes.length > 0) {
+            setSelectedSize(data.sizes[0]);
+          }
+        } catch (err) {
+          setProduct(null);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchProduct();
+    }, [id]);
+
+
+    if (loading) {
+        return (
+             <div className="py-10">
+                <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
+                    <div>
+                        <Skeleton className="aspect-[3/4] w-full rounded-lg mb-4" />
+                        <div className="grid grid-cols-4 gap-2">
+                            <Skeleton className="aspect-square w-full rounded-md" />
+                            <Skeleton className="aspect-square w-full rounded-md" />
+                            <Skeleton className="aspect-square w-full rounded-md" />
+                            <Skeleton className="aspect-square w-full rounded-md" />
+                        </div>
+                    </div>
+                    <div className="space-y-6">
+                        <Skeleton className="h-10 w-3/4" />
+                        <Skeleton className="h-8 w-1/4" />
+                        <Separator />
+                        <div className="space-y-2">
+                            <Skeleton className="h-6 w-1/4" />
+                            <div className="flex gap-2">
+                                <Skeleton className="h-10 w-16" />
+                                <Skeleton className="h-10 w-16" />
+                                <Skeleton className="h-10 w-16" />
+                            </div>
+                        </div>
+                         <Skeleton className="h-12 w-full" />
+                         <div className="space-y-2 pt-4">
+                            <Skeleton className="h-5 w-full" />
+                            <Skeleton className="h-5 w-full" />
+                            <Skeleton className="h-5 w-3/4" />
+                         </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+    
     if (!product) {
         notFound();
     }
     
-    const [selectedSize, setSelectedSize] = useState(product.sizes[0]);
-
     const handleAddToCart = () => {
-        addToCart({
-            id: product.id,
-            name: product.name,
-            image: product.images[0],
-            price: product.price,
-            size: selectedSize,
-            code: product.code,
-        });
+        if (selectedSize) {
+            addToCart({
+                id: product.id,
+                name: product.name,
+                image: product.images[0],
+                price: product.price,
+                size: selectedSize,
+                code: product.code,
+            });
+        }
     };
     
-    // Effect to update the main image if the product changes (e.g., due to state updates).
-    useState(() => {
-        if (product) {
-            setMainImage(product.images[0]);
-        }
-    });
-
     return (
         <div className="py-10">
             <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
@@ -96,7 +156,7 @@ export default function ProductPage() {
                     
                     <div>
                         <h3 className="text-lg font-medium mb-2">Select Size</h3>
-                        <RadioGroup value={selectedSize} onValueChange={setSelectedSize} className="flex flex-wrap gap-2">
+                        <RadioGroup value={selectedSize || ''} onValueChange={setSelectedSize} className="flex flex-wrap gap-2">
                             {product.sizes.map(size => (
                                 <div key={size}>
                                     <RadioGroupItem value={size} id={`size-${size}`} className="sr-only" />
@@ -111,7 +171,7 @@ export default function ProductPage() {
                         </RadioGroup>
                     </div>
 
-                    <Button size="lg" className="w-full" onClick={handleAddToCart}>
+                    <Button size="lg" className="w-full" onClick={handleAddToCart} disabled={!selectedSize}>
                        <ShoppingBag className="mr-2 h-5 w-5"/> Add to Cart
                     </Button>
 

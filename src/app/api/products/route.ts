@@ -1,6 +1,9 @@
+
 import { NextResponse } from 'next/server';
-import { db } from '@/lib/firebase-admin';
+import { getDb } from '@/lib/firebase-admin';
 import type { Product } from '@/lib/types';
+
+const db = getDb();
 
 export async function GET() {
   try {
