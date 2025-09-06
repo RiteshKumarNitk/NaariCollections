@@ -111,7 +111,7 @@ export function Testimonials({ allProducts }: TestimonialsProps) {
                      <CardContent className="p-6 flex flex-col h-full">
                       <Quote className="h-8 w-8 text-primary/50 mb-4" />
                       <div className="flex-grow">
-                          <p className="text-muted-foreground italic">&quot;{review.review}&quot;</p>
+                          <p className="text-muted-foreground italic">"{review.review}"</p>
                       </div>
                        <div className="flex items-center gap-2 mt-4">
                         {[...Array(5)].map((_, i) => (
@@ -136,8 +136,8 @@ export function Testimonials({ allProducts }: TestimonialsProps) {
             )
           })}
         </CarouselContent>
-        <CarouselPrevious className="-left-4 md:-left-12" />
-        <CarouselNext className="-right-4 md:-right-12" />
+        <CarouselPrevious className="left-0 md:-left-8" />
+        <CarouselNext className="right-0 md:-right-8" />
       </Carousel>
     </section>
   );
