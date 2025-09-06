@@ -41,36 +41,38 @@ export default function AdminDashboardPage() {
       </header>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <Link href="/admin/products">
-          <Card className="hover:bg-muted/50 transition-colors">
-            <CardHeader>
-              <CardTitle>Product Management</CardTitle>
-              <CardDescription>
-                View, add, edit, and delete products.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-end text-sm font-medium text-primary">
-                Go to Products <ArrowRight className="ml-2 h-4 w-4" />
-              </div>
-            </CardContent>
-          </Card>
-        </Link>
-        <Card className="bg-muted/30 cursor-not-allowed">
+        <Card className="hover:bg-muted/50 transition-colors">
+            <Link href="/admin/products">
+              <CardHeader>
+                <CardTitle>Product Management</CardTitle>
+                <CardDescription>
+                  View, add, edit, and delete products.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-end text-sm font-medium text-primary">
+                  Go to Products <ArrowRight className="ml-2 h-4 w-4" />
+                </div>
+              </CardContent>
+            </Link>
+        </Card>
+        <Card className="hover:bg-muted/50 transition-colors">
+           <Link href="/admin/homepage">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <LayoutPanelTop className="h-5 w-5 text-muted-foreground" />
                 Homepage Content
               </CardTitle>
               <CardDescription>
-                Manage hero slider images and text. (Coming Soon)
+                Manage hero slider images and text.
               </CardDescription>
             </CardHeader>
             <CardContent>
-               <div className="flex items-center justify-end text-sm font-medium text-muted-foreground">
-                Coming Soon <ArrowRight className="ml-2 h-4 w-4" />
+               <div className="flex items-center justify-end text-sm font-medium text-primary">
+                Manage Content <ArrowRight className="ml-2 h-4 w-4" />
               </div>
             </CardContent>
+           </Link>
         </Card>
         <Card className="bg-muted/30 cursor-not-allowed">
             <CardHeader>
