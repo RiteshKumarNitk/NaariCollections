@@ -29,7 +29,7 @@ const productSchema = z.object({
   category: z.enum(['suits', 'sarees', 'kurtis', 'dresses', 'kaftans', 'anarkali', 'indo-western', 'coord-sets']),
   fabric: z.string().min(3, 'Fabric is required.'),
   bestseller: z.boolean(),
-  images: z.array(z.string().url("Must be a valid URL")).min(1, "At least one image is required."),
+  images: z.array(z.string().min(1, "Image path cannot be empty.")).min(1, "At least one image is required."),
 });
 
 type ProductFormValues = z.infer<typeof productSchema>;
@@ -222,10 +222,10 @@ export default function EditProductPage() {
                             <Label>Product Images</Label>
                             {fields.map((field, index) => (
                                 <div key={field.id} className="flex items-center gap-2">
-                                    {field.value ? (
-                                        <Image src={field.value} alt={`Product image ${index + 1}`} width={40} height={40} className="rounded-md aspect-square object-cover"/>
+                                    {form.watch(`images.${index}`) ? (
+                                        <Image src={form.watch(`images.${index}`)} alt={`Product image ${index + 1}`} width={40} height={40} className="rounded-md aspect-square object-cover"/>
                                     ) : <div className="h-10 w-10 bg-muted rounded-md"/>}
-                                    <Input {...form.register(`images.${index}`)} placeholder="https://example.com/image.jpg" />
+                                    <Input {...form.register(`images.${index}`)} placeholder="/images/your-image.jpg" />
                                     <Button type="button" variant="ghost" size="icon" className="shrink-0" onClick={() => remove(index)}>
                                         <Trash2 className="h-4 w-4 text-destructive" />
                                     </Button>

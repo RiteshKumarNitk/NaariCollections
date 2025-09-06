@@ -27,7 +27,7 @@ const productSchema = z.object({
   category: z.enum(['suits', 'sarees', 'kurtis', 'dresses', 'kaftans', 'anarkali', 'indo-western', 'coord-sets']),
   fabric: z.string().min(3, 'Fabric is required.'),
   bestseller: z.boolean(),
-  images: z.array(z.string().url()).min(1, "At least one image URL is required."),
+  images: z.array(z.string().min(1, "Image path cannot be empty.")).min(1, "At least one image is required."),
   sizes: z.array(z.string()).min(1, "At least one size is required."),
   code: z.string().min(1, "Product code is required"),
 });
@@ -198,8 +198,8 @@ export default function AddProductPage() {
                         </div>
 
                         <div className="space-y-2">
-                            <Label>Image URL</Label>
-                            <Input id="images" {...form.register('images.0')} placeholder="https://example.com/image.jpg" />
+                            <Label>Image Path</Label>
+                            <Input id="images" {...form.register('images.0')} placeholder="/images/your-image.jpg" />
                             {form.formState.errors.images && <p className="text-sm text-destructive">{form.formState.errors.images.message}</p>}
                         </div>
 
