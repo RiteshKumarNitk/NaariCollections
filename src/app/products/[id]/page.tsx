@@ -61,10 +61,11 @@ export default function ProductPage() {
                     <Image 
                         src={mainImage} 
                         alt={product.name}
-                        width={1000}
+                        width={800}
                         height={1200}
                         className="w-full h-full object-cover"
                         data-ai-hint="product photo"
+                        priority
                     />
                </div>
                <Carousel opts={{align: 'start'}} className="w-full max-w-full">
