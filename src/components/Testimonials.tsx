@@ -17,6 +17,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
+import { Skeleton } from "./ui/skeleton";
 
 interface TestimonialsProps {
   allProducts: Product[];
@@ -45,7 +46,36 @@ export function Testimonials({ allProducts }: TestimonialsProps) {
   }, []);
   
   if (isLoading) {
-    return <div>Loading testimonials...</div>;
+    return (
+      <div className="py-16 md:py-24">
+         <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-headline font-bold">What Our Customers Say</h2>
+            <p className="mt-3 text-muted-foreground text-lg">
+              Real reviews from our valued customers.
+            </p>
+          </div>
+        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {Array.from({length: 3}).map((_, i) => (
+            <Card key={i} className="p-6">
+              <div className="flex flex-col h-full">
+                <Skeleton className="h-8 w-8 mb-4" />
+                <Skeleton className="h-20 w-full mb-4" />
+                <Skeleton className="h-5 w-24 mb-6" />
+                <div className="mt-auto pt-4 border-t">
+                  <div className="flex items-center gap-4">
+                    <Skeleton className="h-14 w-14 rounded-full" />
+                    <div className="space-y-2">
+                       <Skeleton className="h-4 w-24" />
+                       <Skeleton className="h-4 w-32" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      </div>
+    )
   }
   
   if (reviews.length === 0) {
@@ -77,16 +107,18 @@ export function Testimonials({ allProducts }: TestimonialsProps) {
             return (
               <CarouselItem key={review.id} className="pl-4 md:basis-1/2 lg:basis-1/3">
                 <div className="p-1 h-full">
-                  <Card className="h-full flex flex-col">
-                    <CardContent className="p-6 flex flex-col flex-grow">
+                  <Card className="h-full">
+                     <CardContent className="p-6 flex flex-col h-full">
                       <Quote className="h-8 w-8 text-primary/50 mb-4" />
-                      <p className="text-muted-foreground italic flex-grow">&quot;{review.review}&quot;</p>
+                      <div className="flex-grow">
+                          <p className="text-muted-foreground italic">&quot;{review.review}&quot;</p>
+                      </div>
                        <div className="flex items-center gap-2 mt-4">
                         {[...Array(5)].map((_, i) => (
                             <Star key={i} className={cn("h-5 w-5", i < review.rating ? 'text-yellow-400 fill-yellow-400' : 'text-muted-foreground/30')} />
                         ))}
                       </div>
-                      <div className="flex items-center gap-4 mt-6 pt-4 border-t">
+                       <div className="mt-6 pt-4 border-t flex items-center gap-4">
                           {product && (
                             <Image src={product.images[0]} alt={product.name} width={56} height={56} className="rounded-full aspect-square object-cover" />
                           )}
