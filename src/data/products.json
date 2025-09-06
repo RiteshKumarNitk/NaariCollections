@@ -5,7 +5,9 @@
     "description": "Elegant suit set with adda handwork. Perfect festive wear.",
     "price": 1996,
     "images": [
-      "/images/27H93_1.jpeg", "/images/27H93_2.jpeg","/images/27H93_3.jpeg"
+      "/images/27H93_1.jpeg",
+      "/images/27H93_2.jpeg",
+      "/images/27H93_2.jpeg"
     ],
     "category": "suits",
     "sizes": [

@@ -16,7 +16,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
-import { ArrowLeft, Sparkles, Loader2, Trash2, PlusCircle } from 'lucide-react';
+import { ArrowLeft, Sparkles, Loader2, Trash2, PlusCircle, ArrowUp, ArrowDown } from 'lucide-react';
 import type { Product } from '@/lib/types';
 import { useProducts } from '@/hooks/use-products';
 import { generateDescription } from '@/ai/flows/generate-description-flow';
@@ -60,7 +60,7 @@ export default function EditProductPage() {
         },
     });
 
-    const { fields, append, remove } = useFieldArray({
+    const { fields, append, remove, move } = useFieldArray({
         control: form.control,
         name: "images"
     });
@@ -220,17 +220,29 @@ export default function EditProductPage() {
                         {/* Image Management */}
                         <div className="space-y-4">
                             <Label>Product Images</Label>
-                            {fields.map((field, index) => (
-                                <div key={field.id} className="flex items-center gap-2">
-                                    {form.watch(`images.${index}`) ? (
-                                        <Image src={form.watch(`images.${index}`)} alt={`Product image ${index + 1}`} width={40} height={40} className="rounded-md aspect-square object-cover"/>
-                                    ) : <div className="h-10 w-10 bg-muted rounded-md"/>}
-                                    <Input {...form.register(`images.${index}`)} placeholder="/images/your-image.jpg" />
-                                    <Button type="button" variant="ghost" size="icon" className="shrink-0" onClick={() => remove(index)}>
-                                        <Trash2 className="h-4 w-4 text-destructive" />
-                                    </Button>
-                                </div>
-                            ))}
+                             <div className="space-y-2">
+                                {fields.map((field, index) => (
+                                    <div key={field.id} className="flex items-center gap-2">
+                                        <div className="flex-shrink-0 w-10 h-10">
+                                            {form.watch(`images.${index}`) ? (
+                                                <Image src={form.watch(`images.${index}`)} alt={`Product image ${index + 1}`} width={40} height={40} className="rounded-md aspect-square object-cover"/>
+                                            ) : <div className="h-10 w-10 bg-muted rounded-md"/>}
+                                        </div>
+                                        <Input {...form.register(`images.${index}`)} placeholder="/images/your-image.jpg" />
+                                        <div className="flex flex-col">
+                                            <Button type="button" variant="ghost" size="icon" className="h-6 w-6 shrink-0" onClick={() => move(index, index - 1)} disabled={index === 0}>
+                                                <ArrowUp className="h-4 w-4" />
+                                            </Button>
+                                             <Button type="button" variant="ghost" size="icon" className="h-6 w-6 shrink-0" onClick={() => move(index, index + 1)} disabled={index === fields.length - 1}>
+                                                <ArrowDown className="h-4 w-4" />
+                                            </Button>
+                                        </div>
+                                        <Button type="button" variant="ghost" size="icon" className="shrink-0" onClick={() => remove(index)}>
+                                            <Trash2 className="h-4 w-4 text-destructive" />
+                                        </Button>
+                                    </div>
+                                ))}
+                            </div>
                             <Button type="button" variant="outline" size="sm" onClick={() => append("")}>
                                 <PlusCircle className="mr-2 h-4 w-4" /> Add Image URL
                             </Button>
