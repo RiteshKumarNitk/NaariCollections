@@ -48,9 +48,9 @@ const ourPromise = [
 ]
 
 export default function Home() {
-  const { products } = useProducts();
+  const { products, loading: productsLoading } = useProducts();
   const [content, setContent] = useState<HomepageContent | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [contentLoading, setContentLoading] = useState(true);
 
   useEffect(() => {
     const fetchHomepageContent = async () => {
@@ -67,10 +67,10 @@ export default function Home() {
         setContent({
           headline: 'Elegance Redefined',
           subheadline: 'Discover our curated collection of exquisite women\'s ethnic wear. Handcrafted with passion, designed for you.',
-          heroProductIds: ['1', '2', '3', '5'],
+          heroProductIds: [],
         });
       } finally {
-        setIsLoading(false);
+        setContentLoading(false);
       }
     };
 
@@ -81,10 +81,10 @@ export default function Home() {
     .map(id => products.find(p => p.id === id)?.images[0])
     .filter((img): img is string => !!img) || [];
 
-  if (isLoading || products.length === 0) {
+  if (productsLoading || contentLoading) {
     return (
-       <>
-        <Skeleton className="h-[calc(100vh-4rem)] w-full" />
+       <div className="container py-8">
+        <Skeleton className="h-[calc(80vh)] w-full" />
         <section className="py-12 md:py-20">
            <div className="space-y-16">
               <div className="space-y-6">
@@ -98,13 +98,13 @@ export default function Home() {
               </div>
            </div>
         </section>
-      </>
+      </div>
     )
   }
 
   return (
     <>
-      <HeroSlider images={heroImages}>
+      <HeroSlider images={heroImages.length > 0 ? heroImages : ['https://picsum.photos/1200/800']}>
          <div className="relative z-10 flex flex-col items-center justify-center h-full text-center text-foreground p-4">
           <h1 className="font-headline text-4xl md:text-6xl lg:text-7xl font-bold drop-shadow-md text-white">
             {content?.headline}
@@ -121,15 +121,17 @@ export default function Home() {
         </div>
       </HeroSlider>
 
-      <section className="py-12 md:py-20">
+      <section className="py-12 md:py-20 container">
         <ProductSliders allProducts={products} />
       </section>
       
       <section className="bg-muted/30 py-16 md:py-24">
-        <DealsOfTheDay allProducts={products} />
+        <div className="container">
+          <DealsOfTheDay allProducts={products} />
+        </div>
       </section>
 
-      <section className="py-16 md:py-24">
+      <section className="py-16 md:py-24 container">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-headline font-bold">Our Promise</h2>
           <p className="mt-3 text-muted-foreground text-lg">

@@ -16,11 +16,11 @@ export function ConditionalLayout({
     return (
         <>
             {isAdminPage ? (
-                <div className="container py-8">{children}</div>
+                <main className="container mx-auto py-8">{children}</main>
             ) : (
                 <div className="flex min-h-dvh flex-col">
                     <Header />
-                    <main className="flex-grow ">{children}</main>
+                    <main className="flex-grow">{children}</main>
                     <Footer />
                 </div>
             )}

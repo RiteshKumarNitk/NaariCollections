@@ -23,7 +23,6 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
   const fetchProducts = useCallback(async () => {
     setLoading(true);
     try {
-      // Add a cache-busting query parameter
       const response = await fetch(`/api/products?v=${new Date().getTime()}`);
       if (!response.ok) {
         throw new Error('Failed to fetch products');
