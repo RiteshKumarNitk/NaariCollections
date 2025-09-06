@@ -5,8 +5,14 @@ import { config } from 'dotenv';
 // Load environment variables from .env file
 config();
 
-const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT_KEY
-  ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY)
+// The service account key might be read with extra quotes, so we clean it up before parsing.
+let key = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
+if (key && key.startsWith("'") && key.endsWith("'")) {
+  key = key.substring(1, key.length - 1);
+}
+
+const serviceAccount = key
+  ? JSON.parse(key)
   : undefined;
 
 if (!admin.apps.length) {
