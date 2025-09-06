@@ -1,4 +1,8 @@
 
+// Load environment variables from .env file
+import { config } from 'dotenv';
+config();
+
 import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {

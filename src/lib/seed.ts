@@ -1,13 +1,11 @@
 
 import 'dotenv/config';
-import { getDb } from './firebase-admin';
+import { db } from './firebase-admin';
 import productsData from '../data/products.json';
 import reviewsData from '../data/reviews.json';
 import homepageData from '../data/homepage.json';
 import type { Product } from './types';
 import type { Review } from './types';
-
-const db = getDb();
 
 async function seedProducts() {
   const productsCollection = db.collection('products');

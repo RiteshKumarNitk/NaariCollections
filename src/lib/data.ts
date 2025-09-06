@@ -1,5 +1,5 @@
 
-import { getDb } from './firebase-admin';
+import { db } from './firebase-admin';
 import type { Product } from './types';
 import { unstable_noStore as noStore } from 'next/cache';
 
@@ -8,7 +8,6 @@ import { unstable_noStore as noStore } from 'next/cache';
 // which is appropriate for dynamic data like a product list.
 export async function getProducts(): Promise<Product[]> {
   noStore();
-  const db = getDb();
   try {
     const productsSnapshot = await db.collection('products').orderBy('creationDate', 'desc').get();
     if (productsSnapshot.empty) {

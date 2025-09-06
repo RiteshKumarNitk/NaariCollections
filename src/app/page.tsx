@@ -8,7 +8,7 @@ import { ProductSliders } from '@/components/ProductSliders';
 import { HeroSlider } from '@/components/HeroSlider';
 import { DealsOfTheDay } from '@/components/DealsOfTheDay';
 import { Testimonials } from '@/components/Testimonials';
-import { getDb } from '@/lib/firebase-admin';
+import { db } from '@/lib/firebase-admin';
 
 interface HomepageContent {
   headline: string;
@@ -45,7 +45,6 @@ const ourPromise = [
 ]
 
 async function getHomepageContent(): Promise<HomepageContent> {
-  const db = getDb();
   try {
     const doc = await db.collection('content').doc('homepage').get();
     if (!doc.exists) {

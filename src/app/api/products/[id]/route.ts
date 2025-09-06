@@ -1,8 +1,6 @@
 
 import { NextResponse } from 'next/server';
-import { getDb } from '@/lib/firebase-admin';
-
-const db = getDb();
+import { db } from '@/lib/firebase-admin';
 
 async function getProductById(productId: string) {
   try {

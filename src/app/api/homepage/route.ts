@@ -1,8 +1,7 @@
 
-import { getDb } from '@/lib/firebase-admin';
+import { db } from '@/lib/firebase-admin';
 import { NextResponse } from 'next/server';
 
-const db = getDb();
 const homepageDocRef = db.collection('content').doc('homepage');
 
 async function getHomepageData() {

@@ -1,9 +1,7 @@
 
 import { NextResponse } from 'next/server';
-import { getDb } from '@/lib/firebase-admin';
+import { db } from '@/lib/firebase-admin';
 import type { Review } from '@/lib/types';
-
-const db = getDb();
 
 export async function GET() {
   try {
