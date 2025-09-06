@@ -1,31 +1,36 @@
-
-import { promises as fs } from 'fs';
-import path from 'path';
+import { db } from '@/lib/firebase-admin';
 import { NextResponse } from 'next/server';
 
-const homepageDataPath = path.join(process.cwd(), 'src/data/homepage.json');
+const homepageDocRef = db.collection('content').doc('homepage');
 
 async function getHomepageData() {
   try {
-    const data = await fs.readFile(homepageDataPath, 'utf-8');
-    return JSON.parse(data);
-  } catch (error) {
-    console.error("Could not read homepage data file:", error);
-    // Return a default structure if the file doesn't exist or is empty
-    return {
-        headline: "",
-        subheadline: "",
+    const doc = await homepageDocRef.get();
+    if (!doc.exists) {
+      // If the document doesn't exist, return a default structure
+      return {
+        headline: "Elegance Redefined",
+        subheadline: "Discover our curated collection of exquisite women's ethnic wear.",
         heroProductIds: []
+      };
+    }
+    return doc.data();
+  } catch (error) {
+    console.error("Could not read homepage data from Firestore:", error);
+    // Return a default structure on error
+    return {
+      headline: "Elegance Redefined",
+      subheadline: "Discover our curated collection of exquisite women's ethnic wear.",
+      heroProductIds: []
     };
   }
 }
 
 async function saveHomepageData(data: any) {
   try {
-    const stringifiedData = JSON.stringify(data, null, 2); // Pretty-print JSON
-    await fs.writeFile(homepageDataPath, stringifiedData, 'utf-8');
+    await homepageDocRef.set(data, { merge: true });
   } catch (error) {
-    console.error("Could not write to homepage data file:", error);
+    console.error("Could not write to homepage data in Firestore:", error);
     throw new Error("Failed to save homepage data.");
   }
 }

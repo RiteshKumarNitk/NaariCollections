@@ -30,7 +30,7 @@ export function Testimonials({ allProducts }: TestimonialsProps) {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const res = await fetch('/data/reviews.json');
+        const res = await fetch('/api/reviews');
         if (!res.ok) {
           throw new Error("Failed to fetch reviews");
         }
@@ -99,7 +99,7 @@ export function Testimonials({ allProducts }: TestimonialsProps) {
           align: "start",
           loop: reviews.length > 2,
         }}
-        className="w-full max-w-5xl mx-auto"
+        className="w-full max-w-5xl mx-auto px-4 md:px-0"
       >
         <CarouselContent className="-ml-4">
           {reviews.map((review) => {
@@ -107,8 +107,8 @@ export function Testimonials({ allProducts }: TestimonialsProps) {
             return (
               <CarouselItem key={review.id} className="pl-4 md:basis-1/2 lg:basis-1/3">
                 <div className="p-1 h-full">
-                  <Card className="h-full">
-                     <CardContent className="p-6 flex flex-col h-full">
+                   <Card className="h-full flex flex-col">
+                     <CardContent className="p-6 flex flex-col flex-grow">
                       <Quote className="h-8 w-8 text-primary/50 mb-4" />
                       <div className="flex-grow">
                           <p className="text-muted-foreground italic">"{review.review}"</p>
@@ -118,7 +118,7 @@ export function Testimonials({ allProducts }: TestimonialsProps) {
                             <Star key={i} className={cn("h-5 w-5", i < review.rating ? 'text-yellow-400 fill-yellow-400' : 'text-muted-foreground/30')} />
                         ))}
                       </div>
-                       <div className="mt-6 pt-4 border-t flex items-center gap-4">
+                       <div className="mt-auto pt-6 border-t mt-6 flex items-center gap-4">
                           {product && (
                             <Image src={product.images[0]} alt={product.name} width={56} height={56} className="rounded-full aspect-square object-cover" />
                           )}

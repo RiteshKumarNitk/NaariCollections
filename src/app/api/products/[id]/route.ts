@@ -1,33 +1,5 @@
-
-import { promises as fs } from 'fs';
-import path from 'path';
 import { NextResponse } from 'next/server';
-import type { Product } from '@/lib/types';
-
-const productsFilePath = path.join(process.cwd(), 'src/data/products.json');
-
-// This is a utility function to read the JSON data file.
-async function getProducts(): Promise<Product[]> {
-  try {
-    const data = await fs.readFile(productsFilePath, 'utf-8');
-    return JSON.parse(data);
-  } catch (error) {
-    // If the file doesn't exist, we can return an empty array or handle it as needed.
-    console.error("Could not read products file:", error);
-    return [];
-  }
-}
-
-// This is a utility function to write to the JSON data file.
-async function saveProducts(products: Product[]) {
-  try {
-    const data = JSON.stringify(products, null, 2); // Pretty-print JSON
-    await fs.writeFile(productsFilePath, data, 'utf-8');
-  } catch (error) {
-    console.error("Could not write to products file:", error);
-    throw new Error("Failed to save product data.");
-  }
-}
+import { db } from '@/lib/firebase-admin';
 
 export async function POST(
   request: Request,
@@ -41,25 +13,12 @@ export async function POST(
 
   try {
     const updatedData = await request.json();
-    const allProducts = await getProducts();
-    
-    let productFound = false;
-    const updatedProducts = allProducts.map(product => {
-      if (product.id === productId) {
-        productFound = true;
-        // Merge the existing product data with the new data from the form.
-        return { ...product, ...updatedData, images: updatedData.images.filter((img: string) => img && img.trim() !== '') };
-      }
-      return product;
-    });
+    const productRef = db.collection('products').doc(productId);
 
-    if (!productFound) {
-      return NextResponse.json({ message: `Product with ID ${productId} not found` }, { status: 404 });
-    }
+    await productRef.update(updatedData);
 
-    await saveProducts(updatedProducts);
-
-    const updatedProduct = updatedProducts.find(p => p.id === productId);
+    const updatedProductDoc = await productRef.get();
+    const updatedProduct = { id: updatedProductDoc.id, ...updatedProductDoc.data() };
 
     return NextResponse.json(updatedProduct, { status: 200 });
 
@@ -84,15 +43,7 @@ export async function DELETE(
   }
 
   try {
-    const allProducts = await getProducts();
-    const updatedProducts = allProducts.filter(p => p.id !== productId);
-
-    if (allProducts.length === updatedProducts.length) {
-      return NextResponse.json({ message: `Product with ID ${productId} not found` }, { status: 404 });
-    }
-
-    await saveProducts(updatedProducts);
-
+    await db.collection('products').doc(productId).delete();
     return NextResponse.json({ message: 'Product deleted successfully' }, { status: 200 });
 
   } catch (error) {

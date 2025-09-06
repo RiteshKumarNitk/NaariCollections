@@ -1,30 +1,21 @@
-
-import { promises as fs } from 'fs';
-import path from 'path';
 import { NextResponse } from 'next/server';
+import { db } from '@/lib/firebase-admin';
 import type { Review } from '@/lib/types';
 
-const reviewsFilePath = path.join(process.cwd(), 'src/data/reviews.json');
-
-async function getReviews(): Promise<Review[]> {
+export async function GET() {
   try {
-    const data = await fs.readFile(reviewsFilePath, 'utf-8');
-    return JSON.parse(data);
+    const reviewsSnapshot = await db.collection('reviews').orderBy('date', 'desc').get();
+    const reviews = reviewsSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+    })) as Review[];
+    return NextResponse.json(reviews);
   } catch (error) {
-    console.error("Could not read reviews file:", error);
-    return [];
+    console.error('Error fetching reviews:', error);
+    return NextResponse.json({ message: 'Failed to fetch reviews' }, { status: 500 });
   }
 }
 
-async function saveReviews(reviews: Review[]) {
-  try {
-    const data = JSON.stringify(reviews, null, 2);
-    await fs.writeFile(reviewsFilePath, data, 'utf-8');
-  } catch (error) {
-    console.error("Could not write to reviews file:", error);
-    throw new Error("Failed to save review data.");
-  }
-}
 
 export async function POST(request: Request) {
   try {
@@ -34,18 +25,19 @@ export async function POST(request: Request) {
         return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
     }
 
-    const allReviews = await getReviews();
-
-    const newReview: Review = {
+    const newReview: Omit<Review, 'id'> = {
       ...newReviewData,
-      id: String(allReviews.length + 1 + Math.random()),
       date: new Date().toISOString(),
     };
+    
+    const docRef = await db.collection('reviews').add(newReview);
+    
+    const createdReview: Review = {
+        id: docRef.id,
+        ...newReview
+    }
 
-    const updatedReviews = [...allReviews, newReview];
-    await saveReviews(updatedReviews);
-
-    return NextResponse.json(newReview, { status: 201 });
+    return NextResponse.json(createdReview, { status: 201 });
 
   } catch (error) {
     console.error('API POST Error:', error);
