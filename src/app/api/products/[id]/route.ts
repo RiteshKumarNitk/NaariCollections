@@ -48,7 +48,7 @@ export async function POST(
       if (product.id === productId) {
         productFound = true;
         // Merge the existing product data with the new data from the form.
-        return { ...product, ...updatedData };
+        return { ...product, ...updatedData, images: updatedData.images.filter((img: string) => img && img.trim() !== '') };
       }
       return product;
     });

@@ -120,7 +120,7 @@ export default function EditProductPage() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(data),
+                body: JSON.stringify({ ...data, images: data.images.filter(img => img.trim() !== '') }),
             });
 
             if (!response.ok) {
@@ -220,23 +220,20 @@ export default function EditProductPage() {
                         {/* Image Management */}
                         <div className="space-y-4">
                             <Label>Product Images</Label>
-                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                                {fields.map((field, index) => (
-                                    <div key={field.id} className="relative group">
-                                        <div className="aspect-square w-full rounded-md overflow-hidden border">
-                                           <Image src={field.value} alt={`Product image ${index + 1}`} fill className="object-cover" />
-                                        </div>
-                                        <Input {...form.register(`images.${index}`)} className="hidden" />
-                                        <Button type="button" variant="destructive" size="icon" className="absolute top-1 right-1 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => remove(index)}>
-                                            <Trash2 className="h-4 w-4" />
-                                        </Button>
-                                    </div>
-                                ))}
-                                <Button type="button" variant="outline" className="aspect-square w-full flex-col gap-2" onClick={() => append("")}>
-                                    <PlusCircle className="h-8 w-8 text-muted-foreground" />
-                                    <span className="text-xs text-muted-foreground">Add Image URL</span>
-                                </Button>
-                            </div>
+                            {fields.map((field, index) => (
+                                <div key={field.id} className="flex items-center gap-2">
+                                    {field.value ? (
+                                        <Image src={field.value} alt={`Product image ${index + 1}`} width={40} height={40} className="rounded-md aspect-square object-cover"/>
+                                    ) : <div className="h-10 w-10 bg-muted rounded-md"/>}
+                                    <Input {...form.register(`images.${index}`)} placeholder="https://example.com/image.jpg" />
+                                    <Button type="button" variant="ghost" size="icon" className="shrink-0" onClick={() => remove(index)}>
+                                        <Trash2 className="h-4 w-4 text-destructive" />
+                                    </Button>
+                                </div>
+                            ))}
+                            <Button type="button" variant="outline" size="sm" onClick={() => append("")}>
+                                <PlusCircle className="mr-2 h-4 w-4" /> Add Image URL
+                            </Button>
                             {form.formState.errors.images && <p className="text-sm text-destructive">{form.formState.errors.images.message}</p>}
                              {form.formState.errors.images?.root && <p className="text-sm text-destructive">{form.formState.errors.images.root.message}</p>}
                         </div>
