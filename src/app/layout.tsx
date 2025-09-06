@@ -1,23 +1,24 @@
 
 import type { Metadata } from 'next';
 import './globals.css';
-import { Header } from '@/components/Header';
-import { Footer } from '@/components/Footer';
 import { Toaster } from '@/components/ui/toaster';
 import { CartProvider } from '@/hooks/use-cart';
 import { AuthProvider } from '@/hooks/use-auth';
 import { ProductsProvider } from '@/hooks/use-products';
+import { ConditionalLayout } from '@/components/ConditionalLayout';
 
 export const metadata: Metadata = {
   title: 'Naari E-Shop',
   description: 'Exquisite ethnic wear for the modern woman.',
 };
 
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -36,11 +37,9 @@ export default function RootLayout({
         <AuthProvider>
           <ProductsProvider>
             <CartProvider>
-              <div className="flex min-h-dvh flex-col">
-                <Header />
-                <main className="flex-grow container">{children}</main>
-                <Footer />
-              </div>
+              <ConditionalLayout>
+                {children}
+              </ConditionalLayout>
               <Toaster />
             </CartProvider>
           </ProductsProvider>
