@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { ProductSliders } from '@/components/ProductSliders';
 import { HeroSlider } from '@/components/HeroSlider';
 import { Skeleton } from '@/components/ui/skeleton';
+import { DealsOfTheDay } from '@/components/DealsOfTheDay';
 
 interface HomepageContent {
   headline: string;
@@ -94,8 +95,12 @@ export default function Home() {
       <section className="py-12 md:py-20">
         <ProductSliders allProducts={products} />
       </section>
+      
+      <section className="bg-muted/30 py-16 md:py-24">
+        <DealsOfTheDay allProducts={products} />
+      </section>
 
-      <section className="bg-secondary/30 py-16 md:py-24">
+      <section className="py-16 md:py-24">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-headline font-bold">Why Choose Naari?</h2>
           <p className="mt-3 text-muted-foreground text-lg">
