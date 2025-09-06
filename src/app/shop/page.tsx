@@ -5,7 +5,10 @@ import ShopPageSkeleton from './loading';
 
 export default function ShopPage() {
   return (
-  <Suspense fallback={<div className="p-8 text-center">Loading shop...</div>}>
+    // <Suspense fallback={<ShopPageSkeleton />}>
+    //   <ShopPageClient />
+    // </Suspense>
+      <Suspense fallback={<div className="p-8 text-center">Loading shop...</div>}>
       <ShopPageClient />
     </Suspense>
   );
