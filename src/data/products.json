@@ -28,8 +28,7 @@
     "price": 1555,
     "images": [
       "/images/27H92_1.jpeg",
-      "/images/27H92_2.jpeg",
-      "/images/27H92_3.jpeg"
+      "/images/27H92_2.jpeg"
     ],
     "category": "suits",
     "sizes": [
@@ -50,8 +49,7 @@
     "price": 1545,
     "images": [
       "/images/27H91_1.jpeg",
-      "/images/27H91_2.jpeg",
-      "/images/27H91_3.jpeg"
+      "/images/27H91_2.jpeg"
     ],
     "category": "kaftans",
     "sizes": [
@@ -114,8 +112,7 @@
     "price": 1295,
     "images": [
       "/images/27H88_1.jpeg",
-      "/images/27H88_2.jpeg",
-      "/images/27H88_3.jpeg"
+      "/images/27H88_2.jpeg"
     ],
     "category": "suits",
     "sizes": [
@@ -135,8 +132,7 @@
     "price": 2374,
     "images": [
       "/images/27H83_1.jpeg",
-      "/images/27H83_2.jpeg",
-      "/images/27H83_3.jpeg"
+      "/images/27H83_2.jpeg"
     ],
     "category": "indo-western",
     "sizes": [
@@ -174,8 +170,7 @@
     "price": 1995,
     "images": [
       "/images/27H85_1.jpeg",
-      "/images/27H85_2.jpeg",
-      "/images/27H85_3.jpeg"
+      "/images/27H85_2.jpeg"
     ],
     "category": "indo-western",
     "sizes": [
@@ -195,8 +190,7 @@
     "price": 1345,
     "images": [
       "/images/27H86_1.jpeg",
-      "/images/27H86_2.jpeg",
-      "/images/27H86_3.jpeg"
+      "/images/27H86_2.jpeg"
     ],
     "category": "suits",
     "sizes": [
@@ -217,8 +211,7 @@
     "price": 3099,
     "images": [
       "/images/27H87_1.jpeg",
-      "/images/27H87_2.jpeg",
-      "/images/27H87_3.jpeg"
+      "/images/27H87_2.jpeg"
     ],
     "category": "suits",
     "sizes": [
@@ -239,8 +232,7 @@
     "price": 1275,
     "images": [
       "/images/25H130_1.jpeg",
-      "/images/25H130_2.jpeg",
-      "/images/25H130_3.jpeg"
+      "/images/25H130_2.jpeg"
     ],
     "category": "suits",
     "sizes": [
@@ -262,8 +254,7 @@
     "price": 1075,
     "images": [
       "/images/25H56_1.jpeg",
-      "/images/25H56_2.jpeg",
-      "/images/25H56_3.jpeg"
+      "/images/25H56_2.jpeg"
     ],
     "category": "suits",
     "sizes": [
@@ -306,8 +297,7 @@
     "price": 995,
     "images": [
       "/images/25H66_1.jpeg",
-      "/images/25H66_2.jpeg",
-      "/images/25H66_3.jpeg"
+      "/images/25H66_2.jpeg"
     ],
     "category": "suits",
     "sizes": [
@@ -329,7 +319,6 @@
     "price": 995,
     "images": [
       "/images/25H64_1.jpeg",
-      "/images/25H64_2.jpeg",
       "/images/25H64_2.jpeg"
     ],
     "category": "suits",
@@ -351,7 +340,6 @@
     "price": 1045,
     "images": [
       "/images/25H62_1.jpeg",
-      "/images/25H62_2.jpeg",
       "/images/25H62_2.jpeg"
     ],
     "category": "suits",
@@ -374,7 +362,8 @@
     "images": [
       "/images/25H61_1.jpeg",
       "/images/25H61_2.jpeg",
-      "/images/25H61_2.jpeg"
+      "/images/25H61_3.jpeg",
+      "/images/25H61_4.jpeg"
     ],
     "category": "suits",
     "sizes": [
@@ -397,7 +386,8 @@
     "images": [
       "/images/25H60_1.jpeg",
       "/images/25H60_2.jpeg",
-      "/images/25H60_2.jpeg"
+      "/images/25H60_3.jpeg",
+      "/images/25H60_4.jpeg"
     ],
     "category": "suits",
     "sizes": [
@@ -420,7 +410,7 @@
     "images": [
       "/images/25H59_1.jpeg",
       "/images/25H59_2.jpeg",
-      "/images/25H59_2.jpeg"
+      "/images/25H59_3.jpeg"
     ],
     "category": "dresses",
     "sizes": [
@@ -442,8 +432,7 @@
     "price": 1250,
     "images": [
       "/images/25H58_1.jpeg",
-      "/images/25H58_2.jpeg",
-      "/images/25H58_3.jpeg"
+      "/images/25H58_2.jpeg"
     ],
     "category": "dresses",
     "sizes": [
@@ -465,8 +454,29 @@
     "price": 1045,
     "images": [
       "/images/25H57_1.jpeg",
-      "/images/25H57_2.jpeg",
-      "/images/25H57_3.jpeg"
+      "/images/25H57_2.jpeg"
+    ],
+    "category": "coord-sets",
+    "sizes": [
+      "38",
+      "40",
+      "42",
+      "44",
+      "46"
+    ],
+    "fabric": "Pure Cotton",
+    "code": "25H57",
+    "creationDate": "2024-07-01T10:00:00Z",
+    "bestseller": true
+  },
+  {
+    "id": "23",
+    "name": "Chikankari Cut Work Coord Set",
+    "description": "Premium coord set with chikankari cutwork and mulmul lining.",
+    "price": 1045,
+    "images": [
+      "/images/25H56_1.jpeg",
+      "/images/25H56_2.jpeg"
     ],
     "category": "coord-sets",
     "sizes": [
