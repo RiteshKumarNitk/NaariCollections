@@ -10,6 +10,7 @@ export default function ShopPage() {
       <AddToCartDialog>
         <ShopPageClient />
       </AddToCartDialog>
+
     </Suspense>
   );
 }
