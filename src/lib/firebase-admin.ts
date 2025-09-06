@@ -1,4 +1,3 @@
-
 import * as admin from 'firebase-admin';
 
 let db: admin.firestore.Firestore;
@@ -18,19 +17,17 @@ if (!admin.apps.length) {
       console.log('Firebase Admin SDK initialized successfully.');
     } catch (error: any) {
       console.error('Firebase admin initialization error:', error.message);
-      // This error will be thrown if the credentials are still somehow malformed.
+      // Provide a more helpful error message.
       throw new Error('Failed to initialize Firebase Admin SDK. The service account key is likely malformed or the environment variables are not set correctly.');
     }
   } else {
     // This provides a clear error if the required environment variables are missing.
-    console.error('Firebase Admin SDK not initialized: environment variables are missing.');
-    // We don't throw an error here to allow builds to succeed without env vars,
-    // but operations requiring the db will fail.
+    console.warn('Firebase Admin SDK not initialized: required environment variables are missing. Make sure FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, and FIREBASE_PRIVATE_KEY are set in your .env file.');
   }
 }
 
 // Export the initialized firestore database instance.
-// It might be undefined if initialization failed.
+// It might be undefined if initialization failed, and downstream code should handle that.
 db = admin.firestore();
 
 export { db };
