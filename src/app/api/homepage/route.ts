@@ -2,30 +2,27 @@
 import { db } from '@/lib/firebase-admin';
 import { NextResponse } from 'next/server';
 
+const fallbackContent = {
+  headline: "Elegance Redefined",
+  subheadline: "Discover our curated collection of exquisite women's ethnic wear.",
+  heroProductIds: []
+};
+
 async function getHomepageData() {
   if (!db) {
-    throw new Error("Firestore is not initialized.");
+    console.error("Firestore is not initialized in API route.");
+    return fallbackContent;
   }
   const homepageDocRef = db.collection('content').doc('homepage');
   try {
     const doc = await homepageDocRef.get();
     if (!doc.exists) {
-      // If the document doesn't exist, return a default structure
-      return {
-        headline: "Elegance Redefined",
-        subheadline: "Discover our curated collection of exquisite women's ethnic wear.",
-        heroProductIds: []
-      };
+      return fallbackContent;
     }
     return doc.data();
   } catch (error) {
     console.error("Could not read homepage data from Firestore:", error);
-    // Return a default structure on error
-    return {
-      headline: "Elegance Redefined",
-      subheadline: "Discover our curated collection of exquisite women's ethnic wear.",
-      heroProductIds: []
-    };
+    return fallbackContent;
   }
 }
 
@@ -57,7 +54,6 @@ export async function POST(request: Request) {
   try {
     const updatedData = await request.json();
 
-    // Basic validation
     if (!updatedData.headline || !updatedData.subheadline || !Array.isArray(updatedData.heroProductIds)) {
         return NextResponse.json({ message: 'Invalid data format' }, { status: 400 });
     }

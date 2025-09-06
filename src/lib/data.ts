@@ -1,7 +1,7 @@
 
+import { unstable_noStore as noStore } from 'next/cache';
 import { db } from './firebase-admin';
 import type { Product } from './types';
-import { unstable_noStore as noStore } from 'next/cache';
 
 // This function fetches all products from Firestore.
 // It uses unstable_noStore to ensure it's re-fetched on every request,

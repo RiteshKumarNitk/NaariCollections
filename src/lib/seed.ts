@@ -7,6 +7,10 @@ import homepageData from '../data/homepage.json';
 import type { Product } from './types';
 import type { Review } from './types';
 
+if (!db) {
+  throw new Error("Firestore is not initialized. Seeding cannot proceed. Please check your Firebase credentials.");
+}
+
 async function seedProducts() {
   const productsCollection = db.collection('products');
   console.log('Seeding products...');
