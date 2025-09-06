@@ -3,7 +3,7 @@
     "id": "1",
     "name": "Beautiful Suit Set with Adda Handwork",
     "description": "Elegant suit set with adda handwork. Perfect festive wear.",
-    "price": 1999,
+    "price": 1996,
     "images": [
       "https://picsum.photos/id/1011/800/1200"
     ],
@@ -436,5 +436,27 @@
     "code": "25H57",
     "creationDate": "2024-07-01T10:00:00Z",
     "bestseller": true
+  },
+  {
+    "name": "Beautiful Suit Set with Adda Handworkssssssssssssssss",
+    "price": 955,
+    "description": "Naari's exquisite suit set. Intricate Adda handwork celebrates heritage, crafting modern elegance for the sophisticated woman.",
+    "category": "suits",
+    "fabric": "Voil Cotton",
+    "bestseller": true,
+    "images": [
+      "https://picsum.photos/id/1011/800/1200"
+    ],
+    "sizes": [
+      "38",
+      "40",
+      "42",
+      "44",
+      "46",
+      "Free Size"
+    ],
+    "code": "552244",
+    "id": "23.8838434468244",
+    "creationDate": "2025-09-06T08:58:27.329Z"
   }
 ]

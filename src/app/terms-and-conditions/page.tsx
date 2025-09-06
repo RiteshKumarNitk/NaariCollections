@@ -1,3 +1,4 @@
+
 export default function TermsAndConditionsPage() {
   return (
     <div className="py-12 md:py-16 prose prose-lg lg:prose-xl prose-stone max-w-4xl mx-auto">
