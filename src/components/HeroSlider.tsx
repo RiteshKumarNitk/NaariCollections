@@ -56,7 +56,7 @@ export function HeroSlider({ images, children, interval = 5000 }: HeroSliderProp
         {children}
       </div>
 
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-8">
+      {/* <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-8">
         <Button onClick={prevSlide} variant="outline" size="icon" className="bg-white/20 hover:bg-white/30 border-white/50 text-white rounded-full">
             <ChevronLeft className="h-6 w-6" />
         </Button>
@@ -72,7 +72,7 @@ export function HeroSlider({ images, children, interval = 5000 }: HeroSliderProp
         <Button onClick={nextSlide} variant="outline" size="icon" className="bg-white/20 hover:bg-white/30 border-white/50 text-white rounded-full">
             <ChevronRight className="h-6 w-6" />
         </Button>
-      </div>
+      </div> */}
 
     </section>
   );

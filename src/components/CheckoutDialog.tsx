@@ -54,10 +54,13 @@ export function CheckoutDialog({ children }: { children: React.ReactNode }) {
   });
 
   function onSubmit(data: CheckoutFormValues) {
+    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+    
     const orderHeader = "Hello Naari E-Shop, I'd like to place an order for the following items:\n\n";
-    const itemsText = cartItems.map(item => 
-      `- ${item.name} (Size: ${item.size}, Code: ${item.code}) x ${item.quantity}`
-    ).join('\n');
+    const itemsText = cartItems.map(item => {
+        const imageUrl = item.image.startsWith('http') ? item.image : `${origin}${item.image}`;
+        return `- ${item.name} (Size: ${item.size}, Code: ${item.code}) x ${item.quantity}\n  Image: ${imageUrl}`;
+    }).join('\n');
     const pricing = `\n\nSubtotal: ₹${subtotal.toFixed(2)}\nShipping: ₹${shippingCost.toFixed(2)}\n*Total: ₹${totalPrice.toFixed(2)}*`;
     
     const customerDetailsHeader = "\n\nMy Details:\n";

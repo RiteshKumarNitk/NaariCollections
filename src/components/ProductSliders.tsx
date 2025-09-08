@@ -41,7 +41,7 @@ function Sliders({ allProducts }: ProductSlidersProps) {
                     .sort((a, b) => newArrivalProductCodes.indexOf(a.code) - newArrivalProductCodes.indexOf(b.code));
                 setNewArrivals(sortedArrivals);
             } catch (error) {
-                console.error("Failed to fetch new arrivals from AI flow, falling back to sorted dates:", error instanceof Error ? error.message : String(error));
+                // The AI flow can fail if the model is overloaded. We fall back to a simple date sort.
                 const fallbackArrivals = [...allProducts].sort((a, b) => new Date(b.creationDate).getTime() - new Date(a.creationDate).getTime()).slice(0, 8);
                 setNewArrivals(fallbackArrivals);
             } finally {

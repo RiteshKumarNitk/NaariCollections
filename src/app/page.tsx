@@ -3,19 +3,49 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Gem, ShieldCheck, Truck, Loader2 } from 'lucide-react';
+import { ArrowRight, Gem, ShieldCheck, Truck, Loader2, Leaf, HeartHandshake, Scissors, Ruler, Shirt } from 'lucide-react';
 import { useProducts } from '@/hooks/use-products';
 
 import { Button } from '@/components/ui/button';
 import { ProductSliders } from '@/components/ProductSliders';
 import { HeroSlider } from '@/components/HeroSlider';
 import { Skeleton } from '@/components/ui/skeleton';
+import { DealsOfTheDay } from '@/components/DealsOfTheDay';
+import { Testimonials } from '@/components/Testimonials';
 
 interface HomepageContent {
   headline: string;
   subheadline: string;
   heroProductIds: string[];
 }
+
+const ourPromise = [
+    {
+        icon: HeartHandshake,
+        title: "Comfort Fit",
+        description: "Designed for a perfect fit that feels custom-made, ensuring you look and feel your best all day long."
+    },
+    {
+        icon: Leaf,
+        title: "Skin Friendly",
+        description: "Crafted from soft, breathable fabrics that are gentle on your skin, preventing any irritation."
+    },
+    {
+        icon: Scissors,
+        title: "Made to Last",
+        description: "Expert craftsmanship and high-quality materials mean your favorite pieces will last for years to come."
+    },
+    {
+        icon: Shirt,
+        title: "Natural Fibers",
+        description: "We prioritize natural fibers that are not only sustainable but also offer superior comfort and elegance."
+    },
+    {
+        icon: Ruler,
+        title: "Sizes upto 5XL",
+        description: "Celebrating every body type with a wide range of sizes, so everyone can find their perfect Naari outfit."
+    }
+]
 
 export default function Home() {
   const { products } = useProducts();
@@ -94,44 +124,34 @@ export default function Home() {
       <section className="py-12 md:py-20">
         <ProductSliders allProducts={products} />
       </section>
+      
+      <section className="bg-muted/30 py-16 md:py-24">
+        <DealsOfTheDay allProducts={products} />
+      </section>
 
-      <section className="bg-secondary/30 py-16 md:py-24">
+      <section className="py-16 md:py-24">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-headline font-bold">Why Choose Naari?</h2>
+          <h2 className="text-3xl md:text-4xl font-headline font-bold">Our Promise</h2>
           <p className="mt-3 text-muted-foreground text-lg">
-            Experience the difference with our commitment to quality and style.
+            We are committed to delivering not just a product, but an experience.
           </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
-          <div className="flex flex-col items-center text-center">
-            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/20 text-primary-foreground">
-              <Gem className="h-8 w-8 text-primary" />
-            </div>
-            <h3 className="text-xl font-headline font-semibold mb-2">Exquisite Quality</h3>
-            <p className="text-muted-foreground">
-              We use only the finest materials and artisanal techniques to craft each piece, ensuring longevity and a luxurious feel.
-            </p>
-          </div>
-          <div className="flex flex-col items-center text-center">
-            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/20 text-primary-foreground">
-              <Truck className="h-8 w-8 text-primary" />
-            </div>
-            <h3 className="text-xl font-headline font-semibold mb-2">Fast & Secure Shipping</h3>
-            <p className="text-muted-foreground">
-              Your new favorite outfit will be at your doorstep in no time, with tracked shipping and careful packaging.
-            </p>
-          </div>
-          <div className="flex flex-col items-center text-center">
-             <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/20 text-primary-foreground">
-               <ShieldCheck className="h-8 w-8 text-primary" />
-            </div>
-            <h3 className="text-xl font-headline font-semibold mb-2">Guaranteed Satisfaction</h3>
-            <p className="text-muted-foreground">
-              We stand by our products. If you&apos;re not completely in love with your purchase, our hassle-free return policy has you covered.
-            </p>
-          </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 md:gap-6">
+            {ourPromise.map((promise) => (
+                 <div key={promise.title} className="flex flex-col items-center text-center">
+                    <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/20 text-primary-foreground">
+                        <promise.icon className="h-8 w-8 text-primary" />
+                    </div>
+                    <h3 className="text-xl font-headline font-semibold mb-2">{promise.title}</h3>
+                    <p className="text-muted-foreground text-sm">
+                        {promise.description}
+                    </p>
+                </div>
+            ))}
         </div>
       </section>
+      
+      <Testimonials allProducts={products} />
     </>
   );
 }

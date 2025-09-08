@@ -48,7 +48,7 @@ export async function POST(
       if (product.id === productId) {
         productFound = true;
         // Merge the existing product data with the new data from the form.
-        return { ...product, ...updatedData };
+        return { ...product, ...updatedData, images: updatedData.images.filter((img: string) => img && img.trim() !== '') };
       }
       return product;
     });
@@ -67,6 +67,38 @@ export async function POST(
     console.error('API Error:', error);
     if (error instanceof Error) {
         return NextResponse.json({ message: 'Failed to update product', error: error.message }, { status: 500 });
+    }
+    return NextResponse.json({ message: 'An unknown error occurred' }, { status: 500 });
+  }
+}
+
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  const productId = params.id;
+
+  if (!productId) {
+    return NextResponse.json({ message: 'Product ID is required' }, { status: 400 });
+  }
+
+  try {
+    const allProducts = await getProducts();
+    const updatedProducts = allProducts.filter(p => p.id !== productId);
+
+    if (allProducts.length === updatedProducts.length) {
+      return NextResponse.json({ message: `Product with ID ${productId} not found` }, { status: 404 });
+    }
+
+    await saveProducts(updatedProducts);
+
+    return NextResponse.json({ message: 'Product deleted successfully' }, { status: 200 });
+
+  } catch (error) {
+    console.error('API DELETE Error:', error);
+    if (error instanceof Error) {
+      return NextResponse.json({ message: 'Failed to delete product', error: error.message }, { status: 500 });
     }
     return NextResponse.json({ message: 'An unknown error occurred' }, { status: 500 });
   }

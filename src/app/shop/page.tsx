@@ -2,14 +2,15 @@
 import { Suspense } from 'react';
 import { ShopPageClient } from '@/components/ShopPageClient';
 import ShopPageSkeleton from './loading';
+import { AddToCartDialog } from '@/components/AddToCartDialog';
 
 export default function ShopPage() {
   return (
-    // <Suspense fallback={<ShopPageSkeleton />}>
-    //   <ShopPageClient />
-    // </Suspense>
-      <Suspense fallback={<div className="p-8 text-center">Loading shop...</div>}>
-      <ShopPageClient />
+    <Suspense fallback={<ShopPageSkeleton />}>
+      <AddToCartDialog>
+        <ShopPageClient />
+      </AddToCartDialog>
+
     </Suspense>
   );
 }

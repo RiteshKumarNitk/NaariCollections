@@ -2,11 +2,11 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useParams, useRouter } from 'next/navigation';
-import { notFound } from 'next/navigation';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -16,7 +16,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
-import { ArrowLeft, Sparkles, Loader2 } from 'lucide-react';
+import { ArrowLeft, Sparkles, Loader2, Trash2, PlusCircle, ArrowUp, ArrowDown } from 'lucide-react';
 import type { Product } from '@/lib/types';
 import { useProducts } from '@/hooks/use-products';
 import { generateDescription } from '@/ai/flows/generate-description-flow';
@@ -29,6 +29,7 @@ const productSchema = z.object({
   category: z.enum(['suits', 'sarees', 'kurtis', 'dresses', 'kaftans', 'anarkali', 'indo-western', 'coord-sets']),
   fabric: z.string().min(3, 'Fabric is required.'),
   bestseller: z.boolean(),
+  images: z.array(z.string().min(1, "Image path cannot be empty.")).min(1, "At least one image is required."),
 });
 
 type ProductFormValues = z.infer<typeof productSchema>;
@@ -55,7 +56,13 @@ export default function EditProductPage() {
             category: 'suits',
             fabric: '',
             bestseller: false,
+            images: [],
         },
+    });
+
+    const { fields, append, remove, move } = useFieldArray({
+        control: form.control,
+        name: "images"
     });
 
     useEffect(() => {
@@ -67,6 +74,7 @@ export default function EditProductPage() {
                  category: product.category,
                  fabric: product.fabric,
                  bestseller: product.bestseller,
+                 images: product.images
             });
         }
     }, [product, form]);
@@ -112,7 +120,7 @@ export default function EditProductPage() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(data),
+                body: JSON.stringify({ ...data, images: data.images.filter(img => img.trim() !== '') }),
             });
 
             if (!response.ok) {
@@ -121,10 +129,7 @@ export default function EditProductPage() {
 
             const updatedProductFromServer = await response.json();
             
-            // Update the local state for immediate feedback
             updateProduct(updatedProductFromServer);
-
-            // Force other components to refetch data
             forceRerender();
 
             toast({
@@ -160,6 +165,7 @@ export default function EditProductPage() {
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                        {/* Basic Details */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                              <div className="space-y-2">
                                 <Label htmlFor="name">Product Name</Label>
@@ -173,15 +179,12 @@ export default function EditProductPage() {
                             </div>
                         </div>
                         
+                        {/* Description */}
                         <div className="space-y-2">
                              <div className="flex justify-between items-center">
                                 <Label htmlFor="description">Description</Label>
                                  <Button type="button" variant="outline" size="sm" onClick={handleGenerateDescription} disabled={isGenerating}>
-                                    {isGenerating ? (
-                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    ) : (
-                                        <Sparkles className="mr-2 h-4 w-4" />
-                                    )}
+                                    {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
                                     Generate with AI
                                 </Button>
                             </div>
@@ -189,17 +192,14 @@ export default function EditProductPage() {
                             {form.formState.errors.description && <p className="text-sm text-destructive">{form.formState.errors.description.message}</p>}
                         </div>
 
+                        {/* Category and Fabric */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                              <div className="space-y-2">
                                 <Label>Category</Label>
-                                <Controller
-                                    control={form.control}
-                                    name="category"
+                                <Controller control={form.control} name="category"
                                     render={({ field }) => (
                                         <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Select a category" />
-                                            </SelectTrigger>
+                                            <SelectTrigger><SelectValue placeholder="Select a category" /></SelectTrigger>
                                             <SelectContent>
                                                 {CATEGORIES.map(cat => (
                                                     <SelectItem key={cat} value={cat} className="capitalize">{cat.replace('-', ' ')}</SelectItem>
@@ -216,22 +216,49 @@ export default function EditProductPage() {
                                 {form.formState.errors.fabric && <p className="text-sm text-destructive">{form.formState.errors.fabric.message}</p>}
                             </div>
                         </div>
+
+                        {/* Image Management */}
+                        <div className="space-y-4">
+                            <Label>Product Images</Label>
+                             <div className="space-y-2">
+                                {fields.map((field, index) => (
+                                    <div key={field.id} className="flex items-center gap-2">
+                                        <div className="flex-shrink-0 w-10 h-10">
+                                            {form.watch(`images.${index}`) ? (
+                                                <Image src={form.watch(`images.${index}`)} alt={`Product image ${index + 1}`} width={40} height={40} className="rounded-md aspect-square object-cover"/>
+                                            ) : <div className="h-10 w-10 bg-muted rounded-md"/>}
+                                        </div>
+                                        <Input {...form.register(`images.${index}`)} placeholder="/images/your-image.jpg" />
+                                        <div className="flex flex-col">
+                                            <Button type="button" variant="ghost" size="icon" className="h-6 w-6 shrink-0" onClick={() => move(index, index - 1)} disabled={index === 0}>
+                                                <ArrowUp className="h-4 w-4" />
+                                            </Button>
+                                             <Button type="button" variant="ghost" size="icon" className="h-6 w-6 shrink-0" onClick={() => move(index, index + 1)} disabled={index === fields.length - 1}>
+                                                <ArrowDown className="h-4 w-4" />
+                                            </Button>
+                                        </div>
+                                        <Button type="button" variant="ghost" size="icon" className="shrink-0" onClick={() => remove(index)}>
+                                            <Trash2 className="h-4 w-4 text-destructive" />
+                                        </Button>
+                                    </div>
+                                ))}
+                            </div>
+                            <Button type="button" variant="outline" size="sm" onClick={() => append("")}>
+                                <PlusCircle className="mr-2 h-4 w-4" /> Add Image URL
+                            </Button>
+                            {form.formState.errors.images && <p className="text-sm text-destructive">{form.formState.errors.images.message}</p>}
+                             {form.formState.errors.images?.root && <p className="text-sm text-destructive">{form.formState.errors.images.root.message}</p>}
+                        </div>
                         
+                        {/* Bestseller Checkbox */}
                         <div className="flex items-center space-x-2">
-                             <Controller
-                                name="bestseller"
-                                control={form.control}
-                                render={({ field }) => (
-                                     <Checkbox
-                                        id="bestseller"
-                                        checked={field.value}
-                                        onCheckedChange={field.onChange}
-                                    />
-                                )}
+                             <Controller name="bestseller" control={form.control}
+                                render={({ field }) => ( <Checkbox id="bestseller" checked={field.value} onCheckedChange={field.onChange} /> )}
                             />
                             <Label htmlFor="bestseller" className="font-normal">Mark as bestseller</Label>
                         </div>
                         
+                        {/* Action Buttons */}
                         <div className="flex justify-end gap-2">
                             <Button type="button" variant="outline" onClick={() => router.push('/admin/products')}>Cancel</Button>
                             <Button type="submit" disabled={form.formState.isSubmitting}>

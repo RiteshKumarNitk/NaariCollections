@@ -20,7 +20,7 @@ export function ConditionalLayout({
             ) : (
                 <div className="flex min-h-dvh flex-col">
                     <Header />
-                    <main className="flex-grow container">{children}</main>
+                    <main className="flex-grow ">{children}</main>
                     <Footer />
                 </div>
             )}
