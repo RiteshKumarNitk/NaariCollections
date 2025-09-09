@@ -1,33 +1,37 @@
-import * as admin from 'firebase-admin';
+// src/lib/firebase-admin.ts
+import * as admin from "firebase-admin";
 
-let db: admin.firestore.Firestore;
+let db: admin.firestore.Firestore | undefined;
 
 if (!admin.apps.length) {
-  const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
+  const projectId = process.env.FIREBASE_PROJECT_ID;
+  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+  let privateKey = process.env.FIREBASE_PRIVATE_KEY;
 
-  if (process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_CLIENT_EMAIL && privateKey) {
+  if (projectId && clientEmail && privateKey) {
     try {
+      // Convert escaped \n into real newlines
+      privateKey = privateKey.replace(/\\n/g, "\n");
+
       admin.initializeApp({
         credential: admin.credential.cert({
-          projectId: process.env.FIREBASE_PROJECT_ID,
-          clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-          privateKey: privateKey,
+          projectId,
+          clientEmail,
+          privateKey,
         }),
       });
-      console.log('Firebase Admin SDK initialized successfully.');
+
+      db = admin.firestore();
+      console.log("✅ Firebase Admin SDK initialized successfully.");
     } catch (error: any) {
-      console.error('Firebase admin initialization error:', error.message);
-      // Provide a more helpful error message.
-      throw new Error('Failed to initialize Firebase Admin SDK. The service account key is likely malformed or the environment variables are not set correctly.');
+      console.error("❌ Firebase admin initialization error:", error.message);
+      throw new Error("Failed to initialize Firebase Admin SDK. Check FIREBASE_PRIVATE_KEY formatting.");
     }
   } else {
-    // This provides a clear error if the required environment variables are missing.
-    console.warn('Firebase Admin SDK not initialized: required environment variables are missing. Make sure FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, and FIREBASE_PRIVATE_KEY are set in your .env file.');
+    console.warn(
+      "⚠️ Firebase Admin SDK not initialized: Missing FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, or FIREBASE_PRIVATE_KEY"
+    );
   }
 }
-
-// Export the initialized firestore database instance.
-// It might be undefined if initialization failed, and downstream code should handle that.
-db = admin.firestore();
 
 export { db };
