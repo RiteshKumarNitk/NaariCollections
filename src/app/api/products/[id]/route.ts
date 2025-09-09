@@ -1,35 +1,29 @@
 
-import { promises as fs } from 'fs';
-import path from 'path';
 import { NextResponse } from 'next/server';
-import type { Product } from '@/lib/types';
+import { getDb } from '@/lib/firebase-admin';
 
-const productsFilePath = path.join(process.cwd(), 'src/data/products.json');
-
-// This is a utility function to read the JSON data file.
-async function getProducts(): Promise<Product[]> {
+ 
+async function getProductById(productId: string) {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Firestore is not initialized.");
+  }
   try {
-    const data = await fs.readFile(productsFilePath, 'utf-8');
-    return JSON.parse(data);
+    const docRef = db.collection('products').doc(productId);
+    const doc = await docRef.get();
+
+    if (!doc.exists) {
+      return null;
+    }
+
+    return { id: doc.id, ...doc.data() };
   } catch (error) {
-    // If the file doesn't exist, we can return an empty array or handle it as needed.
-    console.error("Could not read products file:", error);
-    return [];
+    console.error(`Error fetching product ${productId}:`, error);
+    throw new Error('Failed to retrieve product data');
   }
 }
 
-// This is a utility function to write to the JSON data file.
-async function saveProducts(products: Product[]) {
-  try {
-    const data = JSON.stringify(products, null, 2); // Pretty-print JSON
-    await fs.writeFile(productsFilePath, data, 'utf-8');
-  } catch (error) {
-    console.error("Could not write to products file:", error);
-    throw new Error("Failed to save product data.");
-  }
-}
-
-export async function POST(
+export async function GET(
   request: Request,
   { params }: { params: { id: string } }
 ) {
@@ -40,26 +34,41 @@ export async function POST(
   }
 
   try {
-    const updatedData = await request.json();
-    const allProducts = await getProducts();
-    
-    let productFound = false;
-    const updatedProducts = allProducts.map(product => {
-      if (product.id === productId) {
-        productFound = true;
-        // Merge the existing product data with the new data from the form.
-        return { ...product, ...updatedData, images: updatedData.images.filter((img: string) => img && img.trim() !== '') };
-      }
-      return product;
-    });
-
-    if (!productFound) {
-      return NextResponse.json({ message: `Product with ID ${productId} not found` }, { status: 404 });
+    const product = await getProductById(productId);
+    if (!product) {
+      return NextResponse.json({ message: 'Product not found' }, { status: 404 });
     }
+    return NextResponse.json(product);
+  } catch (error) {
+    console.error('API GET Error:', error);
+    const message = error instanceof Error ? error.message : 'Failed to retrieve product data';
+    return NextResponse.json({ message }, { status: 500 });
+  }
+}
 
-    await saveProducts(updatedProducts);
+export async function POST(
+  
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  const productId = params.id;
+  const db = await getDb();
+  
+  if (!productId) {
+    return NextResponse.json({ message: 'Product ID is required' }, { status: 400 });
+  }
+  if (!db) {
+     return NextResponse.json({ message: 'Database not initialized' }, { status: 500 });
+  }
 
-    const updatedProduct = updatedProducts.find(p => p.id === productId);
+  try {
+    const updatedData = await request.json();
+    const productRef = db.collection('products').doc(productId);
+
+    await productRef.update(updatedData);
+
+    const updatedProductDoc = await productRef.get();
+    const updatedProduct = { id: updatedProductDoc.id, ...updatedProductDoc.data() };
 
     return NextResponse.json(updatedProduct, { status: 200 });
 
@@ -78,21 +87,16 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   const productId = params.id;
-
+const db = await getDb();
   if (!productId) {
     return NextResponse.json({ message: 'Product ID is required' }, { status: 400 });
   }
+   if (!db) {
+     return NextResponse.json({ message: 'Database not initialized' }, { status: 500 });
+  }
 
   try {
-    const allProducts = await getProducts();
-    const updatedProducts = allProducts.filter(p => p.id !== productId);
-
-    if (allProducts.length === updatedProducts.length) {
-      return NextResponse.json({ message: `Product with ID ${productId} not found` }, { status: 404 });
-    }
-
-    await saveProducts(updatedProducts);
-
+    await db.collection('products').doc(productId).delete();
     return NextResponse.json({ message: 'Product deleted successfully' }, { status: 200 });
 
   } catch (error) {

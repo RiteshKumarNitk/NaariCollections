@@ -3,12 +3,15 @@ import { Suspense } from 'react';
 import { ShopPageClient } from '@/components/ShopPageClient';
 import ShopPageSkeleton from './loading';
 import { AddToCartDialog } from '@/components/AddToCartDialog';
+import { getProducts } from '@/lib/data';
 
-export default function ShopPage() {
+export default async function ShopPage() {
+  const allProducts = await getProducts();
+
   return (
     <Suspense fallback={<ShopPageSkeleton />}>
       <AddToCartDialog>
-        <ShopPageClient />
+        <ShopPageClient allProducts={allProducts} />
       </AddToCartDialog>
 
     </Suspense>

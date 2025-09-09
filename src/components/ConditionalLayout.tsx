@@ -4,6 +4,7 @@
 import { usePathname } from 'next/navigation';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
+import { ProductsProvider } from '@/hooks/use-products';
 
 export function ConditionalLayout({
     children,
@@ -11,19 +12,26 @@ export function ConditionalLayout({
     children: React.ReactNode;
 }>) {
     const pathname = usePathname();
-    const isAdminPage = pathname.startsWith('/admin') || pathname === '/login';
+    const isAdminPage = pathname.startsWith('/admin');
+    const isLoginPage = pathname === '/login';
+
+    if (isAdminPage) {
+        return (
+            <ProductsProvider>
+                <main className="container mx-auto py-8">{children}</main>
+            </ProductsProvider>
+        )
+    }
+
+    if (isLoginPage) {
+         return <main className="container mx-auto py-8">{children}</main>
+    }
 
     return (
-        <>
-            {isAdminPage ? (
-                <div className="container py-8">{children}</div>
-            ) : (
-                <div className="flex min-h-dvh flex-col">
-                    <Header />
-                    <main className="flex-grow ">{children}</main>
-                    <Footer />
-                </div>
-            )}
-        </>
+        <div className="flex min-h-dvh flex-col">
+            <Header />
+            <main className="flex-grow">{children}</main>
+            <Footer />
+        </div>
     );
 }

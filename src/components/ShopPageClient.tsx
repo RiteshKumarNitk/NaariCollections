@@ -5,7 +5,6 @@ import { useState, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 import { ProductCard } from '@/components/ProductCard';
-import { useProducts } from '@/hooks/use-products';
 import { useAddToCartDialog } from '@/components/AddToCartDialog';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -20,15 +19,17 @@ import type { Product } from '@/lib/types';
 
 const CATEGORIES: Product['category'][] = ['suits', 'sarees', 'kurtis', 'dresses', 'kaftans', 'anarkali', 'indo-western', 'coord-sets'];
 
+interface ShopPageClientProps {
+  allProducts: Product[];
+}
 
-export function ShopPageClient() {
-  const { products: allProducts } = useProducts();
+export function ShopPageClient({ allProducts }: ShopPageClientProps) {
   const searchParams = useSearchParams();
   const initialCategory = searchParams.get('category');
   const { openDialog } = useAddToCartDialog();
 
   const FABRICS = useMemo(() => [...new Set(allProducts.map(p => p.fabric))], [allProducts]);
-  const SIZES = useMemo(() => [...new Set(allProducts.flatMap(p => p.sizes))], [allProducts]);
+  const SIZES = useMemo(() => [...new Set(allProducts.flatMap(p => p.sizes))].sort(), [allProducts]);
   
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [sortOrder, setSortOrder] = useState('newest');

@@ -1,47 +1,48 @@
 
-import { promises as fs } from 'fs';
-import path from 'path';
 import { NextResponse } from 'next/server';
+import { getDb } from '@/lib/firebase-admin';
 import type { Product } from '@/lib/types';
 
-const productsFilePath = path.join(process.cwd(), 'src/data/products.json');
 
-async function getProducts(): Promise<Product[]> {
-  try {
-    const data = await fs.readFile(productsFilePath, 'utf-8');
-    return JSON.parse(data);
-  } catch (error) {
-    console.error("Could not read products file:", error);
-    return [];
+export async function GET() {
+   const db = await getDb();
+  if (!db) {
+    return NextResponse.json({ message: 'Database not initialized' }, { status: 500 });
   }
-}
-
-async function saveProducts(products: Product[]) {
   try {
-    const data = JSON.stringify(products, null, 2);
-    await fs.writeFile(productsFilePath, data, 'utf-8');
+    const productsSnapshot = await db.collection('products').orderBy('creationDate', 'desc').get();
+    const products = productsSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+    })) as Product[];
+    return NextResponse.json(products);
   } catch (error) {
-    console.error("Could not write to products file:", error);
-    throw new Error("Failed to save product data.");
+    console.error('Error fetching products:', error);
+    return NextResponse.json({ message: 'Failed to fetch products' }, { status: 500 });
   }
 }
 
 export async function POST(request: Request) {
+   const db = await getDb();
+  if (!db) {
+    return NextResponse.json({ message: 'Database not initialized' }, { status: 500 });
+  }
   try {
     const newProductData = await request.json();
-    const allProducts = await getProducts();
-
-    // Generate a unique ID and creation date for the new product
-    const newProduct: Product = {
+    
+    const newProduct: Omit<Product, 'id'> = {
       ...newProductData,
-      id: String(allProducts.length + 1 + Math.random()), // A simple way to generate a somewhat unique ID
       creationDate: new Date().toISOString(),
     };
 
-    const updatedProducts = [...allProducts, newProduct];
-    await saveProducts(updatedProducts);
+    const docRef = await db.collection('products').add(newProduct);
+    
+    const createdProduct: Product = {
+        id: docRef.id,
+        ...newProduct
+    }
 
-    return NextResponse.json(newProduct, { status: 201 });
+    return NextResponse.json(createdProduct, { status: 201 });
 
   } catch (error) {
     console.error('API POST Error:', error);

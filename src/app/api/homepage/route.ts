@@ -1,31 +1,43 @@
 
-import { promises as fs } from 'fs';
-import path from 'path';
+import { getDb } from '@/lib/firebase-admin';
 import { NextResponse } from 'next/server';
 
-const homepageDataPath = path.join(process.cwd(), 'src/data/homepage.json');
+ 
+const fallbackContent = {
+  headline: "Elegance Redefined",
+  subheadline: "Discover our curated collection of exquisite women's ethnic wear.",
+  heroProductIds: []
+};
 
 async function getHomepageData() {
+  const db = await getDb();
+  if (!db) {
+    console.error("Firestore is not initialized in API route.");
+    return fallbackContent;
+  }
+  const homepageDocRef = db.collection('content').doc('homepage');
   try {
-    const data = await fs.readFile(homepageDataPath, 'utf-8');
-    return JSON.parse(data);
+    const doc = await homepageDocRef.get();
+    if (!doc.exists) {
+      return fallbackContent;
+    }
+    return doc.data();
   } catch (error) {
-    console.error("Could not read homepage data file:", error);
-    // Return a default structure if the file doesn't exist or is empty
-    return {
-        headline: "",
-        subheadline: "",
-        heroProductIds: []
-    };
+    console.error("Could not read homepage data from Firestore:", error);
+    return fallbackContent;
   }
 }
 
 async function saveHomepageData(data: any) {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Firestore is not initialized.");
+  }
+  const homepageDocRef = db.collection('content').doc('homepage');
   try {
-    const stringifiedData = JSON.stringify(data, null, 2); // Pretty-print JSON
-    await fs.writeFile(homepageDataPath, stringifiedData, 'utf-8');
+    await homepageDocRef.set(data, { merge: true });
   } catch (error) {
-    console.error("Could not write to homepage data file:", error);
+    console.error("Could not write to homepage data in Firestore:", error);
     throw new Error("Failed to save homepage data.");
   }
 }
@@ -36,7 +48,8 @@ export async function GET() {
     return NextResponse.json(data);
   } catch (error) {
     console.error('API GET Error:', error);
-    return NextResponse.json({ message: 'Failed to retrieve homepage data' }, { status: 500 });
+    const message = error instanceof Error ? error.message : 'Failed to retrieve homepage data';
+    return NextResponse.json({ message }, { status: 500 });
   }
 }
 
@@ -44,7 +57,6 @@ export async function POST(request: Request) {
   try {
     const updatedData = await request.json();
 
-    // Basic validation
     if (!updatedData.headline || !updatedData.subheadline || !Array.isArray(updatedData.heroProductIds)) {
         return NextResponse.json({ message: 'Invalid data format' }, { status: 400 });
     }
@@ -54,6 +66,7 @@ export async function POST(request: Request) {
     return NextResponse.json(updatedData, { status: 200 });
   } catch (error) {
     console.error('API POST Error:', error);
-    return NextResponse.json({ message: 'Failed to update homepage data' }, { status: 500 });
+    const message = error instanceof Error ? error.message : 'Failed to update homepage data';
+    return NextResponse.json({ message }, { status: 500 });
   }
 }

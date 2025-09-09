@@ -1,17 +1,14 @@
 
-"use client";
-
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Gem, ShieldCheck, Truck, Loader2, Leaf, HeartHandshake, Scissors, Ruler, Shirt } from 'lucide-react';
-import { useProducts } from '@/hooks/use-products';
+import { ArrowRight, Leaf, HeartHandshake, Scissors, Ruler, Shirt } from 'lucide-react';
 
+import { getProducts } from '@/lib/data';
 import { Button } from '@/components/ui/button';
 import { ProductSliders } from '@/components/ProductSliders';
 import { HeroSlider } from '@/components/HeroSlider';
-import { Skeleton } from '@/components/ui/skeleton';
 import { DealsOfTheDay } from '@/components/DealsOfTheDay';
 import { Testimonials } from '@/components/Testimonials';
+import { getDb } from '@/lib/firebase-admin';
 
 interface HomepageContent {
   headline: string;
@@ -47,64 +44,69 @@ const ourPromise = [
     }
 ]
 
-export default function Home() {
-  const { products } = useProducts();
-  const [content, setContent] = useState<HomepageContent | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+// async function getHomepageContent(): Promise<HomepageContent> {
+//   const db = await getDb();
+//   const fallbackContent = {
+//     headline: 'Elegance Redefined',
+//     subheadline: "Discover our curated collection of exquisite women's ethnic wear. Handcrafted with passion, designed for you.",
+//     heroProductIds: [],
+//   };
 
-  useEffect(() => {
-    const fetchHomepageContent = async () => {
-      try {
-        const response = await fetch('/api/homepage');
-        if (!response.ok) {
-          throw new Error('Failed to fetch homepage content');
-        }
-        const data = await response.json();
-        setContent(data);
-      } catch (error) {
-        console.error(error);
-        // Fallback content in case of error
-        setContent({
-          headline: 'Elegance Redefined',
-          subheadline: 'Discover our curated collection of exquisite women\'s ethnic wear. Handcrafted with passion, designed for you.',
-          heroProductIds: ['1', '2', '3', '5'],
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
+//   if (!db) {
+//       console.error("Firestore is not initialized. Cannot fetch homepage content.");
+//       return fallbackContent;
+//   }
+//   try {
+//     const doc = await db.collection('content').doc('homepage').get();
+//     if (!doc.exists) {
+//       // Fallback content
+//       return fallbackContent;
+//     }
+//     return doc.data() as HomepageContent;
+//   } catch (error) {
+//     console.error("Failed to fetch homepage content from Firestore:", error);
+//     // Return fallback content on error
+//      return fallbackContent;
+//   }
+// }
+export async function getHomepageContent(): Promise<HomepageContent> {
+  const fallbackContent: HomepageContent = {
+    headline: "Elegance Redefined",
+    subheadline:
+      "Discover our curated collection of exquisite women's ethnic wear. Handcrafted with passion, designed for you.",
+    heroProductIds: [],
+  };
 
-    fetchHomepageContent();
-  }, []);
+  try {
+    const db = await getDb(); // server-only Firestore instance
+    if (!db) {
+      console.error("Firestore is not initialized. Returning fallback content.");
+      return fallbackContent;
+    }
+
+    const doc = await db.collection("content").doc("homepage").get();
+    if (!doc.exists) {
+      return fallbackContent;
+    }
+
+    return doc.data() as HomepageContent;
+  } catch (error) {
+    console.error("Failed to fetch homepage content from Firestore:", error);
+    return fallbackContent;
+  }
+}
+
+export default async function Home() {
+  const allProducts = await getProducts();
+  const content = await getHomepageContent();
 
   const heroImages = content?.heroProductIds
-    .map(id => products.find(p => p.id === id)?.images[0])
+    .map(id => allProducts.find(p => p.id === id)?.images[0])
     .filter((img): img is string => !!img) || [];
-
-  if (isLoading || products.length === 0) {
-    return (
-       <>
-        <Skeleton className="h-[calc(100vh-4rem)] w-full" />
-        <section className="py-12 md:py-20">
-           <div className="space-y-16">
-              <div className="space-y-6">
-                <Skeleton className="h-8 w-1/3 mx-auto" />
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <Skeleton className="h-[350px] w-full" />
-                  <Skeleton className="h-[350px] w-full" />
-                  <Skeleton className="h-[350px] w-full" />
-                  <Skeleton className="h-[350px] w-full" />
-                </div>
-              </div>
-           </div>
-        </section>
-      </>
-    )
-  }
 
   return (
     <>
-      <HeroSlider images={heroImages}>
+      <HeroSlider images={heroImages.length > 0 ? heroImages : ['https://picsum.photos/1200/800']}>
          <div className="relative z-10 flex flex-col items-center justify-center h-full text-center text-foreground p-4">
           <h1 className="font-headline text-4xl md:text-6xl lg:text-7xl font-bold drop-shadow-md text-white">
             {content?.headline}
@@ -121,15 +123,17 @@ export default function Home() {
         </div>
       </HeroSlider>
 
-      <section className="py-12 md:py-20">
-        <ProductSliders allProducts={products} />
+      <section className="py-12 md:py-20 container">
+        <ProductSliders allProducts={allProducts} />
       </section>
       
       <section className="bg-muted/30 py-16 md:py-24">
-        <DealsOfTheDay allProducts={products} />
+        <div className="container">
+          <DealsOfTheDay allProducts={allProducts} />
+        </div>
       </section>
 
-      <section className="py-16 md:py-24">
+      <section className="py-16 md:py-24 container">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-headline font-bold">Our Promise</h2>
           <p className="mt-3 text-muted-foreground text-lg">
@@ -151,7 +155,7 @@ export default function Home() {
         </div>
       </section>
       
-      <Testimonials allProducts={products} />
+      <Testimonials allProducts={allProducts} />
     </>
   );
 }

@@ -4,7 +4,6 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { CartProvider } from '@/hooks/use-cart';
 import { AuthProvider } from '@/hooks/use-auth';
-import { ProductsProvider } from '@/hooks/use-products';
 import { ConditionalLayout } from '@/components/ConditionalLayout';
 
 export const metadata: Metadata = {
@@ -35,14 +34,12 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased">
         <AuthProvider>
-          <ProductsProvider>
             <CartProvider>
               <ConditionalLayout>
                 {children}
               </ConditionalLayout>
               <Toaster />
             </CartProvider>
-          </ProductsProvider>
         </AuthProvider>
       </body>
     </html>
