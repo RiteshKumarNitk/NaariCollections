@@ -1,9 +1,11 @@
 
 import { NextResponse } from 'next/server';
-import { db } from '@/lib/firebase-admin';
+import { getDb } from '@/lib/firebase-admin';
 import type { Product } from '@/lib/types';
 
+
 export async function GET() {
+   const db = await getDb();
   if (!db) {
     return NextResponse.json({ message: 'Database not initialized' }, { status: 500 });
   }
@@ -21,6 +23,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+   const db = await getDb();
   if (!db) {
     return NextResponse.json({ message: 'Database not initialized' }, { status: 500 });
   }

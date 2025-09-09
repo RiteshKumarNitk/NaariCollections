@@ -1,17 +1,19 @@
 
 import 'dotenv/config';
-import { db } from './firebase-admin';
+import { getDb } from './firebase-admin';
 import productsData from '../data/products.json';
 import reviewsData from '../data/reviews.json';
 import homepageData from '../data/homepage.json';
 import type { Product } from './types';
 import type { Review } from './types';
 
-if (!db) {
-  throw new Error("Firestore is not initialized. Seeding cannot proceed. Please check your Firebase credentials.");
-}
+// const db = await getDb();
+// if (!db) {
+//   throw new Error("Firestore is not initialized. Seeding cannot proceed. Please check your Firebase credentials.");
+// }
 
 async function seedProducts() {
+   const db = await getDb();
   const productsCollection = db.collection('products');
   console.log('Seeding products...');
   for (const product of productsData) {
@@ -30,6 +32,7 @@ async function seedProducts() {
 }
 
 async function seedReviews() {
+   const db = await getDb();
   const reviewsCollection = db.collection('reviews');
   console.log('Seeding reviews...');
   for (const review of reviewsData) {
@@ -46,6 +49,7 @@ async function seedReviews() {
 }
 
 async function seedHomepage() {
+   const db = await getDb();
     console.log('Seeding homepage content...');
     await db.collection('content').doc('homepage').set(homepageData);
     console.log('Homepage content seeded successfully!');

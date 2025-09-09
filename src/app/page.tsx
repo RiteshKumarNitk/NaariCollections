@@ -8,7 +8,7 @@ import { ProductSliders } from '@/components/ProductSliders';
 import { HeroSlider } from '@/components/HeroSlider';
 import { DealsOfTheDay } from '@/components/DealsOfTheDay';
 import { Testimonials } from '@/components/Testimonials';
-import { db } from '@/lib/firebase-admin';
+import { getDb } from '@/lib/firebase-admin';
 
 interface HomepageContent {
   headline: string;
@@ -44,28 +44,55 @@ const ourPromise = [
     }
 ]
 
-async function getHomepageContent(): Promise<HomepageContent> {
-  const fallbackContent = {
-    headline: 'Elegance Redefined',
-    subheadline: "Discover our curated collection of exquisite women's ethnic wear. Handcrafted with passion, designed for you.",
+// async function getHomepageContent(): Promise<HomepageContent> {
+//   const db = await getDb();
+//   const fallbackContent = {
+//     headline: 'Elegance Redefined',
+//     subheadline: "Discover our curated collection of exquisite women's ethnic wear. Handcrafted with passion, designed for you.",
+//     heroProductIds: [],
+//   };
+
+//   if (!db) {
+//       console.error("Firestore is not initialized. Cannot fetch homepage content.");
+//       return fallbackContent;
+//   }
+//   try {
+//     const doc = await db.collection('content').doc('homepage').get();
+//     if (!doc.exists) {
+//       // Fallback content
+//       return fallbackContent;
+//     }
+//     return doc.data() as HomepageContent;
+//   } catch (error) {
+//     console.error("Failed to fetch homepage content from Firestore:", error);
+//     // Return fallback content on error
+//      return fallbackContent;
+//   }
+// }
+export async function getHomepageContent(): Promise<HomepageContent> {
+  const fallbackContent: HomepageContent = {
+    headline: "Elegance Redefined",
+    subheadline:
+      "Discover our curated collection of exquisite women's ethnic wear. Handcrafted with passion, designed for you.",
     heroProductIds: [],
   };
 
-  if (!db) {
-      console.error("Firestore is not initialized. Cannot fetch homepage content.");
-      return fallbackContent;
-  }
   try {
-    const doc = await db.collection('content').doc('homepage').get();
-    if (!doc.exists) {
-      // Fallback content
+    const db = await getDb(); // server-only Firestore instance
+    if (!db) {
+      console.error("Firestore is not initialized. Returning fallback content.");
       return fallbackContent;
     }
+
+    const doc = await db.collection("content").doc("homepage").get();
+    if (!doc.exists) {
+      return fallbackContent;
+    }
+
     return doc.data() as HomepageContent;
   } catch (error) {
     console.error("Failed to fetch homepage content from Firestore:", error);
-    // Return fallback content on error
-     return fallbackContent;
+    return fallbackContent;
   }
 }
 

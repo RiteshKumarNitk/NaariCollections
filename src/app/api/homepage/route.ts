@@ -1,7 +1,8 @@
 
-import { db } from '@/lib/firebase-admin';
+import { getDb } from '@/lib/firebase-admin';
 import { NextResponse } from 'next/server';
 
+ 
 const fallbackContent = {
   headline: "Elegance Redefined",
   subheadline: "Discover our curated collection of exquisite women's ethnic wear.",
@@ -9,6 +10,7 @@ const fallbackContent = {
 };
 
 async function getHomepageData() {
+  const db = await getDb();
   if (!db) {
     console.error("Firestore is not initialized in API route.");
     return fallbackContent;
@@ -27,6 +29,7 @@ async function getHomepageData() {
 }
 
 async function saveHomepageData(data: any) {
+  const db = await getDb();
   if (!db) {
     throw new Error("Firestore is not initialized.");
   }

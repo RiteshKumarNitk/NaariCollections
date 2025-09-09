@@ -1,8 +1,10 @@
 
 import { NextResponse } from 'next/server';
-import { db } from '@/lib/firebase-admin';
+import { getDb } from '@/lib/firebase-admin';
 
+ 
 async function getProductById(productId: string) {
+  const db = await getDb();
   if (!db) {
     throw new Error("Firestore is not initialized.");
   }
@@ -45,10 +47,12 @@ export async function GET(
 }
 
 export async function POST(
+  
   request: Request,
   { params }: { params: { id: string } }
 ) {
   const productId = params.id;
+  const db = await getDb();
   
   if (!productId) {
     return NextResponse.json({ message: 'Product ID is required' }, { status: 400 });
@@ -83,7 +87,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   const productId = params.id;
-
+const db = await getDb();
   if (!productId) {
     return NextResponse.json({ message: 'Product ID is required' }, { status: 400 });
   }
