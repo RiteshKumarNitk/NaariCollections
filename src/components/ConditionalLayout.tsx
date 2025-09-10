@@ -18,13 +18,15 @@ export function ConditionalLayout({
     if (isAdminPage) {
         return (
             <ProductsProvider>
-                <main className="container mx-auto py-8">{children}</main>
+                {/* Removed container and mx-auto to allow pages to control their own layout */}
+                <main className="py-8">{children}</main>
             </ProductsProvider>
         )
     }
 
     if (isLoginPage) {
-         return <main className="container mx-auto py-8">{children}</main>
+         {/* Removed container and mx-auto to allow pages to control their own layout */}
+         return <main className="py-8">{children}</main>
     }
 
     return (

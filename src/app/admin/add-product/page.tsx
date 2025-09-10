@@ -126,7 +126,7 @@ export default function AddProductPage() {
     };
 
     return (
-        <div className="py-8">
+        <div className="container mx-auto">
             <div className="mb-4">
                  <Button variant="outline" asChild>
                     <Link href="/admin/products">

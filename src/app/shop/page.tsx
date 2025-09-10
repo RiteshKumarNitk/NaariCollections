@@ -9,11 +9,12 @@ export default async function ShopPage() {
   const allProducts = await getProducts();
 
   return (
-    <Suspense fallback={<ShopPageSkeleton />}>
-      <AddToCartDialog>
-        <ShopPageClient allProducts={allProducts} />
-      </AddToCartDialog>
-
-    </Suspense>
+    <div className="container mx-auto">
+      <Suspense fallback={<ShopPageSkeleton />}>
+        <AddToCartDialog>
+          <ShopPageClient allProducts={allProducts} />
+        </AddToCartDialog>
+      </Suspense>
+    </div>
   );
 }

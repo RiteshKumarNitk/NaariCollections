@@ -82,7 +82,7 @@ export default function EditProductPage() {
 
     if (!product) {
         // This can happen briefly on load, so we show a loading state.
-        return <div>Loading...</div>;
+        return <div className="container mx-auto">Loading...</div>;
     }
 
     const handleGenerateDescription = async () => {
@@ -149,7 +149,7 @@ export default function EditProductPage() {
     };
 
     return (
-        <div className="py-8">
+        <div className="container mx-auto">
             <div className="mb-4">
                  <Button variant="outline" asChild>
                     <Link href="/admin/products">

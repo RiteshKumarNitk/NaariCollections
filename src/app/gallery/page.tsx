@@ -18,7 +18,7 @@ const galleryImages = [
 
 export default function GalleryPage() {
   return (
-    <div className="py-12">
+    <div className="container mx-auto py-12">
       <div className="text-center mb-10">
         <h1 className="text-4xl font-headline font-bold">Our Gallery</h1>
         <p className="mt-2 text-lg text-muted-foreground">

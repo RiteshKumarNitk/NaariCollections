@@ -63,7 +63,7 @@ export default function ProductPage() {
 
     if (loading) {
         return (
-             <div className="py-10">
+             <div className="container mx-auto py-10">
                 <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
                     <div>
                         <Skeleton className="aspect-[3/4] w-full rounded-lg mb-4" />
@@ -116,7 +116,7 @@ export default function ProductPage() {
     };
     
     return (
-        <div className="py-10">
+        <div className="container mx-auto py-10">
             <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
                 <div>
                    <div className="aspect-[3/4] w-full overflow-hidden rounded-lg mb-4 border">

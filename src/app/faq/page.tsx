@@ -35,7 +35,7 @@ const faqs = [
 
 export default function FaqPage() {
   return (
-    <div className="max-w-3xl mx-auto py-12 md:py-20">
+    <div className="max-w-3xl mx-auto py-12 md:py-20 container">
       <div className="text-center mb-10">
         <h1 className="text-4xl font-headline font-bold">Frequently Asked Questions</h1>
         <p className="mt-2 text-lg text-muted-foreground">
