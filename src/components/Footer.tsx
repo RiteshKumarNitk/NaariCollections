@@ -18,24 +18,24 @@ const footerLinks = [
 
 export function Footer() {
   return (
-    <footer className="border-t bg-stone-900 text-stone-50">
+    <footer className="border-t bg-secondary/30">
       <div className="container py-12">
         {/* Top Section */}
-        <div className="flex flex-col lg:flex-row lg:justify-between gap-12">
+        <div className="grid gap-12 text-center md:grid-cols-2 md:text-left lg:grid-cols-4">
           {/* Brand + Description */}
-          <div className="lg:w-1/3 text-center lg:text-left">
-            <Link href="/" className="flex items-center justify-center lg:justify-start space-x-2 mb-4">
+          <div className="flex flex-col items-center md:items-start col-span-full lg:col-span-1">
+            <Link href="/" className="flex items-center space-x-2 mb-4">
               <Logo className="h-10 w-auto" />
             </Link>
-            <p className="text-sm text-stone-400 max-w-sm mx-auto lg:mx-0">
+            <p className="text-sm text-muted-foreground max-w-sm">
               Exquisite ethnic wear for the modern woman. Handcrafted with passion, designed for you.
             </p>
-            <div className="flex justify-center lg:justify-start space-x-4 mt-6">
+            <div className="flex space-x-4 mt-6">
               {socialLinks.map((social) => (
                 <Link
                   key={social.name}
                   href={social.href}
-                  className="text-stone-400 hover:text-stone-200 transition-colors"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
                 >
                   <social.icon className="h-5 w-5" />
                   <span className="sr-only">{social.name}</span>
@@ -45,10 +45,10 @@ export function Footer() {
           </div>
 
           {/* Links Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 flex-1 text-center sm:text-left">
+          <div className="col-span-full md:col-span-2 lg:col-span-3 grid grid-cols-2 sm:grid-cols-3 gap-8">
             {footerLinks.map((section) => (
               <div key={section.title}>
-                <h3 className="font-headline text-sm font-semibold mb-4 text-stone-200 uppercase tracking-wide">
+                <h3 className="font-headline text-sm font-semibold mb-4 text-foreground uppercase tracking-wide">
                   {section.title}
                 </h3>
                 <ul className="space-y-3">
@@ -56,7 +56,7 @@ export function Footer() {
                     <li key={link.label}>
                       <Link
                         href={link.href}
-                        className="text-sm text-stone-400 hover:text-stone-100 transition-colors"
+                        className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                       >
                         {link.label}
                       </Link>
@@ -69,8 +69,8 @@ export function Footer() {
         </div>
 
         {/* Bottom Section */}
-        <div className="mt-12 pt-8 border-t border-stone-800">
-          <p className="text-center text-xs sm:text-sm text-stone-500">
+        <div className="mt-12 pt-8 border-t border-border">
+          <p className="text-center text-xs sm:text-sm text-muted-foreground">
             © {new Date().getFullYear()} Naari E-Shop. All Rights Reserved.
           </p>
         </div>
