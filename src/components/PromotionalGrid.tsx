@@ -34,7 +34,7 @@ export function PromotionalGrid() {
   return (
     <section className="py-12 md:py-16 bg-muted/30">
       <div className="container">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
           {themedSelections.map((selection) => (
             <Card key={selection.title} className="shadow-sm hover:shadow-md transition-shadow duration-300">
               <CardHeader>
@@ -67,7 +67,7 @@ export function PromotionalGrid() {
           ))}
           
           {/* Ad Banner */}
-          <Card className="lg:col-span-1 bg-primary/20 flex flex-col items-center justify-center text-center p-8 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+          <Card className="lg:col-span-2 bg-primary/20 flex flex-col items-center justify-center text-center p-8 rounded-lg shadow-sm hover:shadow-md transition-shadow">
              <h3 className="text-2xl md:text-3xl font-headline font-bold text-primary-foreground">
                 Discover Our<br/>Newest Collection
              </h3>
