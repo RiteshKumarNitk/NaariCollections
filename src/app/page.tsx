@@ -9,7 +9,7 @@ import { HeroSlider } from '@/components/HeroSlider';
 import { DealsOfTheDay } from '@/components/DealsOfTheDay';
 import { Testimonials } from '@/components/Testimonials';
 import { getDb } from '@/lib/firebase-admin';
-import { ShopByCategory } from '@/components/ShopByCategory';
+import { PromotionalGrid } from '@/components/PromotionalGrid';
 
 interface HomepageContent {
   headline: string;
@@ -99,7 +99,7 @@ export default async function Home() {
         </div>
       </HeroSlider>
 
-      <ShopByCategory />
+      <PromotionalGrid />
 
       <section className="py-12 md:py-20 container">
         <ProductSliders allProducts={allProducts} />
