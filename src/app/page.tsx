@@ -114,25 +114,27 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="py-16 md:py-24 container">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-headline font-bold">Our Promise</h2>
-          <p className="mt-3 text-muted-foreground text-lg">
-            We are committed to delivering not just a product, but an experience.
-          </p>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 md:gap-6">
-            {ourPromise.map((promise) => (
-                 <div key={promise.title} className="flex flex-col items-center text-center">
-                    <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/20 text-primary-foreground">
-                        <promise.icon className="h-8 w-8 text-primary" />
+      <section className="py-16 md:py-24 bg-secondary/30">
+        <div className="container">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-headline font-bold">Our Promise</h2>
+              <p className="mt-3 text-muted-foreground text-lg max-w-2xl mx-auto">
+                We are committed to delivering not just a product, but an experience rooted in quality, comfort, and timeless elegance.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 md:gap-6">
+                {ourPromise.map((promise) => (
+                     <div key={promise.title} className="flex flex-col items-center text-center">
+                        <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-background shadow-md">
+                            <promise.icon className="h-8 w-8 text-primary" />
+                        </div>
+                        <h3 className="text-lg font-semibold mb-2">{promise.title}</h3>
+                        <p className="text-muted-foreground text-sm leading-relaxed">
+                            {promise.description}
+                        </p>
                     </div>
-                    <h3 className="text-xl font-headline font-semibold mb-2">{promise.title}</h3>
-                    <p className="text-muted-foreground text-sm">
-                        {promise.description}
-                    </p>
-                </div>
-            ))}
+                ))}
+            </div>
         </div>
       </section>
       
