@@ -10,6 +10,7 @@ import { DealsOfTheDay } from '@/components/DealsOfTheDay';
 import { Testimonials } from '@/components/Testimonials';
 import { getDb } from '@/lib/firebase-admin';
 import { PromotionalGrid } from '@/components/PromotionalGrid';
+import { AdBanner } from '@/components/AdBanner';
 
 interface HomepageContent {
   headline: string;
@@ -98,6 +99,8 @@ export default async function Home() {
           </Button>
         </div>
       </HeroSlider>
+      
+      <AdBanner />
 
       <PromotionalGrid />
 
