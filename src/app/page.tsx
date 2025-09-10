@@ -102,7 +102,7 @@ export default async function Home() {
       
       <AdBanner />
 
-      <PromotionalGrid />
+      {/* <PromotionalGrid /> */}
 
       <section className="py-12 md:py-20 container">
         <ProductSliders allProducts={allProducts} />
