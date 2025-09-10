@@ -15,35 +15,28 @@ export function AppProvider({
   children: React.ReactNode;
 }>) {
   const pathname = usePathname();
-  const [loading, setLoading] = useState(true);
+  const [isInitialLoad, setIsInitialLoad] = useState(pathname === '/');
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    // Artificial delay removed. Loading is now handled by Next.js and component readiness.
-    setLoading(false);
-  }, [pathname]); // Re-evaluate loading state on path change.
-
-  // Only show splash screen on initial load of the home page.
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
+    setIsClient(true);
+  }, []);
 
   useEffect(() => {
-    if (pathname === '/') {
+    if (isInitialLoad) {
         const timer = setTimeout(() => setIsInitialLoad(false), 800); // Shorter splash for initial visit
         return () => clearTimeout(timer);
-    } else {
-        setIsInitialLoad(false);
     }
-  }, [pathname]);
+  }, [isInitialLoad]);
 
-  // We want to show a splash screen only on the very first load of the marketing site.
-  // Subsequent navigations should be instant.
-  const isSplashVisible = isInitialLoad && loading && pathname === '/';
-
+  // We only want to show the splash screen on the very first navigation to the home page.
+  // Subsequent navigations should be instant. `isClient` ensures we don't try to render this on the server.
+  if (isClient && isInitialLoad) {
+      return <SplashScreen />;
+  }
 
   return (
     <>
-      {isSplashVisible ? (
-        <SplashScreen />
-      ) : (
         <AuthProvider>
           <CartProvider>
             <ConditionalLayout>
@@ -52,7 +45,6 @@ export function AppProvider({
             <Toaster />
           </CartProvider>
         </AuthProvider>
-      )}
     </>
   );
 }
