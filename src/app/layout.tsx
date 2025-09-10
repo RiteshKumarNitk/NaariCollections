@@ -1,23 +1,18 @@
 
 import type { Metadata } from 'next';
 import './globals.css';
-import { Toaster } from '@/components/ui/toaster';
-import { CartProvider } from '@/hooks/use-cart';
-import { AuthProvider } from '@/hooks/use-auth';
-import { ConditionalLayout } from '@/components/ConditionalLayout';
+import { AppProvider } from '@/components/AppProvider';
 
 export const metadata: Metadata = {
   title: 'Naari E-Shop',
   description: 'Exquisite ethnic wear for the modern woman.',
 };
 
-
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -28,19 +23,12 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
         <link
-          href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Inter:wght@400;500;600;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap"
           rel="stylesheet"
         />
       </head>
       <body className="font-body antialiased">
-        <AuthProvider>
-            <CartProvider>
-              <ConditionalLayout>
-                {children}
-              </ConditionalLayout>
-              <Toaster />
-            </CartProvider>
-        </AuthProvider>
+        <AppProvider>{children}</AppProvider>
       </body>
     </html>
   );
