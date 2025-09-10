@@ -111,7 +111,7 @@ export function Testimonials({ allProducts }: TestimonialsProps) {
                      <CardContent className="p-6 flex flex-col flex-grow">
                       <Quote className="h-8 w-8 text-primary/50 mb-4" />
                       <div className="flex-grow">
-                          <p className="text-muted-foreground italic">"{review.review}"</p>
+                          <p className="text-muted-foreground italic">"'{review.review}'"</p>
                       </div>
                        <div className="flex items-center gap-2 mt-4">
                         {[...Array(5)].map((_, i) => (
