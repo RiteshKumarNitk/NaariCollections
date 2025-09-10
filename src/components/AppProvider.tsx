@@ -24,17 +24,19 @@ export function AppProvider({
 
   useEffect(() => {
     if (isInitialLoad) {
-        const timer = setTimeout(() => setIsInitialLoad(false), 800); // Shorter splash for initial visit
+        const timer = setTimeout(() => setIsInitialLoad(false), 800);
         return () => clearTimeout(timer);
     }
   }, [isInitialLoad]);
 
   // We only want to show the splash screen on the very first navigation to the home page.
-  // Subsequent navigations should be instant. `isClient` ensures we don't try to render this on the server.
+  // `isClient` ensures we don't try to render this on the server, and `isInitialLoad` gates the splash screen itself.
   if (isClient && isInitialLoad) {
       return <SplashScreen />;
   }
 
+  // On the server, and on the client after the initial splash, render the main layout.
+  // This ensures the server and client render the same initial HTML.
   return (
     <>
         <AuthProvider>
