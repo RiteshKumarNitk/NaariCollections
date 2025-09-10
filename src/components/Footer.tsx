@@ -21,9 +21,9 @@ export function Footer() {
     <footer className="border-t bg-secondary/30">
       <div className="container py-12">
         {/* Top Section */}
-        <div className="grid gap-12 text-center md:grid-cols-2 md:text-left lg:grid-cols-4">
+        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
           {/* Brand + Description */}
-          <div className="flex flex-col items-center md:items-start col-span-full lg:col-span-1">
+          <div className="flex flex-col items-start col-span-full lg:col-span-1">
             <Link href="/" className="flex items-center space-x-2 mb-4">
               <Logo className="h-10 w-auto" />
             </Link>
