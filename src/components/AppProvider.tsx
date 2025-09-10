@@ -18,14 +18,26 @@ export function AppProvider({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1500);
+    // Artificial delay removed. Loading is now handled by Next.js and component readiness.
+    setLoading(false);
+  }, [pathname]); // Re-evaluate loading state on path change.
 
-    return () => clearTimeout(timer);
-  }, []);
+  // Only show splash screen on initial load of the home page.
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
-  const isSplashVisible = loading && !pathname.startsWith('/admin');
+  useEffect(() => {
+    if (pathname === '/') {
+        const timer = setTimeout(() => setIsInitialLoad(false), 800); // Shorter splash for initial visit
+        return () => clearTimeout(timer);
+    } else {
+        setIsInitialLoad(false);
+    }
+  }, [pathname]);
+
+  // We want to show a splash screen only on the very first load of the marketing site.
+  // Subsequent navigations should be instant.
+  const isSplashVisible = isInitialLoad && loading && pathname === '/';
+
 
   return (
     <>
