@@ -15,30 +15,22 @@ export function AppProvider({
   children: React.ReactNode;
 }>) {
   const pathname = usePathname();
-  const [isInitialLoad, setIsInitialLoad] = useState(pathname === '/');
-  const [isClient, setIsClient] = useState(false);
+  const [isLoading, setIsLoading] = useState(pathname === '/');
 
   useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  useEffect(() => {
-    if (isInitialLoad) {
-        const timer = setTimeout(() => setIsInitialLoad(false), 800);
-        return () => clearTimeout(timer);
+    if (isLoading) {
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+      }, 800);
+      return () => clearTimeout(timer);
     }
-  }, [isInitialLoad]);
+  }, [isLoading]);
 
-  // We only want to show the splash screen on the very first navigation to the home page.
-  // `isClient` ensures we don't try to render this on the server, and `isInitialLoad` gates the splash screen itself.
-  if (isClient && isInitialLoad) {
-      return <SplashScreen />;
-  }
-
-  // On the server, and on the client after the initial splash, render the main layout.
-  // This ensures the server and client render the same initial HTML.
   return (
     <>
+      {isLoading ? (
+        <SplashScreen />
+      ) : (
         <AuthProvider>
           <CartProvider>
             <ConditionalLayout>
@@ -47,6 +39,7 @@ export function AppProvider({
             <Toaster />
           </CartProvider>
         </AuthProvider>
+      )}
     </>
   );
 }
