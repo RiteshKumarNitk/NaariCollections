@@ -5,12 +5,12 @@ import { getStorage } from 'firebase-admin/storage';
 import { randomUUID } from 'crypto';
 
 export async function POST(request: Request) {
-  // Ensure DB is initialized before proceeding, although it's not directly used for upload
   try {
+    // Ensure DB connection is attempted, which also initializes the app
     await getDb();
   } catch(error) {
-    console.error('API Upload Error - DB Initialization failed:', error);
-    return NextResponse.json({ message: 'Database connection failed.' }, { status: 500 });
+    console.error('API Upload Error - DB/App Initialization failed:', error);
+    return NextResponse.json({ message: 'Server configuration failed.' }, { status: 500 });
   }
 
   try {
@@ -21,7 +21,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: 'No files provided' }, { status: 400 });
     }
 
-    const bucket = getStorage().bucket();
+    const bucket = getStorage().bucket(); // This should now work correctly after the fix in firebase-admin.ts
     const uploadPromises = files.map(async (file) => {
       const fileBuffer = Buffer.from(await file.arrayBuffer());
       const uniqueFilename = `${randomUUID()}-${file.name.replace(/\s+/g, '_')}`;
@@ -48,5 +48,3 @@ export async function POST(request: Request) {
     return NextResponse.json({ message }, { status: 500 });
   }
 }
-
-    

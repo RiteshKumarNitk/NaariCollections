@@ -22,28 +22,31 @@ export async function getDb(): Promise<adminType.firestore.Firestore> {
 
   const admin = global._firebaseAdmin;
 
-  if (!global._firebaseDb) {
+  if (!admin.apps.length) {
     const projectId = process.env.FIREBASE_PROJECT_ID;
     const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
     const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n");
-    const storageBucket = `${projectId}.appspot.com`;
-
+    
     if (!projectId || !clientEmail || !privateKey) {
-      throw new Error("Missing Firebase environment variables");
+      throw new Error("Missing Firebase environment variables for initialization.");
     }
 
-    if (!admin.apps.length) {
+    try {
       admin.initializeApp({
         credential: admin.credential.cert({ projectId, clientEmail, privateKey }),
-        storageBucket: storageBucket,
+        storageBucket: `${projectId}.appspot.com`,
       });
+      console.log("✅ Firebase Admin initialized");
+    } catch (error: any) {
+        if (!/already exists/i.test(error.message)) {
+            console.error('Firebase admin initialization error', error.stack);
+        }
     }
+  }
 
+  if (!global._firebaseDb) {
     global._firebaseDb = admin.firestore();
-    console.log("✅ Firebase Admin initialized");
   }
 
   return global._firebaseDb;
 }
-
-    
