@@ -15,10 +15,13 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
-import { ArrowLeft, Sparkles, Loader2 } from 'lucide-react';
+import { ArrowLeft, Sparkles, Loader2, Upload } from 'lucide-react';
 import type { Product } from '@/lib/types';
 import { useProducts } from '@/hooks/use-products';
 import { generateDescription } from '@/ai/flows/generate-description-flow';
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 
 const productSchema = z.object({
   name: z.string().min(3, 'Name must be at least 3 characters.'),
@@ -27,7 +30,13 @@ const productSchema = z.object({
   category: z.enum(['suits', 'sarees', 'kurtis', 'dresses', 'kaftans', 'anarkali', 'indo-western', 'coord-sets']),
   fabric: z.string().min(3, 'Fabric is required.'),
   bestseller: z.boolean(),
-  images: z.array(z.string().min(1, "Image path cannot be empty.")).min(1, "At least one image is required."),
+  images: z.any()
+    .refine((files) => files?.length >= 1, 'At least one image is required.')
+    .refine((files) => Array.from(files).every((file: any) => file?.size <= MAX_FILE_SIZE), `Max file size is 5MB.`)
+    .refine(
+      (files) => Array.from(files).every((file: any) => ACCEPTED_IMAGE_TYPES.includes(file?.type)),
+      ".jpg, .jpeg, .png and .webp files are accepted."
+    ),
   sizes: z.array(z.string()).min(1, "At least one size is required."),
   code: z.string().min(1, "Product code is required"),
 });
@@ -42,6 +51,7 @@ export default function AddProductPage() {
     const { toast } = useToast();
     const { addProduct, forceRerender } = useProducts();
     const [isGenerating, setIsGenerating] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
 
     const form = useForm<ProductFormValues>({
         resolver: zodResolver(productSchema),
@@ -52,7 +62,7 @@ export default function AddProductPage() {
             category: 'suits',
             fabric: '',
             bestseller: false,
-            images: [''],
+            images: undefined,
             sizes: [],
             code: ''
         },
@@ -69,10 +79,6 @@ export default function AddProductPage() {
             });
             if (result.description) {
                 form.setValue('description', result.description, { shouldValidate: true });
-                toast({
-                    title: 'Description Generated',
-                    description: 'The AI-powered description has been added.',
-                });
             }
         } catch (error) {
             console.error('Failed to generate description', error);
@@ -87,18 +93,37 @@ export default function AddProductPage() {
     };
 
     const onSubmit = async (data: ProductFormValues) => {
+        setIsUploading(true);
         try {
-            const response = await fetch('/api/products', {
+            // 1. Upload images
+            const formData = new FormData();
+            for (const file of Array.from(data.images as FileList)) {
+                formData.append('files', file);
+            }
+
+            const uploadResponse = await fetch('/api/upload', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data),
+                body: formData,
             });
 
-            if (!response.ok) {
+            if (!uploadResponse.ok) {
+                throw new Error('Failed to upload images');
+            }
+            const { urls } = await uploadResponse.json();
+
+            // 2. Create product with image URLs
+            const productData = { ...data, images: urls };
+            const productResponse = await fetch('/api/products', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(productData),
+            });
+
+            if (!productResponse.ok) {
                 throw new Error('Failed to create product');
             }
 
-            const newProduct = await response.json();
+            const newProduct = await productResponse.json();
             addProduct(newProduct);
             forceRerender();
 
@@ -110,10 +135,12 @@ export default function AddProductPage() {
         } catch (error) {
              toast({
                 title: 'Error',
-                description: 'Could not create the product. Please try again.',
+                description: error instanceof Error ? error.message : 'Could not create the product. Please try again.',
                 variant: 'destructive',
             });
             console.error('Failed to create product:', error);
+        } finally {
+            setIsUploading(false);
         }
     };
     
@@ -124,6 +151,8 @@ export default function AddProductPage() {
             : [...currentSizes, size];
         form.setValue('sizes', newSizes, { shouldValidate: true });
     };
+    
+    const imageRef = form.register("images");
 
     return (
         <div className="container mx-auto">
@@ -198,9 +227,15 @@ export default function AddProductPage() {
                         </div>
 
                         <div className="space-y-2">
-                            <Label>Image Path</Label>
-                            <Input id="images" {...form.register('images.0')} placeholder="/images/your-image.jpg" />
-                            {form.formState.errors.images && <p className="text-sm text-destructive">{form.formState.errors.images.message}</p>}
+                            <Label>Product Images</Label>
+                            <Input
+                                id="images"
+                                type="file"
+                                multiple
+                                accept="image/png, image/jpeg, image/webp"
+                                {...imageRef}
+                            />
+                            {form.formState.errors.images && <p className="text-sm text-destructive">{form.formState.errors.images.message as string}</p>}
                         </div>
 
                         <div className="space-y-2">
@@ -227,8 +262,9 @@ export default function AddProductPage() {
                         
                         <div className="flex justify-end gap-2">
                             <Button type="button" variant="outline" onClick={() => router.push('/admin/products')}>Cancel</Button>
-                            <Button type="submit" disabled={form.formState.isSubmitting}>
-                                {form.formState.isSubmitting ? 'Creating...' : 'Create Product'}
+                            <Button type="submit" disabled={isUploading || form.formState.isSubmitting}>
+                                {isUploading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                                {isUploading ? 'Uploading...' : 'Create Product'}
                             </Button>
                         </div>
                     </form>
@@ -237,3 +273,5 @@ export default function AddProductPage() {
         </div>
     )
 }
+
+    
