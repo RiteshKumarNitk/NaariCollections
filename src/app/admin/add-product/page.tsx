@@ -107,7 +107,8 @@ export default function AddProductPage() {
             });
 
             if (!uploadResponse.ok) {
-                throw new Error('Failed to upload images');
+                const errorData = await uploadResponse.json();
+                throw new Error(errorData.message || 'Failed to upload images');
             }
             const { urls } = await uploadResponse.json();
 
@@ -120,7 +121,8 @@ export default function AddProductPage() {
             });
 
             if (!productResponse.ok) {
-                throw new Error('Failed to create product');
+                 const errorData = await productResponse.json();
+                throw new Error(errorData.message || 'Failed to create product');
             }
 
             const newProduct = await productResponse.json();

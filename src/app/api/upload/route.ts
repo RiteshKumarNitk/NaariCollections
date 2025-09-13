@@ -5,9 +5,12 @@ import { getStorage } from 'firebase-admin/storage';
 import { randomUUID } from 'crypto';
 
 export async function POST(request: Request) {
-  const db = await getDb();
-  if (!db) {
-    return NextResponse.json({ message: 'Database not initialized' }, { status: 500 });
+  // Ensure DB is initialized before proceeding, although it's not directly used for upload
+  try {
+    await getDb();
+  } catch(error) {
+    console.error('API Upload Error - DB Initialization failed:', error);
+    return NextResponse.json({ message: 'Database connection failed.' }, { status: 500 });
   }
 
   try {
@@ -21,17 +24,17 @@ export async function POST(request: Request) {
     const bucket = getStorage().bucket();
     const uploadPromises = files.map(async (file) => {
       const fileBuffer = Buffer.from(await file.arrayBuffer());
-      const uniqueFilename = `${randomUUID()}-${file.name}`;
+      const uniqueFilename = `${randomUUID()}-${file.name.replace(/\s+/g, '_')}`;
       const gcsFile = bucket.file(`product-images/${uniqueFilename}`);
 
       await gcsFile.save(fileBuffer, {
         metadata: {
           contentType: file.type,
         },
+        public: true, // Make file public upon upload
       });
 
-      // Make the file public and get its URL
-      await gcsFile.makePublic();
+      // Return the public URL
       return gcsFile.publicUrl();
     });
 
