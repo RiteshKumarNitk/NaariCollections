@@ -1,41 +1,45 @@
-
 import { NextResponse } from 'next/server';
-import { getDb } from '@/lib/firebase-admin';
-import { getStorage } from 'firebase-admin/storage';
-import { randomUUID } from 'crypto';
+import { v2 as cloudinary } from 'cloudinary';
+
+// Configure Cloudinary with your credentials from .env
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+  secure: true,
+});
 
 export async function POST(request: Request) {
   try {
-    // Ensure DB connection is attempted, which also initializes the app
-    await getDb();
-  } catch(error) {
-    console.error('API Upload Error - DB/App Initialization failed:', error);
-    return NextResponse.json({ message: 'Server configuration failed.' }, { status: 500 });
-  }
-
-  try {
     const formData = await request.formData();
     const files = formData.getAll('files') as File[];
-    
+
     if (!files || files.length === 0) {
       return NextResponse.json({ message: 'No files provided' }, { status: 400 });
     }
 
-    const bucket = getStorage().bucket(); // This should now work correctly after the fix in firebase-admin.ts
     const uploadPromises = files.map(async (file) => {
-      const fileBuffer = Buffer.from(await file.arrayBuffer());
-      const uniqueFilename = `${randomUUID()}-${file.name.replace(/\s+/g, '_')}`;
-      const gcsFile = bucket.file(`product-images/${uniqueFilename}`);
+      // Convert the file to a buffer
+      const fileBuffer = await file.arrayBuffer();
+      const buffer = Buffer.from(fileBuffer);
 
-      await gcsFile.save(fileBuffer, {
-        metadata: {
-          contentType: file.type,
-        },
-        public: true, // Make file public upon upload
+      // Upload the file to Cloudinary
+      return new Promise((resolve, reject) => {
+        cloudinary.uploader.upload_stream(
+          {
+            // Optionally, you can specify a folder in Cloudinary
+            folder: 'naari-eshop',
+            // Cloudinary will automatically detect the resource type (image)
+          },
+          (error, result) => {
+            if (error) {
+              return reject(error);
+            }
+            // Return the secure URL of the uploaded image
+            resolve(result?.secure_url);
+          }
+        ).end(buffer);
       });
-
-      // Return the public URL
-      return gcsFile.publicUrl();
     });
 
     const urls = await Promise.all(uploadPromises);
