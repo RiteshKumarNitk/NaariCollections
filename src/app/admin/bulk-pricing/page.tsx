@@ -33,6 +33,7 @@ export default function BulkPricingPage() {
     const { toast } = useToast();
     const [isUpdating, setIsUpdating] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [formData, setFormData] = useState<PricingFormValues | null>(null);
     
     const form = useForm<PricingFormValues>({
         resolver: zodResolver(pricingSchema),
@@ -41,20 +42,22 @@ export default function BulkPricingPage() {
         },
     });
 
-    const onSubmit = () => {
+    const onSubmit = (data: PricingFormValues) => {
+        setFormData(data);
         setIsDialogOpen(true);
     };
     
     const handleBulkUpdate = async () => {
+        if (!formData) return;
+
         setIsDialogOpen(false);
         setIsUpdating(true);
-        const amount = form.getValues('amount');
         
         try {
             const response = await fetch('/api/products/bulk-update-price', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ amount }),
+                body: JSON.stringify({ amount: formData.amount }),
             });
 
             const result = await response.json();
@@ -63,12 +66,13 @@ export default function BulkPricingPage() {
                 throw new Error(result.message || 'Failed to update prices.');
             }
 
-            const action = amount > 0 ? 'increased' : 'decreased';
+            const action = formData.amount > 0 ? 'increased' : 'decreased';
             toast({
                 title: 'Success!',
-                description: `${result.updatedCount} product prices have been ${action} by ₹${Math.abs(amount)}. ${result.adjustedCount > 0 ? `${result.adjustedCount} prices were adjusted to prevent falling below ₹1.` : ''}`,
+                description: `${result.updatedCount} product prices have been ${action} by ₹${Math.abs(formData.amount)}. ${result.adjustedCount > 0 ? `${result.adjustedCount} prices were adjusted to prevent falling below ₹1.` : ''}`,
             });
             form.reset({ amount: 0 });
+            setFormData(null);
 
         } catch (error) {
             console.error("Failed to update prices", error);
@@ -121,7 +125,7 @@ export default function BulkPricingPage() {
                             </div>
 
                             <div className="flex justify-end">
-                                <Button type="submit" disabled={isUpdating || amount === 0}>
+                                <Button type="submit" disabled={isUpdating}>
                                     {isUpdating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                                     Update All Prices
                                 </Button>
