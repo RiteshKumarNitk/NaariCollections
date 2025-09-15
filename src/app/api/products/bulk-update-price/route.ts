@@ -1,7 +1,6 @@
 
 import { NextResponse } from 'next/server';
 import { getDb } from '@/lib/firebase-admin';
-import admin from 'firebase-admin';
 
 export async function POST(request: Request) {
   const db = await getDb();
@@ -12,8 +11,8 @@ export async function POST(request: Request) {
   try {
     const { amount } = await request.json();
 
-    if (typeof amount !== 'number' || amount <= 0) {
-      return NextResponse.json({ message: 'A positive amount is required' }, { status: 400 });
+    if (typeof amount !== 'number' || amount === 0) {
+      return NextResponse.json({ message: 'A non-zero amount is required' }, { status: 400 });
     }
 
     const productsCollection = db.collection('products');
@@ -23,14 +22,19 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: 'No products found to update' }, { status: 404 });
     }
 
-    // Use a batch write for atomic and efficient updates
     const batch = db.batch();
     let updatedCount = 0;
+    let adjustedCount = 0;
 
     snapshot.forEach(doc => {
       const product = doc.data();
       const currentPrice = product.price || 0;
-      const newPrice = currentPrice + amount;
+      let newPrice = currentPrice + amount;
+
+      if (newPrice < 1) {
+        newPrice = 1; // Prevent price from going below 1
+        adjustedCount++;
+      }
 
       batch.update(doc.ref, { price: newPrice });
       updatedCount++;
@@ -40,7 +44,8 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ 
         message: 'Product prices updated successfully',
-        updatedCount 
+        updatedCount,
+        adjustedCount
     }, { status: 200 });
 
   } catch (error) {

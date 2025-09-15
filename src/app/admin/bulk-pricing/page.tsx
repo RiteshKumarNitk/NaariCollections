@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/alert-dialog"
 
 const pricingSchema = z.object({
-  amount: z.coerce.number().int().min(1, 'Please enter a positive number.'),
+  amount: z.coerce.number().int().refine(n => n !== 0, 'Please enter a non-zero amount.'),
 });
 
 type PricingFormValues = z.infer<typeof pricingSchema>;
@@ -42,7 +42,6 @@ export default function BulkPricingPage() {
     });
 
     const onSubmit = () => {
-        // This just opens the confirmation dialog
         setIsDialogOpen(true);
     };
     
@@ -64,9 +63,10 @@ export default function BulkPricingPage() {
                 throw new Error(result.message || 'Failed to update prices.');
             }
 
+            const action = amount > 0 ? 'increased' : 'decreased';
             toast({
                 title: 'Success!',
-                description: `${result.updatedCount} product prices have been increased by ₹${amount}.`,
+                description: `${result.updatedCount} product prices have been ${action} by ₹${Math.abs(amount)}. ${result.adjustedCount > 0 ? `${result.adjustedCount} prices were adjusted to prevent falling below ₹1.` : ''}`,
             });
             form.reset({ amount: 0 });
 
@@ -81,6 +81,11 @@ export default function BulkPricingPage() {
             setIsUpdating(false);
         }
     };
+    
+    const amount = form.watch('amount');
+    const isIncrease = amount > 0;
+    const actionText = isIncrease ? 'increase' : 'decrease';
+    const absAmount = Math.abs(amount);
 
     return (
         <>
@@ -97,17 +102,17 @@ export default function BulkPricingPage() {
                     <CardHeader>
                         <CardTitle>Bulk Price Editor</CardTitle>
                         <CardDescription>
-                            Increase the price of all products by a specific amount. This action cannot be undone.
+                            Increase or decrease the price of all products by a specific amount. This action cannot be undone. Use a negative number to decrease prices.
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                             <div className="space-y-2">
-                                <Label htmlFor="amount">Amount to Add (₹)</Label>
+                                <Label htmlFor="amount">Amount to Add or Subtract (₹)</Label>
                                 <Input 
                                     id="amount" 
                                     type="number" 
-                                    placeholder="e.g., 200"
+                                    placeholder="e.g., 200 or -150"
                                     {...form.register('amount')} 
                                 />
                                 {form.formState.errors.amount && (
@@ -116,7 +121,7 @@ export default function BulkPricingPage() {
                             </div>
 
                             <div className="flex justify-end">
-                                <Button type="submit" disabled={isUpdating}>
+                                <Button type="submit" disabled={isUpdating || amount === 0}>
                                     {isUpdating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                                     Update All Prices
                                 </Button>
@@ -133,8 +138,8 @@ export default function BulkPricingPage() {
                         <AlertTriangle className="h-6 w-6 text-destructive" /> Are you absolutely sure?
                     </AlertDialogTitle>
                     <AlertDialogDescription>
-                        This will permanently increase the price of all products in your store by 
-                        <strong className="font-bold text-foreground"> ₹{form.getValues('amount')}</strong>. 
+                        This will permanently <strong className={`font-bold ${isIncrease ? 'text-green-600' : 'text-red-600'}`}>{actionText}</strong> the price of all products in your store by 
+                        <strong className="font-bold text-foreground"> ₹{absAmount}</strong>. 
                         This action cannot be undone.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
@@ -143,9 +148,10 @@ export default function BulkPricingPage() {
                     <AlertDialogAction
                         onClick={handleBulkUpdate}
                         disabled={isUpdating}
+                        className={!isIncrease ? 'bg-destructive hover:bg-destructive/90' : ''}
                     >
                     {isUpdating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                    {isUpdating ? 'Updating...' : 'Yes, update prices'}
+                    {isUpdating ? 'Updating...' : `Yes, ${actionText} prices`}
                     </AlertDialogAction>
                 </AlertDialogFooter>
                 </AlertDialogContent>
