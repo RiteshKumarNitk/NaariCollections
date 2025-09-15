@@ -12,16 +12,11 @@ async function seedProducts() {
   const productsCollection = db.collection('products');
   console.log('Seeding products...');
   for (const product of productsData) {
-    // We will use the existing IDs from the JSON file if they are strings,
-    // otherwise Firestore will auto-generate an ID.
     const { id, ...productData } = product as (Product & { id?: string });
-    if (id && typeof id === 'string') {
-       await productsCollection.doc(id).set(productData);
-       console.log(`- Added product ${product.name} with explicit ID: ${id}`);
-    } else {
-        const docRef = await productsCollection.add(productData);
-        console.log(`- Added product ${product.name} with auto-generated ID: ${docRef.id}`);
-    }
+    // Use the product 'code' as the document ID for consistency
+    const docId = product.code;
+    await productsCollection.doc(docId).set({ ...productData, id: docId });
+    console.log(`- Added product ${product.name} with ID: ${docId}`);
   }
   console.log('Products seeded successfully!');
 }
@@ -64,4 +59,7 @@ async function main() {
   }
 }
 
-main();
+// Check if the script is being run directly
+if (process.argv[1] && (process.argv[1].endsWith('seed.ts') || process.argv[1].endsWith('seed'))) {
+  main();
+}
