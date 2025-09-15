@@ -7,11 +7,6 @@ import homepageData from '../data/homepage.json';
 import type { Product } from './types';
 import type { Review } from './types';
 
-// const db = await getDb();
-// if (!db) {
-//   throw new Error("Firestore is not initialized. Seeding cannot proceed. Please check your Firebase credentials.");
-// }
-
 async function seedProducts() {
    const db = await getDb();
   const productsCollection = db.collection('products');
@@ -19,8 +14,8 @@ async function seedProducts() {
   for (const product of productsData) {
     // We will use the existing IDs from the JSON file if they are strings,
     // otherwise Firestore will auto-generate an ID.
-    const { id, ...productData } = product as any; // Use `any` to handle potential `id` property
-    if (typeof id === 'string' && id) {
+    const { id, ...productData } = product as (Product & { id?: string });
+    if (id && typeof id === 'string') {
        await productsCollection.doc(id).set(productData);
        console.log(`- Added product ${product.name} with explicit ID: ${id}`);
     } else {
@@ -36,8 +31,8 @@ async function seedReviews() {
   const reviewsCollection = db.collection('reviews');
   console.log('Seeding reviews...');
   for (const review of reviewsData) {
-     const { id, ...reviewData } = review as any;
-     if (typeof id === 'string' && id) {
+     const { id, ...reviewData } = review as (Review & { id?: string });
+     if (id && typeof id === 'string') {
         await reviewsCollection.doc(id).set(reviewData);
         console.log(`- Added review by ${review.name} with explicit ID: ${id}`);
      } else {
@@ -62,10 +57,10 @@ async function main() {
     await seedReviews();
     await seedHomepage();
     console.log('\nDatabase seeding completed!');
-    process.exit(0);
+    // process.exit(0) is removed to prevent the dev server from stopping
   } catch (error) {
     console.error('Error seeding database:', error);
-    process.exit(1);
+    // process.exit(1) is removed to prevent the dev server from stopping
   }
 }
 
