@@ -10,7 +10,7 @@ const adItems = [
     subtitle: 'Exquisite Sarees',
     price: 'Starting from ₹1299',
     href: '/shop?category=sarees',
-    imageSrc: 'https://picsum.photos/seed/saree-ad/600/400',
+    imageSrc: 'https://res.cloudinary.com/your_cloud_name/image/upload/v1/naari-eshop/ad_saree.jpg',
     aiHint: 'elegant saree'
   },
   {
@@ -18,7 +18,7 @@ const adItems = [
     subtitle: 'Flat 20% Off',
     price: 'Use Code: FESTIVE20',
     href: '/shop',
-    imageSrc: 'https://picsum.photos/seed/festive-ad/600/400',
+    imageSrc: 'https://res.cloudinary.com/your_cloud_name/image/upload/v1/naari-eshop/ad_festive.jpg',
     aiHint: 'festive woman'
   },
   {
@@ -26,7 +26,7 @@ const adItems = [
     subtitle: 'Designer Kurtis',
     price: 'From ₹799',
     href: '/shop?category=kurtis',
-    imageSrc: 'https://picsum.photos/seed/kurti-ad/600/400',
+    imageSrc: 'https://res.cloudinary.com/your_cloud_name/image/upload/v1/naari-eshop/ad_kurti.jpg',
     aiHint: 'designer kurti'
   }
 ];
@@ -58,3 +58,5 @@ export function AdBanner() {
     </section>
   );
 }
+
+    

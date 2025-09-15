@@ -31,7 +31,7 @@ export default function AboutUsPage() {
         <div className="order-1 md:order-2">
           <div className="aspect-[3/4] relative overflow-hidden rounded-lg shadow-lg">
             <Image
-              src="https://picsum.photos/id/1011/800/1200"
+              src="https://res.cloudinary.com/your_cloud_name/image/upload/v1/naari-eshop/about_us_founder.jpg"
               alt="Founder of Naari"
               fill
               className="object-cover"
@@ -43,3 +43,5 @@ export default function AboutUsPage() {
     </div>
   );
 }
+
+    
