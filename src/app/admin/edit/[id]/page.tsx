@@ -222,13 +222,13 @@ export default function EditProductPage() {
                             <Label>Product Images</Label>
                              <div className="space-y-2">
                                 {fields.map((field, index) => (
-                                    <div key={field.id} className="flex items-center gap-2">
-                                        <div className="flex-shrink-0 w-10 h-10">
+                                    <div key={field.id} className="flex items-center gap-2 p-2 border rounded-md">
+                                        <div className="flex-shrink-0 w-16 h-16 relative">
                                             {form.watch(`images.${index}`) ? (
-                                                <Image src={form.watch(`images.${index}`)} alt={`Product image ${index + 1}`} width={40} height={40} className="rounded-md aspect-square object-cover"/>
-                                            ) : <div className="h-10 w-10 bg-muted rounded-md"/>}
+                                                <Image src={form.watch(`images.${index}`)} alt={`Product image ${index + 1}`} fill className="rounded-md aspect-square object-cover"/>
+                                            ) : <div className="h-16 w-16 bg-muted rounded-md"/>}
                                         </div>
-                                        <Input {...form.register(`images.${index}`)} placeholder="/images/your-image.jpg" />
+                                        <p className="flex-grow text-xs text-muted-foreground truncate">{form.watch(`images.${index}`)}</p>
                                         <div className="flex flex-col">
                                             <Button type="button" variant="ghost" size="icon" className="h-6 w-6 shrink-0" onClick={() => move(index, index - 1)} disabled={index === 0}>
                                                 <ArrowUp className="h-4 w-4" />
@@ -270,4 +270,5 @@ export default function EditProductPage() {
             </Card>
         </div>
     )
-}
+
+    
