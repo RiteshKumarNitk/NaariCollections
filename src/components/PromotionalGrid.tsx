@@ -12,20 +12,20 @@ const themedSelections = [
     title: 'Festive Favorites',
     href: '/shop?category=anarkali',
     items: [
-      { name: 'Anarkali Sets', href: '/shop?category=anarkali', image: 'https://res.cloudinary.com/your_cloud_name/image/upload/v1/naari-eshop/promo_anarkali.jpg', hint: 'anarkali suit' },
-      { name: 'Elegant Sarees', href: '/shop?category=sarees', image: 'https://res.cloudinary.com/your_cloud_name/image/upload/v1/naari-eshop/promo_sarees.jpg', hint: 'elegant saree' },
-      { name: 'Indo-Western', href: '/shop?category=indo-western', image: 'https://res.cloudinary.com/your_cloud_name/image/upload/v1/naari-eshop/promo_indowestern.jpg', hint: 'indo western dress' },
-      { name: 'Jewellery', href: '/shop', image: 'https://res.cloudinary.com/your_cloud_name/image/upload/v1/naari-eshop/promo_jewellery.jpg', hint: 'ethnic jewellery' },
+      { name: 'Anarkali Sets', href: '/shop?category=anarkali', image: 'https://res.cloudinary.com/di2f6s7a7/image/upload/v1/naari-eshop/promo_anarkali.jpg', hint: 'anarkali suit' },
+      { name: 'Elegant Sarees', href: '/shop?category=sarees', image: 'https://res.cloudinary.com/di2f6s7a7/image/upload/v1/naari-eshop/promo_sarees.jpg', hint: 'elegant saree' },
+      { name: 'Indo-Western', href: '/shop?category=indo-western', image: 'https://res.cloudinary.com/di2f6s7a7/image/upload/v1/naari-eshop/promo_indowestern.jpg', hint: 'indo western dress' },
+      { name: 'Jewellery', href: '/shop', image: 'https://res.cloudinary.com/di2f6s7a7/image/upload/v1/naari-eshop/promo_jewellery.jpg', hint: 'ethnic jewellery' },
     ]
   },
   {
     title: 'Casual Comfort',
     href: '/shop?category=kurtis',
     items: [
-      { name: 'Everyday Kurtis', href: '/shop?category=kurtis', image: 'https://res.cloudinary.com/your_cloud_name/image/upload/v1/naari-eshop/promo_kurtis.jpg', hint: 'casual kurti' },
-      { name: 'Airy Kaftans', href: '/shop?category=kaftans', image: 'https://res.cloudinary.com/your_cloud_name/image/upload/v1/naari-eshop/promo_kaftan.jpg', hint: 'comfortable kaftan' },
-      { name: 'Co-ord Sets', href: '/shop?category=coord-sets', image: 'https://res.cloudinary.com/your_cloud_name/image/upload/v1/naari-eshop/promo_coord.jpg', hint: 'stylish coord set' },
-      { name: 'Cotton Suits', href: '/shop?category=suits', image: 'https://res.cloudinary.com/your_cloud_name/image/upload/v1/naari-eshop/promo_cottonsuit.jpg', hint: 'cotton suit' },
+      { name: 'Everyday Kurtis', href: '/shop?category=kurtis', image: 'https://res.cloudinary.com/di2f6s7a7/image/upload/v1/naari-eshop/promo_kurtis.jpg', hint: 'casual kurti' },
+      { name: 'Airy Kaftans', href: '/shop?category=kaftans', image: 'https://res.cloudinary.com/di2f6s7a7/image/upload/v1/naari-eshop/promo_kaftan.jpg', hint: 'comfortable kaftan' },
+      { name: 'Co-ord Sets', href: '/shop?category=coord-sets', image: 'https://res.cloudinary.com/di2f6s7a7/image/upload/v1/naari-eshop/promo_coord.jpg', hint: 'stylish coord set' },
+      { name: 'Cotton Suits', href: '/shop?category=suits', image: 'https://res.cloudinary.com/di2f6s7a7/image/upload/v1/naari-eshop/promo_cottonsuit.jpg', hint: 'cotton suit' },
     ]
   },
 ];

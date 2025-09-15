@@ -83,7 +83,7 @@ export default async function Home() {
 
   return (
     <>
-      <HeroSlider images={heroImages.length > 0 ? heroImages : ['https://res.cloudinary.com/your_cloud_name/image/upload/v1/naari-eshop/hero_fallback.jpg']}>
+      <HeroSlider images={heroImages.length > 0 ? heroImages : ['https://res.cloudinary.com/di2f6s7a7/image/upload/v1/naari-eshop/hero_fallback.jpg']}>
          <div className="relative z-10 flex flex-col items-center justify-center h-full text-center text-foreground p-4">
           <h1 className="font-headline text-4xl md:text-6xl lg:text-7xl font-bold drop-shadow-md text-white">
             {content?.headline}
