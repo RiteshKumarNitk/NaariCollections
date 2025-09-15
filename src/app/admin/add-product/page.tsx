@@ -205,7 +205,7 @@ export default function AddProductPage() {
                                     control={form.control}
                                     name="category"
                                     render={({ field }) => (
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <Select onValueChange={field.onChange} value={field.value}>
                                             <SelectTrigger><SelectValue placeholder="Select a category" /></SelectTrigger>
                                             <SelectContent>
                                                 {CATEGORIES.map(cat => ( <SelectItem key={cat} value={cat} className="capitalize">{cat.replace('-', ' ')}</SelectItem> ))}
@@ -275,5 +275,3 @@ export default function AddProductPage() {
         </div>
     )
 }
-
-    

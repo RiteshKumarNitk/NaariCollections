@@ -16,11 +16,13 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
-import { ArrowLeft, Sparkles, Loader2, Trash2, PlusCircle, ArrowUp, ArrowDown } from 'lucide-react';
+import { ArrowLeft, Sparkles, Loader2, Trash2, ArrowUp, ArrowDown, Upload, X } from 'lucide-react';
 import type { Product } from '@/lib/types';
 import { useProducts } from '@/hooks/use-products';
 import { generateDescription } from '@/ai/flows/generate-description-flow';
 
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 
 const productSchema = z.object({
   name: z.string().min(3, 'Name must be at least 3 characters.'),
@@ -30,6 +32,12 @@ const productSchema = z.object({
   fabric: z.string().min(3, 'Fabric is required.'),
   bestseller: z.boolean(),
   images: z.array(z.string().min(1, "Image path cannot be empty.")).min(1, "At least one image is required."),
+  newImages: z.any()
+    .refine((files) => !files || Array.from(files).every((file: any) => file?.size <= MAX_FILE_SIZE), `Max file size is 5MB.`)
+    .refine(
+      (files) => !files || Array.from(files).every((file: any) => ACCEPTED_IMAGE_TYPES.includes(file?.type)),
+      ".jpg, .jpeg, .png and .webp files are accepted."
+    ).optional(),
 });
 
 type ProductFormValues = z.infer<typeof productSchema>;
@@ -43,7 +51,10 @@ export default function EditProductPage() {
     const { toast } = useToast();
     const { products, updateProduct, forceRerender } = useProducts();
     const id = Array.isArray(params.id) ? params.id[0] : params.id;
+    
     const [isGenerating, setIsGenerating] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
+    const [newImagePreviews, setNewImagePreviews] = useState<string[]>([]);
     
     const product = products.find(p => p.id === id);
 
@@ -57,10 +68,11 @@ export default function EditProductPage() {
             fabric: '',
             bestseller: false,
             images: [],
+            newImages: undefined,
         },
     });
 
-    const { fields, append, remove, move } = useFieldArray({
+    const { fields, remove, move } = useFieldArray({
         control: form.control,
         name: "images"
     });
@@ -78,11 +90,20 @@ export default function EditProductPage() {
             });
         }
     }, [product, form]);
+    
+    const newImagesFiles = form.watch('newImages');
+    useEffect(() => {
+        if (newImagesFiles && newImagesFiles.length > 0) {
+            const urls = Array.from(newImagesFiles).map((file: any) => URL.createObjectURL(file));
+            setNewImagePreviews(urls);
+            return () => urls.forEach(url => URL.revokeObjectURL(url));
+        }
+        setNewImagePreviews([]);
+    }, [newImagesFiles]);
 
 
     if (!product) {
-        // This can happen briefly on load, so we show a loading state.
-        return <div className="container mx-auto">Loading...</div>;
+        return <div className="container mx-auto flex justify-center items-center h-64"><Loader2 className="h-8 w-8 animate-spin" /></div>;
     }
 
     const handleGenerateDescription = async () => {
@@ -114,13 +135,47 @@ export default function EditProductPage() {
     };
 
     const onSubmit = async (data: ProductFormValues) => {
+        setIsSaving(true);
         try {
+            let uploadedImageUrls: string[] = [];
+
+            // 1. Upload new images if any
+            if (data.newImages && data.newImages.length > 0) {
+                const formData = new FormData();
+                for (const file of Array.from(data.newImages as FileList)) {
+                    formData.append('files', file);
+                }
+
+                const uploadResponse = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (!uploadResponse.ok) {
+                    const errorData = await uploadResponse.json();
+                    throw new Error(errorData.message || 'Failed to upload new images');
+                }
+                const { urls } = await uploadResponse.json();
+                uploadedImageUrls = urls;
+            }
+
+            // 2. Combine existing and new image URLs
+            const finalImages = [...data.images, ...uploadedImageUrls];
+            
+            if (finalImages.length === 0) {
+                form.setError('images', { type: 'manual', message: 'At least one image is required.' });
+                setIsSaving(false);
+                return;
+            }
+
+            // 3. Update product with new data
+            const productUpdateData = { ...data, images: finalImages };
+            delete productUpdateData.newImages; // Don't save this to DB
+
             const response = await fetch(`/api/products/${id}`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ ...data, images: data.images.filter(img => img.trim() !== '') }),
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(productUpdateData),
             });
 
             if (!response.ok) {
@@ -141,10 +196,12 @@ export default function EditProductPage() {
         } catch (error) {
              toast({
                 title: 'Error',
-                description: 'Could not update the product. Please try again.',
+                description: error instanceof Error ? error.message : 'Could not update the product. Please try again.',
                 variant: 'destructive',
             });
             console.error('Failed to update product:', error);
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -198,7 +255,7 @@ export default function EditProductPage() {
                                 <Label>Category</Label>
                                 <Controller control={form.control} name="category"
                                     render={({ field }) => (
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <Select onValueChange={field.onChange} value={field.value}>
                                             <SelectTrigger><SelectValue placeholder="Select a category" /></SelectTrigger>
                                             <SelectContent>
                                                 {CATEGORIES.map(cat => (
@@ -220,34 +277,47 @@ export default function EditProductPage() {
                         {/* Image Management */}
                         <div className="space-y-4">
                             <Label>Product Images</Label>
-                             <div className="space-y-2">
+                            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
                                 {fields.map((field, index) => (
-                                    <div key={field.id} className="flex items-center gap-2 p-2 border rounded-md">
-                                        <div className="flex-shrink-0 w-16 h-16 relative">
-                                            {form.watch(`images.${index}`) ? (
-                                                <Image src={form.watch(`images.${index}`)} alt={`Product image ${index + 1}`} fill className="rounded-md aspect-square object-cover"/>
-                                            ) : <div className="h-16 w-16 bg-muted rounded-md"/>}
-                                        </div>
-                                        <p className="flex-grow text-xs text-muted-foreground truncate">{form.watch(`images.${index}`)}</p>
-                                        <div className="flex flex-col">
+                                    <div key={field.id} className="relative aspect-square rounded-md overflow-hidden border group">
+                                        <Image src={form.watch(`images.${index}`)} alt={`Product image ${index + 1}`} fill className="object-cover"/>
+                                        <div className="absolute top-0 right-0 flex flex-col bg-white/70">
                                             <Button type="button" variant="ghost" size="icon" className="h-6 w-6 shrink-0" onClick={() => move(index, index - 1)} disabled={index === 0}>
                                                 <ArrowUp className="h-4 w-4" />
                                             </Button>
-                                             <Button type="button" variant="ghost" size="icon" className="h-6 w-6 shrink-0" onClick={() => move(index, index + 1)} disabled={index === fields.length - 1}>
+                                            <Button type="button" variant="ghost" size="icon" className="h-6 w-6 shrink-0" onClick={() => move(index, index + 1)} disabled={index === fields.length - 1}>
                                                 <ArrowDown className="h-4 w-4" />
                                             </Button>
                                         </div>
-                                        <Button type="button" variant="ghost" size="icon" className="shrink-0" onClick={() => remove(index)}>
-                                            <Trash2 className="h-4 w-4 text-destructive" />
+                                         <Button type="button" variant="ghost" size="icon" className="absolute bottom-0 right-0 h-8 w-8 shrink-0 bg-white/70 hover:bg-destructive/80 hover:text-white" onClick={() => remove(index)}>
+                                            <Trash2 className="h-4 w-4" />
                                         </Button>
                                     </div>
                                 ))}
+                                {newImagePreviews.map((previewUrl, index) => (
+                                    <div key={index} className="relative aspect-square rounded-md overflow-hidden border">
+                                        <Image src={previewUrl} alt={`New image preview ${index + 1}`} fill className="object-cover opacity-70" />
+                                         <div className="absolute inset-0 flex items-center justify-center">
+                                            <Loader2 className="h-6 w-6 animate-spin text-foreground" />
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
-                            <Button type="button" variant="outline" size="sm" onClick={() => append("")}>
-                                <PlusCircle className="mr-2 h-4 w-4" /> Add Image URL
-                            </Button>
+                            
+                            <div>
+                                <Label htmlFor="newImages" className="text-sm font-medium">Add New Images</Label>
+                                <Input
+                                    id="newImages"
+                                    type="file"
+                                    multiple
+                                    accept="image/png, image/jpeg, image/webp"
+                                    {...form.register("newImages")}
+                                />
+                                {form.formState.errors.newImages && <p className="text-sm text-destructive">{form.formState.errors.newImages.message as string}</p>}
+                            </div>
+                            
                             {form.formState.errors.images && <p className="text-sm text-destructive">{form.formState.errors.images.message}</p>}
-                             {form.formState.errors.images?.root && <p className="text-sm text-destructive">{form.formState.errors.images.root.message}</p>}
+                            {form.formState.errors.images?.root && <p className="text-sm text-destructive">{form.formState.errors.images.root.message}</p>}
                         </div>
                         
                         {/* Bestseller Checkbox */}
@@ -261,8 +331,9 @@ export default function EditProductPage() {
                         {/* Action Buttons */}
                         <div className="flex justify-end gap-2">
                             <Button type="button" variant="outline" onClick={() => router.push('/admin/products')}>Cancel</Button>
-                            <Button type="submit" disabled={form.formState.isSubmitting}>
-                                {form.formState.isSubmitting ? 'Saving...' : 'Save Changes'}
+                            <Button type="submit" disabled={isSaving || isGenerating}>
+                                {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                                {isSaving ? 'Saving...' : 'Save Changes'}
                             </Button>
                         </div>
                     </form>
@@ -270,5 +341,4 @@ export default function EditProductPage() {
             </Card>
         </div>
     )
-
-    
+}
