@@ -59,7 +59,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex items-center justify-center py-12">
+    <div className="container mx-auto flex items-center justify-center">
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-2xl">Admin Login</CardTitle>

@@ -26,7 +26,7 @@ function DealsCarousel({ allProducts }: DealsOfTheDayProps) {
         <div>
             <h2 className="text-3xl font-headline mb-6 text-center">Deals of the Day</h2>
             <p className="mt-3 mb-8 text-muted-foreground text-lg text-center">
-                Don&apos;t miss out on these limited-time offers!
+                Don't miss out on these limited-time offers!
             </p>
              <Carousel
                 opts={{

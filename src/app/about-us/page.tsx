@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 
 export default function AboutUsPage() {
   return (
-    <div className="bg-background py-12 md:py-20">
+    <div className="container mx-auto bg-background py-12 md:py-20">
       <div className="grid md:grid-cols-2 gap-12 items-center">
         <div className="order-2 md:order-1">
           <h1 className="font-headline text-4xl md:text-5xl font-bold mb-4">
@@ -31,7 +31,7 @@ export default function AboutUsPage() {
         <div className="order-1 md:order-2">
           <div className="aspect-[3/4] relative overflow-hidden rounded-lg shadow-lg">
             <Image
-              src="https://picsum.photos/id/1011/800/1200"
+              src="https://res.cloudinary.com/di2f6s7a7/image/upload/v1/naari-eshop/about_us_founder.jpg"
               alt="Founder of Naari"
               fill
               className="object-cover"
@@ -43,3 +43,5 @@ export default function AboutUsPage() {
     </div>
   );
 }
+
+    

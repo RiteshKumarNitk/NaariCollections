@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { MoreHorizontal, PlusCircle, ArrowLeft, Trash2 } from 'lucide-react';
+import { MoreHorizontal, PlusCircle, ArrowLeft, Trash2, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { format } from 'date-fns';
@@ -48,6 +48,7 @@ export default function AdminProductsPage() {
   const { user } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
+  const [isDeleting, setIsDeleting] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
 
@@ -65,6 +66,7 @@ export default function AdminProductsPage() {
 
   const handleDeleteProduct = async () => {
     if (!productToDelete) return;
+    setIsDeleting(true);
 
     try {
       const response = await fetch(`/api/products/${productToDelete.id}`, {
@@ -92,6 +94,7 @@ export default function AdminProductsPage() {
     } finally {
       setIsDeleteDialogOpen(false);
       setProductToDelete(null);
+      setIsDeleting(false);
     }
   };
   
@@ -103,7 +106,7 @@ export default function AdminProductsPage() {
 
   return (
     <>
-      <div className="py-8">
+      <div className="container mx-auto">
         <div className="mb-4">
           <Button variant="outline" asChild>
             <Link href="/admin">
@@ -211,12 +214,14 @@ export default function AdminProductsPage() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteProduct}
               className="bg-destructive hover:bg-destructive/90"
+              disabled={isDeleting}
             >
-              Delete
+              {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+              {isDeleting ? 'Deleting...' : 'Delete'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -224,3 +229,5 @@ export default function AdminProductsPage() {
     </>
   );
 }
+
+    

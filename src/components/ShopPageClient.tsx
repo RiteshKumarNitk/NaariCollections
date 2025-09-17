@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useState, useMemo } from 'react';
@@ -199,7 +200,7 @@ export function ShopPageClient({ allProducts }: ShopPageClientProps) {
                 <SelectItem value="newest">Newest</SelectItem>
                 <SelectItem value="bestselling">Best Selling</SelectItem>
                 <SelectItem value="price-asc">Price: Low to High</SelectItem>
-                <SelectItem value="price-desc">Price: High to LOWss</SelectItem>
+                <SelectItem value="price-desc">Price: High to Low</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -220,3 +221,5 @@ export function ShopPageClient({ allProducts }: ShopPageClientProps) {
     </div>
   );
 }
+
+    

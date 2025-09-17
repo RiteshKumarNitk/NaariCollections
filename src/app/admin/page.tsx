@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { useAuth } from '@/hooks/use-auth';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, LogOut, Image as ImageIcon, Lightbulb, LayoutPanelTop } from 'lucide-react';
+import { ArrowRight, LogOut, Image as ImageIcon, Lightbulb, LayoutPanelTop, DollarSign } from 'lucide-react';
 
 export default function AdminDashboardPage() {
   const { user, logout } = useAuth();
@@ -29,7 +29,7 @@ export default function AdminDashboardPage() {
   };
 
   return (
-    <div className="py-8">
+    <div className="container mx-auto">
       <header className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold">Admin Dashboard</h1>
@@ -70,6 +70,24 @@ export default function AdminDashboardPage() {
             <CardContent>
                <div className="flex items-center justify-end text-sm font-medium text-primary">
                 Manage Content <ArrowRight className="ml-2 h-4 w-4" />
+              </div>
+            </CardContent>
+           </Link>
+        </Card>
+         <Card className="hover:bg-muted/50 transition-colors">
+           <Link href="/admin/bulk-pricing">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <DollarSign className="h-5 w-5 text-muted-foreground" />
+                Bulk Price Editor
+              </CardTitle>
+              <CardDescription>
+                Increase all product prices by a set amount.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+               <div className="flex items-center justify-end text-sm font-medium text-primary">
+                Update Prices <ArrowRight className="ml-2 h-4 w-4" />
               </div>
             </CardContent>
            </Link>

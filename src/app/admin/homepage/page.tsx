@@ -120,7 +120,7 @@ export default function HomepageContentPage() {
     const selectedProducts = form.watch('heroProductIds').map(id => products.find(p => p.id === id)).filter(Boolean) as Product[];
 
     return (
-        <div className="py-8">
+        <div className="container mx-auto">
             <div className="mb-4">
                 <Button variant="outline" asChild>
                     <Link href="/admin">
