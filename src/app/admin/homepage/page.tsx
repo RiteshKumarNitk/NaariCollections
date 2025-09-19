@@ -107,7 +107,7 @@ export default function HomepageContentPage() {
     const onSubmit = async (data: HomepageFormValues) => {
         setIsSaving(true);
         try {
-            let uploadedImageUrls: string[] = [];
+            let finalImageUrls = [...data.heroImageUrls];
             const hasNewImages = data.newImages && data.newImages.length > 0;
 
             if (hasNewImages) {
@@ -126,13 +126,13 @@ export default function HomepageContentPage() {
                     throw new Error(errorData.message || 'Failed to upload new images');
                 }
                 const uploadResult = await uploadResponse.json();
-                uploadedImageUrls = uploadResult.urls;
+                finalImageUrls = [...finalImageUrls, ...uploadResult.urls];
             }
             
             const finalData = {
                 headline: data.headline,
                 subheadline: data.subheadline,
-                heroImageUrls: [...(data.heroImageUrls || []), ...uploadedImageUrls],
+                heroImageUrls: finalImageUrls,
             };
 
             const response = await fetch('/api/homepage', {
@@ -150,6 +150,8 @@ export default function HomepageContentPage() {
                 title: 'Success!',
                 description: 'Homepage content has been updated.',
             });
+            
+            // Reset form with new data
             form.reset({
                 ...finalData,
                 newImages: undefined,
@@ -356,3 +358,5 @@ export default function HomepageContentPage() {
         </div>
     );
 }
+
+    
