@@ -6,7 +6,8 @@ import { NextResponse } from 'next/server';
 const fallbackContent = {
   headline: "Elegance Redefined",
   subheadline: "Discover our curated collection of exquisite women's ethnic wear.",
-  heroProductIds: []
+  heroProductIds: [],
+  heroImageUrls: []
 };
 
 async function getHomepageData() {
@@ -21,7 +22,11 @@ async function getHomepageData() {
     if (!doc.exists) {
       return fallbackContent;
     }
-    return doc.data();
+    const data = doc.data();
+    return {
+        ...fallbackContent, // ensure all keys exist
+        ...data,
+    };
   } catch (error) {
     console.error("Could not read homepage data from Firestore:", error);
     return fallbackContent;
@@ -57,9 +62,13 @@ export async function POST(request: Request) {
   try {
     const updatedData = await request.json();
 
-    if (!updatedData.headline || !updatedData.subheadline || !Array.isArray(updatedData.heroProductIds)) {
+    if (!updatedData.headline || !updatedData.subheadline) {
         return NextResponse.json({ message: 'Invalid data format' }, { status: 400 });
     }
+    
+    // Ensure arrays exist even if empty
+    updatedData.heroProductIds = updatedData.heroProductIds || [];
+    updatedData.heroImageUrls = updatedData.heroImageUrls || [];
 
     await saveHomepageData(updatedData);
     
@@ -70,3 +79,4 @@ export async function POST(request: Request) {
     return NextResponse.json({ message }, { status: 500 });
   }
 }
+

@@ -1,8 +1,9 @@
 
+
 "use client";
 
 import { useEffect, useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import Image from 'next/image';
@@ -15,7 +16,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Loader2, ImagePlus, X, Check } from 'lucide-react';
+import { ArrowLeft, Loader2, ImagePlus, X, Check, Upload, Trash2 } from 'lucide-react';
 import type { Product } from '@/lib/types';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
@@ -31,7 +32,17 @@ import {
 const homepageSchema = z.object({
   headline: z.string().min(1, 'Headline is required.'),
   subheadline: z.string().min(1, 'Sub-headline is required.'),
-  heroProductIds: z.array(z.string()).min(1, 'Please select at least one hero image.'),
+  heroProductIds: z.array(z.string()),
+  heroImageUrls: z.array(z.string()),
+  newImages: z.any()
+    .refine((files) => !files || Array.from(files).every((file: any) => file?.size <= 5 * 1024 * 1024), `Max file size is 5MB.`)
+    .refine(
+      (files) => !files || Array.from(files).every((file: any) => ["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(file?.type)),
+      ".jpg, .jpeg, .png and .webp files are accepted."
+    ).optional(),
+}).refine(data => data.heroProductIds.length > 0 || data.heroImageUrls.length > 0, {
+    message: 'Please select at least one product image or upload a custom hero image.',
+    path: ['heroProductIds'],
 });
 
 type HomepageFormValues = z.infer<typeof homepageSchema>;
@@ -43,6 +54,7 @@ export default function HomepageContentPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [newImagePreviews, setNewImagePreviews] = useState<string[]>([]);
 
     const form = useForm<HomepageFormValues>({
         resolver: zodResolver(homepageSchema),
@@ -50,7 +62,14 @@ export default function HomepageContentPage() {
             headline: '',
             subheadline: '',
             heroProductIds: [],
+            heroImageUrls: [],
+            newImages: undefined,
         },
+    });
+    
+    const { fields: heroImageFields, remove: removeHeroImage } = useFieldArray({
+        control: form.control,
+        name: "heroImageUrls"
     });
 
     useEffect(() => {
@@ -59,7 +78,10 @@ export default function HomepageContentPage() {
             try {
                 const response = await fetch('/api/homepage');
                 const data = await response.json();
-                form.reset(data);
+                form.reset({
+                    ...data,
+                    heroImageUrls: data.heroImageUrls || [],
+                });
             } catch (error) {
                 console.error("Failed to fetch homepage content", error);
                 toast({
@@ -74,13 +96,45 @@ export default function HomepageContentPage() {
         fetchContent();
     }, [form, toast]);
     
+     const newImagesFiles = form.watch('newImages');
+    useEffect(() => {
+        if (newImagesFiles && newImagesFiles.length > 0) {
+            const urls = Array.from(newImagesFiles).map((file: any) => URL.createObjectURL(file));
+            setNewImagePreviews(urls);
+            return () => urls.forEach(url => URL.revokeObjectURL(url));
+        }
+        setNewImagePreviews([]);
+    }, [newImagesFiles]);
+    
     const onSubmit = async (data: HomepageFormValues) => {
         setIsSaving(true);
         try {
+            let uploadedImageUrls: string[] = [];
+
+            if (data.newImages && data.newImages.length > 0) {
+                const formData = new FormData();
+                for (const file of Array.from(data.newImages as FileList)) {
+                    formData.append('files', file);
+                }
+                const uploadResponse = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData,
+                });
+                if (!uploadResponse.ok) throw new Error('Failed to upload new images');
+                const { urls } = await uploadResponse.json();
+                uploadedImageUrls = urls;
+            }
+            
+            const finalData = {
+                ...data,
+                heroImageUrls: [...(data.heroImageUrls || []), ...uploadedImageUrls],
+            };
+            delete finalData.newImages;
+
             const response = await fetch('/api/homepage', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data),
+                body: JSON.stringify(finalData),
             });
 
             if (!response.ok) {
@@ -150,22 +204,58 @@ export default function HomepageContentPage() {
                             </div>
                         </div>
 
-                        {/* Image Selection */}
+                        {/* Custom Image Upload */}
+                         <div className="space-y-4">
+                             <Label>Custom Hero Images</Label>
+                             <p className="text-sm text-muted-foreground">Upload custom images for the hero slider. These will be shown first.</p>
+                             <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
+                                {heroImageFields.map((field, index) => (
+                                    <div key={field.id} className="relative aspect-square rounded-md overflow-hidden border group">
+                                        <Image src={form.watch(`heroImageUrls.${index}`)} alt={`Custom hero image ${index + 1}`} fill className="object-cover"/>
+                                         <Button type="button" variant="destructive" size="icon" className="absolute top-1 right-1 h-6 w-6 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => removeHeroImage(index)}>
+                                            <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+                                ))}
+                                {newImagePreviews.map((previewUrl, index) => (
+                                    <div key={index} className="relative aspect-square rounded-md overflow-hidden border">
+                                        <Image src={previewUrl} alt={`New image preview ${index + 1}`} fill className="object-cover opacity-70" />
+                                         <div className="absolute inset-0 flex items-center justify-center">
+                                            <Loader2 className="h-6 w-6 animate-spin text-foreground" />
+                                        </div>
+                                    </div>
+                                ))}
+                             </div>
+                             <div>
+                                <Label htmlFor="newImages" className="text-sm font-medium">Add New Custom Images</Label>
+                                <Input
+                                    id="newImages"
+                                    type="file"
+                                    multiple
+                                    accept="image/png, image/jpeg, image/webp"
+                                    {...form.register("newImages")}
+                                />
+                                {form.formState.errors.newImages && <p className="text-sm text-destructive">{form.formState.errors.newImages.message as string}</p>}
+                            </div>
+                         </div>
+
+
+                        {/* Product Image Selection */}
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <Label>Hero Slider Images</Label>
-                                    <p className="text-sm text-muted-foreground">Select which product images to display in the homepage slider.</p>
+                                    <Label>Product-based Hero Images</Label>
+                                    <p className="text-sm text-muted-foreground">Select products to feature in the slider. These appear after custom images.</p>
                                 </div>
                                  <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                                     <DialogTrigger asChild>
-                                        <Button type="button" variant="outline"><ImagePlus className="mr-2 h-4 w-4"/> Change Images</Button>
+                                        <Button type="button" variant="outline"><ImagePlus className="mr-2 h-4 w-4"/> Change Product Images</Button>
                                     </DialogTrigger>
                                     <DialogContent className="max-w-3xl">
                                         <DialogHeader>
-                                        <DialogTitle>Select Hero Images</DialogTitle>
+                                        <DialogTitle>Select Product Images</DialogTitle>
                                         <DialogDescription>
-                                            Choose the products whose main images you want to feature in the homepage hero slider.
+                                            Choose products whose main images you want to feature in the hero slider.
                                         </DialogDescription>
                                         </DialogHeader>
                                         <ScrollArea className="h-[60vh] my-4">
@@ -204,7 +294,7 @@ export default function HomepageContentPage() {
                                 </div>
                             ) : (
                                 <div className="text-center py-10 border-dashed border-2 rounded-md">
-                                    <p className="text-muted-foreground">No images selected.</p>
+                                    <p className="text-muted-foreground">No product images selected.</p>
                                 </div>
                             )}
 

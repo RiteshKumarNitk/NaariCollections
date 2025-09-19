@@ -1,4 +1,5 @@
 
+
 import Link from 'next/link';
 import { ArrowRight, Leaf, HeartHandshake, Scissors, Ruler, Shirt } from 'lucide-react';
 
@@ -16,6 +17,7 @@ interface HomepageContent {
   headline: string;
   subheadline: string;
   heroProductIds: string[];
+  heroImageUrls: string[];
 }
 
 const ourPromise = [
@@ -52,6 +54,7 @@ export async function getHomepageContent(): Promise<HomepageContent> {
     subheadline:
       "Discover our curated collection of exquisite women's ethnic wear. Handcrafted with passion, designed for you.",
     heroProductIds: [],
+    heroImageUrls: [],
   };
 
   try {
@@ -65,8 +68,11 @@ export async function getHomepageContent(): Promise<HomepageContent> {
     if (!doc.exists) {
       return fallbackContent;
     }
+    
+    const data = doc.data();
+    // Merge with fallback to ensure all properties exist
+    return { ...fallbackContent, ...data } as HomepageContent;
 
-    return doc.data() as HomepageContent;
   } catch (error) {
     console.error("Failed to fetch homepage content from Firestore:", error);
     return fallbackContent;
@@ -77,9 +83,13 @@ export default async function Home() {
   const allProducts = await getProducts();
   const content = await getHomepageContent();
 
-  const heroImages = content?.heroProductIds
+  const productImages = content?.heroProductIds
     .map(id => allProducts.find(p => p.id === id)?.images[0])
     .filter((img): img is string => !!img) || [];
+    
+  const customImages = content?.heroImageUrls || [];
+
+  const heroImages = [...customImages, ...productImages];
 
   return (
     <>
