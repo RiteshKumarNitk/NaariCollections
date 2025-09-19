@@ -24,9 +24,9 @@ const aboutUsSchema = z.object({
   paragraph3: z.string().min(1, 'Paragraph 3 is required.'),
   imageUrl: z.string().url('A valid image URL is required.'),
   newImage: z.any()
-    .refine((file) => !file || (file.size <= 5 * 1024 * 1024), `Max file size is 5MB.`)
+    .refine((files) => !files || files.length === 0 || (files[0] && files[0].size <= 5 * 1024 * 1024), `Max file size is 5MB.`)
     .refine(
-      (file) => !file || ["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(file.type),
+      (files) => !files || files.length === 0 || (files[0] && ["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(files[0].type)),
       ".jpg, .jpeg, .png and .webp files are accepted."
     ).optional(),
 });
@@ -75,23 +75,25 @@ export default function AboutUsContentPage() {
         fetchContent();
     }, [form, toast]);
 
-    const newImageFile = form.watch('newImage');
+    const newImageFiles = form.watch('newImage');
     useEffect(() => {
-        if (newImageFile) {
-            const url = URL.createObjectURL(newImageFile);
+        if (newImageFiles && newImageFiles.length > 0) {
+            const file = newImageFiles[0];
+            const url = URL.createObjectURL(file);
             setImagePreview(url);
             return () => URL.revokeObjectURL(url);
         }
-    }, [newImageFile]);
+    }, [newImageFiles]);
 
     const onSubmit = async (data: AboutUsFormValues) => {
         setIsSaving(true);
         try {
             let finalImageUrl = data.imageUrl;
+            const newImageFile = data.newImage && data.newImage.length > 0 ? data.newImage[0] : null;
 
-            if (data.newImage) {
+            if (newImageFile) {
                 const formData = new FormData();
-                formData.append('files', data.newImage);
+                formData.append('files', newImageFile);
                 
                 const uploadResponse = await fetch('/api/upload', {
                     method: 'POST',
@@ -106,7 +108,7 @@ export default function AboutUsContentPage() {
             }
             
             const finalData = { ...data, imageUrl: finalImageUrl };
-            delete finalData.newImage;
+            delete (finalData as any).newImage;
 
             const response = await fetch('/api/content/about-us', {
                 method: 'POST',
@@ -120,7 +122,7 @@ export default function AboutUsContentPage() {
                 title: 'Success!',
                 description: 'About Us page content has been updated.',
             });
-            form.reset(finalData);
+            form.reset({ ...finalData, newImage: undefined });
             setImagePreview(finalData.imageUrl);
         } catch (error) {
             console.error("Failed to save content", error);
