@@ -6,7 +6,7 @@ import { NextResponse } from 'next/server';
 const fallbackContent = {
   headline: "Elegance Redefined",
   subheadline: "Discover our curated collection of exquisite women's ethnic wear.",
-  heroProductIds: []
+  heroImageUrls: []
 };
 
 async function getHomepageData() {
@@ -21,7 +21,11 @@ async function getHomepageData() {
     if (!doc.exists) {
       return fallbackContent;
     }
-    return doc.data();
+    const data = doc.data();
+    return {
+        ...fallbackContent, // ensure all keys exist
+        ...data,
+    };
   } catch (error) {
     console.error("Could not read homepage data from Firestore:", error);
     return fallbackContent;
@@ -35,7 +39,9 @@ async function saveHomepageData(data: any) {
   }
   const homepageDocRef = db.collection('content').doc('homepage');
   try {
-    await homepageDocRef.set(data, { merge: true });
+    // We use `set` instead of `update` to completely overwrite the document,
+    // which is useful for managing the array of hero images.
+    await homepageDocRef.set(data);
   } catch (error) {
     console.error("Could not write to homepage data in Firestore:", error);
     throw new Error("Failed to save homepage data.");
@@ -57,9 +63,12 @@ export async function POST(request: Request) {
   try {
     const updatedData = await request.json();
 
-    if (!updatedData.headline || !updatedData.subheadline || !Array.isArray(updatedData.heroProductIds)) {
-        return NextResponse.json({ message: 'Invalid data format' }, { status: 400 });
+    if (!updatedData.headline || !updatedData.subheadline) {
+        return NextResponse.json({ message: 'Invalid data format: headline and subheadline are required.' }, { status: 400 });
     }
+    
+    // Ensure heroImageUrls is always an array
+    updatedData.heroImageUrls = updatedData.heroImageUrls || [];
 
     await saveHomepageData(updatedData);
     
