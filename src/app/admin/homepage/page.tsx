@@ -35,9 +35,9 @@ const homepageSchema = z.object({
   subheadline: z.string().min(1, 'Sub-headline is required.'),
   heroImageUrls: z.array(z.string()).min(1, 'Please add at least one hero image.'),
   newImages: z.any()
-    .refine((files) => !files || Array.from(files).every((file: any) => file?.size <= 5 * 1024 * 1024), `Max file size is 5MB.`)
+    .refine((files) => !files || (files && files.length === 0) || Array.from(files).every((file: any) => file?.size <= 5 * 1024 * 1024), `Max file size is 5MB.`)
     .refine(
-      (files) => !files || Array.from(files).every((file: any) => ["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(file?.type)),
+      (files) => !files || (files && files.length === 0) || Array.from(files).every((file: any) => ["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(file?.type)),
       ".jpg, .jpeg, .png and .webp files are accepted."
     ).optional(),
 });
@@ -222,7 +222,7 @@ export default function HomepageContentPage() {
 
 
     if (isLoading) {
-        return <div className="flex justify-center items-center h-64"><Loader2 className="h-8 w-8 animate-spin" /></div>;
+        return <div className="container mx-auto flex justify-center items-center h-64"><Loader2 className="h-8 w-8 animate-spin" /></div>;
     }
 
     return (
@@ -357,3 +357,5 @@ export default function HomepageContentPage() {
         </div>
     );
 }
+
+    
