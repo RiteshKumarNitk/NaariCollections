@@ -3,6 +3,7 @@ import { Suspense } from 'react';
 import { ShopPageClient } from '@/components/ShopPageClient';
 import ShopPageSkeleton from './loading';
 import { getProducts } from '@/lib/data';
+import { AddToCartDialog } from '@/components/AddToCartDialog';
 
 export default async function ShopPage() {
   // We still fetch products here to pass them to the client component
@@ -13,7 +14,9 @@ export default async function ShopPage() {
   return (
     <div className="container mx-auto">
       <Suspense fallback={<ShopPageSkeleton />}>
-        <ShopPageClient allProducts={allProducts} />
+        <AddToCartDialog>
+          <ShopPageClient allProducts={allProducts} />
+        </AddToCartDialog>
       </Suspense>
     </div>
   );
