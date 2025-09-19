@@ -113,29 +113,33 @@ export default function HomepageContentPage() {
         setIsSaving(true);
         try {
             let uploadedImageUrls: string[] = [];
+            const hasNewImages = data.newImages && data.newImages.length > 0;
 
-            if (data.newImages && data.newImages.length > 0) {
+            if (hasNewImages) {
                 const formData = new FormData();
                 for (const file of Array.from(data.newImages as FileList)) {
                     formData.append('files', file);
                 }
+
                 const uploadResponse = await fetch('/api/upload', {
                     method: 'POST',
                     body: formData,
                 });
+
                 if (!uploadResponse.ok) {
                     const errorData = await uploadResponse.json();
                     throw new Error(errorData.message || 'Failed to upload new images');
                 }
-                const { urls } = await uploadResponse.json();
-                uploadedImageUrls = urls;
+                const uploadResult = await uploadResponse.json();
+                uploadedImageUrls = uploadResult.urls;
             }
             
             const finalData = {
                 ...data,
                 heroImageUrls: [...(data.heroImageUrls || []), ...uploadedImageUrls],
             };
-            delete finalData.newImages;
+            delete (finalData as Partial<HomepageFormValues>).newImages;
+
 
             const response = await fetch('/api/homepage', {
                 method: 'POST',
