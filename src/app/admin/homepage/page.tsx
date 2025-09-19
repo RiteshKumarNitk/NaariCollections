@@ -33,7 +33,7 @@ import {
 const homepageSchema = z.object({
   headline: z.string().min(1, 'Headline is required.'),
   subheadline: z.string().min(1, 'Sub-headline is required.'),
-  heroImageUrls: z.array(z.string()).min(1, 'Please add at least one hero image.'),
+  heroImageUrls: z.array(z.string()), // Validation moved to onSubmit
   newImages: z.any()
     .refine((files) => !files || (files && files.length === 0) || Array.from(files).every((file: any) => file?.size <= 5 * 1024 * 1024), `Max file size is 5MB.`)
     .refine(
@@ -109,6 +109,16 @@ export default function HomepageContentPage() {
         try {
             let uploadedImageUrls: string[] = [];
             const hasNewImages = data.newImages && data.newImages.length > 0;
+
+            if (data.heroImageUrls.length === 0 && !hasNewImages) {
+                 toast({
+                    title: 'Validation Error',
+                    description: 'Please add at least one hero image.',
+                    variant: 'destructive',
+                });
+                setIsSaving(false);
+                return;
+            }
 
             if (hasNewImages) {
                 const formData = new FormData();
@@ -358,4 +368,3 @@ export default function HomepageContentPage() {
     );
 }
 
-    
