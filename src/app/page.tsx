@@ -12,6 +12,7 @@ import { Testimonials } from '@/components/Testimonials';
 import { getDb } from '@/lib/firebase-admin';
 import { PromotionalGrid } from '@/components/PromotionalGrid';
 import { AdBanner } from '@/components/AdBanner';
+import { AddToCartDialog } from '@/components/AddToCartDialog';
 
 interface HomepageContent {
   headline: string;
@@ -84,7 +85,7 @@ export default async function Home() {
   const heroImages = content.heroImageUrls || [];
 
   return (
-    <>
+    <AddToCartDialog>
       <HeroSlider images={heroImages.length > 0 ? heroImages : ['https://res.cloudinary.com/di2f6s7a7/image/upload/v1/naari-eshop/hero_fallback.jpg']}>
          <div className="relative z-10 flex flex-col items-center justify-center h-full text-center text-foreground p-4">
           <h1 className="font-headline text-4xl md:text-6xl lg:text-7xl font-bold drop-shadow-md text-white">
@@ -141,6 +142,6 @@ export default async function Home() {
       </section>
       
       <Testimonials allProducts={allProducts} />
-    </>
+    </AddToCartDialog>
   );
 }

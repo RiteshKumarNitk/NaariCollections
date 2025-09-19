@@ -5,13 +5,12 @@ import type { Product } from "@/lib/types";
 import { ProductCard } from "./ProductCard";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "./ui/carousel";
 import { useAddToCartDialog } from "./AddToCartDialog";
-import { AddToCartDialog } from "./AddToCartDialog";
 
 interface DealsOfTheDayProps {
     allProducts: Product[];
 }
 
-function DealsCarousel({ allProducts }: DealsOfTheDayProps) {
+export function DealsOfTheDay({ allProducts }: DealsOfTheDayProps) {
     const { openDialog } = useAddToCartDialog();
     
     // Simple logic to select some products for the deals section
@@ -49,13 +48,4 @@ function DealsCarousel({ allProducts }: DealsOfTheDayProps) {
             </Carousel>
         </div>
     );
-}
-
-
-export function DealsOfTheDay(props: DealsOfTheDayProps) {
-    return (
-        <AddToCartDialog>
-            <DealsCarousel {...props} />
-        </AddToCartDialog>
-    )
 }
