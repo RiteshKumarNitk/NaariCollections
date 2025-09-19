@@ -64,7 +64,7 @@ export default function HomepageContentPage() {
         },
     });
     
-    const { fields: heroImageFields, remove: removeHeroImage, append: appendHeroImage, move } = useFieldArray({
+    const { fields: heroImageFields, remove: removeHeroImage, append: appendHeroImage } = useFieldArray({
         control: form.control,
         name: "heroImageUrls"
     });
@@ -151,9 +151,7 @@ export default function HomepageContentPage() {
                 description: 'Homepage content has been updated.',
             });
             form.reset({
-                headline: finalData.headline,
-                subheadline: finalData.subheadline,
-                heroImageUrls: finalData.heroImageUrls,
+                ...finalData,
                 newImages: undefined,
             });
             setNewImagePreviews([]);
@@ -219,7 +217,7 @@ export default function HomepageContentPage() {
         }
     };
     
-    const imageRef = form.register("newImages");
+    const newImageRef = form.register("newImages");
 
 
     if (isLoading) {
@@ -268,54 +266,7 @@ export default function HomepageContentPage() {
                              <div className="flex items-center justify-between">
                                  <div>
                                     <Label>Hero Images</Label>
-                                    <p className="text-sm text-muted-foreground">Manage the images in your homepage slider. Drag to reorder.</p>
-                                </div>
-                                <div className="flex gap-2">
-                                     <Dialog open={isProductDialogOpen} onOpenChange={setIsProductDialogOpen}>
-                                        <DialogTrigger asChild>
-                                            <Button type="button" variant="outline"><PlusCircle className="mr-2 h-4 w-4"/> Add from Products</Button>
-                                        </DialogTrigger>
-                                        <DialogContent className="max-w-3xl">
-                                            <DialogHeader>
-                                            <DialogTitle>Select Product Images</DialogTitle>
-                                            <DialogDescription>
-                                                Click on a product to add its main image to the hero slider.
-                                            </DialogDescription>
-                                            </DialogHeader>
-                                            <ScrollArea className="h-[60vh] my-4">
-                                                 <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4 p-1">
-                                                    {products.map(product => {
-                                                        const isSelected = form.watch('heroImageUrls').includes(product.images[0]);
-                                                        return (
-                                                            <div key={product.id} onClick={() => addProductImageToHero(product)} className={`relative aspect-square cursor-pointer rounded-md overflow-hidden ring-offset-background focus-within:ring-2 ring-ring`}>
-                                                                <Image src={product.images[0]} alt={product.name} fill className="object-cover"/>
-                                                                <div className={`absolute inset-0 bg-black/50 transition-opacity ${isSelected ? 'opacity-100' : 'opacity-0 hover:opacity-100'}`}>
-                                                                    <div className="flex items-center justify-center h-full">
-                                                                         <Check className="h-8 w-8 text-white" />
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        )
-                                                    })}
-                                                 </div>
-                                            </ScrollArea>
-                                             <Button onClick={() => setIsProductDialogOpen(false)}>Done</Button>
-                                        </DialogContent>
-                                    </Dialog>
-                                    
-                                     <Label htmlFor="newImages" className="cursor-pointer">
-                                        <div className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
-                                            <Upload className="mr-2 h-4 w-4"/> Upload Custom
-                                        </div>
-                                        <Input
-                                            id="newImages"
-                                            type="file"
-                                            multiple
-                                            accept="image/png, image/jpeg, image/webp"
-                                            className="sr-only"
-                                            {...imageRef}
-                                        />
-                                    </Label>
+                                    <p className="text-sm text-muted-foreground">Manage the images in your homepage slider.</p>
                                 </div>
                              </div>
                              
@@ -345,10 +296,56 @@ export default function HomepageContentPage() {
                                     <p className="text-muted-foreground">No hero images added yet.</p>
                                 </div>
                              )}
+
+                            <div className="flex items-center gap-2 mt-4">
+                                 <Dialog open={isProductDialogOpen} onOpenChange={setIsProductDialogOpen}>
+                                    <DialogTrigger asChild>
+                                        <Button type="button" variant="outline"><PlusCircle className="mr-2 h-4 w-4"/> Add from Products</Button>
+                                    </DialogTrigger>
+                                    <DialogContent className="max-w-3xl">
+                                        <DialogHeader>
+                                        <DialogTitle>Select Product Images</DialogTitle>
+                                        <DialogDescription>
+                                            Click on a product to add its main image to the hero slider.
+                                        </DialogDescription>
+                                        </DialogHeader>
+                                        <ScrollArea className="h-[60vh] my-4">
+                                             <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4 p-1">
+                                                {products.map(product => {
+                                                    const isSelected = form.watch('heroImageUrls').includes(product.images[0]);
+                                                    return (
+                                                        <div key={product.id} onClick={() => addProductImageToHero(product)} className={`relative aspect-square cursor-pointer rounded-md overflow-hidden ring-offset-background focus-within:ring-2 ring-ring`}>
+                                                            <Image src={product.images[0]} alt={product.name} fill className="object-cover"/>
+                                                            <div className={`absolute inset-0 bg-black/50 transition-opacity ${isSelected ? 'opacity-100' : 'opacity-0 hover:opacity-100'}`}>
+                                                                <div className="flex items-center justify-center h-full">
+                                                                     <Check className="h-8 w-8 text-white" />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    )
+                                                })}
+                                             </div>
+                                        </ScrollArea>
+                                         <Button onClick={() => setIsProductDialogOpen(false)}>Done</Button>
+                                    </DialogContent>
+                                </Dialog>
+                                
+                                <div className="flex-grow">
+                                    <Label htmlFor="newImages" className="sr-only">Upload Custom Images</Label>
+                                    <Input
+                                        id="newImages"
+                                        type="file"
+                                        multiple
+                                        accept="image/png, image/jpeg, image/webp"
+                                        {...newImageRef}
+                                    />
+                                </div>
+                            </div>
+                            {form.formState.errors.newImages && <p className="text-sm text-destructive">{form.formState.errors.newImages.message as string}</p>}
                         </div>
 
                         <div className="flex justify-end">
-                            <Button type="submit" disabled={isSaving || !form.formState.isDirty}>
+                            <Button type="submit" disabled={isSaving || (!form.formState.isDirty && newImagePreviews.length === 0)}>
                                 {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                                 Save Changes
                             </Button>
