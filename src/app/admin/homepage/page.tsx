@@ -16,7 +16,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Loader2, ImagePlus, X, Check, Upload, Trash2, Sparkles } from 'lucide-react';
+import { ArrowLeft, Loader2, ImagePlus, X, Check, Upload, Trash2, Sparkles, PlusCircle } from 'lucide-react';
 import type { Product } from '@/lib/types';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { generateSubheadline } from '@/ai/flows/generate-subheadline-flow';
@@ -33,17 +33,13 @@ import {
 const homepageSchema = z.object({
   headline: z.string().min(1, 'Headline is required.'),
   subheadline: z.string().min(1, 'Sub-headline is required.'),
-  heroProductIds: z.array(z.string()),
-  heroImageUrls: z.array(z.string()),
+  heroImageUrls: z.array(z.string()).min(1, 'Please add at least one hero image.'),
   newImages: z.any()
     .refine((files) => !files || Array.from(files).every((file: any) => file?.size <= 5 * 1024 * 1024), `Max file size is 5MB.`)
     .refine(
       (files) => !files || Array.from(files).every((file: any) => ["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(file?.type)),
       ".jpg, .jpeg, .png and .webp files are accepted."
     ).optional(),
-}).refine(data => data.heroProductIds.length > 0 || data.heroImageUrls.length > 0, {
-    message: 'Please select at least one product image or upload a custom hero image.',
-    path: ['heroProductIds'],
 });
 
 type HomepageFormValues = z.infer<typeof homepageSchema>;
@@ -54,7 +50,7 @@ export default function HomepageContentPage() {
     const { products } = useProducts();
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
     const [newImagePreviews, setNewImagePreviews] = useState<string[]>([]);
     const [isGenerating, setIsGenerating] = useState(false);
 
@@ -63,13 +59,12 @@ export default function HomepageContentPage() {
         defaultValues: {
             headline: '',
             subheadline: '',
-            heroProductIds: [],
             heroImageUrls: [],
             newImages: undefined,
         },
     });
     
-    const { fields: heroImageFields, remove: removeHeroImage } = useFieldArray({
+    const { fields: heroImageFields, remove: removeHeroImage, append: appendHeroImage, move } = useFieldArray({
         control: form.control,
         name: "heroImageUrls"
     });
@@ -99,7 +94,7 @@ export default function HomepageContentPage() {
         fetchContent();
     }, [form, toast]);
     
-     const newImagesFiles = form.watch('newImages');
+    const newImagesFiles = form.watch('newImages');
     useEffect(() => {
         if (newImagesFiles && newImagesFiles.length > 0) {
             const urls = Array.from(newImagesFiles).map((file: any) => URL.createObjectURL(file));
@@ -135,11 +130,10 @@ export default function HomepageContentPage() {
             }
             
             const finalData = {
-                ...data,
+                headline: data.headline,
+                subheadline: data.subheadline,
                 heroImageUrls: [...(data.heroImageUrls || []), ...uploadedImageUrls],
             };
-            delete (finalData as Partial<HomepageFormValues>).newImages;
-
 
             const response = await fetch('/api/homepage', {
                 method: 'POST',
@@ -156,7 +150,13 @@ export default function HomepageContentPage() {
                 title: 'Success!',
                 description: 'Homepage content has been updated.',
             });
-            router.push('/admin');
+            form.reset({
+                headline: finalData.headline,
+                subheadline: finalData.subheadline,
+                heroImageUrls: finalData.heroImageUrls,
+                newImages: undefined,
+            });
+            setNewImagePreviews([]);
 
         } catch (error) {
             console.error("Failed to save homepage content", error);
@@ -170,12 +170,21 @@ export default function HomepageContentPage() {
         }
     };
     
-    const toggleHeroProduct = (productId: string) => {
-        const currentIds = form.getValues('heroProductIds');
-        const newIds = currentIds.includes(productId)
-            ? currentIds.filter(id => id !== productId)
-            : [...currentIds, productId];
-        form.setValue('heroProductIds', newIds, { shouldValidate: true, shouldDirty: true });
+    const addProductImageToHero = (product: Product) => {
+        const imageUrl = product.images[0];
+        if (imageUrl && !form.getValues('heroImageUrls').includes(imageUrl)) {
+            appendHeroImage(imageUrl);
+            toast({
+                title: 'Image Added',
+                description: `Image from ${product.name} has been added to the hero slider.`,
+            });
+        } else if (form.getValues('heroImageUrls').includes(imageUrl)) {
+            toast({
+                title: 'Image Already Added',
+                description: 'This product image is already in your hero slider.',
+                variant: 'destructive',
+            });
+        }
     };
 
     const handleGenerateSubheadline = async () => {
@@ -209,12 +218,13 @@ export default function HomepageContentPage() {
             setIsGenerating(false);
         }
     };
+    
+    const imageRef = form.register("newImages");
+
 
     if (isLoading) {
         return <div className="flex justify-center items-center h-64"><Loader2 className="h-8 w-8 animate-spin" /></div>;
     }
-
-    const selectedProducts = form.watch('heroProductIds').map(id => products.find(p => p.id === id)).filter(Boolean) as Product[];
 
     return (
         <div className="container mx-auto">
@@ -252,101 +262,89 @@ export default function HomepageContentPage() {
                                 {form.formState.errors.subheadline && <p className="text-sm text-destructive">{form.formState.errors.subheadline.message}</p>}
                             </div>
                         </div>
-
-                        {/* Custom Image Upload */}
-                         <div className="space-y-4">
-                             <Label>Custom Hero Images</Label>
-                             <p className="text-sm text-muted-foreground">Upload custom images for the hero slider. These will be shown first.</p>
-                             <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
-                                {heroImageFields.map((field, index) => (
-                                    <div key={field.id} className="relative aspect-square rounded-md overflow-hidden border group">
-                                        <Image src={form.watch(`heroImageUrls.${index}`)} alt={`Custom hero image ${index + 1}`} fill className="object-cover"/>
-                                         <Button type="button" variant="destructive" size="icon" className="absolute top-1 right-1 h-6 w-6 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => removeHeroImage(index)}>
-                                            <Trash2 className="h-4 w-4" />
-                                        </Button>
-                                    </div>
-                                ))}
-                                {newImagePreviews.map((previewUrl, index) => (
-                                    <div key={index} className="relative aspect-square rounded-md overflow-hidden border">
-                                        <Image src={previewUrl} alt={`New image preview ${index + 1}`} fill className="object-cover opacity-70" />
-                                         <div className="absolute inset-0 flex items-center justify-center">
-                                            <Loader2 className="h-6 w-6 animate-spin text-foreground" />
-                                        </div>
-                                    </div>
-                                ))}
-                             </div>
-                             <div>
-                                <Label htmlFor="newImages" className="text-sm font-medium">Add New Custom Images</Label>
-                                <Input
-                                    id="newImages"
-                                    type="file"
-                                    multiple
-                                    accept="image/png, image/jpeg, image/webp"
-                                    {...form.register("newImages")}
-                                />
-                                {form.formState.errors.newImages && <p className="text-sm text-destructive">{form.formState.errors.newImages.message as string}</p>}
-                            </div>
-                         </div>
-
-
-                        {/* Product Image Selection */}
+                        
+                        {/* Hero Image Management */}
                         <div className="space-y-4">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <Label>Product-based Hero Images</Label>
-                                    <p className="text-sm text-muted-foreground">Select products to feature in the slider. These appear after custom images.</p>
+                             <div className="flex items-center justify-between">
+                                 <div>
+                                    <Label>Hero Images</Label>
+                                    <p className="text-sm text-muted-foreground">Manage the images in your homepage slider. Drag to reorder.</p>
                                 </div>
-                                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                                    <DialogTrigger asChild>
-                                        <Button type="button" variant="outline"><ImagePlus className="mr-2 h-4 w-4"/> Change Product Images</Button>
-                                    </DialogTrigger>
-                                    <DialogContent className="max-w-3xl">
-                                        <DialogHeader>
-                                        <DialogTitle>Select Product Images</DialogTitle>
-                                        <DialogDescription>
-                                            Choose products whose main images you want to feature in the hero slider.
-                                        </DialogDescription>
-                                        </DialogHeader>
-                                        <ScrollArea className="h-[60vh] my-4">
-                                             <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4 p-1">
-                                                {products.map(product => {
-                                                    const isSelected = form.watch('heroProductIds').includes(product.id);
-                                                    return (
-                                                        <div key={product.id} onClick={() => toggleHeroProduct(product.id)} className={`relative aspect-square cursor-pointer rounded-md overflow-hidden ring-offset-background focus-within:ring-2 ring-ring ${isSelected ? 'ring-2 ring-primary' : ''}`}>
-                                                            <Image src={product.images[0]} alt={product.name} fill className="object-cover"/>
-                                                            <div className={`absolute inset-0 bg-black/50 transition-opacity ${isSelected ? 'opacity-100' : 'opacity-0'}`}>
-                                                                <div className="flex items-center justify-center h-full">
-                                                                     <Check className="h-8 w-8 text-white" />
+                                <div className="flex gap-2">
+                                     <Dialog open={isProductDialogOpen} onOpenChange={setIsProductDialogOpen}>
+                                        <DialogTrigger asChild>
+                                            <Button type="button" variant="outline"><PlusCircle className="mr-2 h-4 w-4"/> Add from Products</Button>
+                                        </DialogTrigger>
+                                        <DialogContent className="max-w-3xl">
+                                            <DialogHeader>
+                                            <DialogTitle>Select Product Images</DialogTitle>
+                                            <DialogDescription>
+                                                Click on a product to add its main image to the hero slider.
+                                            </DialogDescription>
+                                            </DialogHeader>
+                                            <ScrollArea className="h-[60vh] my-4">
+                                                 <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4 p-1">
+                                                    {products.map(product => {
+                                                        const isSelected = form.watch('heroImageUrls').includes(product.images[0]);
+                                                        return (
+                                                            <div key={product.id} onClick={() => addProductImageToHero(product)} className={`relative aspect-square cursor-pointer rounded-md overflow-hidden ring-offset-background focus-within:ring-2 ring-ring`}>
+                                                                <Image src={product.images[0]} alt={product.name} fill className="object-cover"/>
+                                                                <div className={`absolute inset-0 bg-black/50 transition-opacity ${isSelected ? 'opacity-100' : 'opacity-0 hover:opacity-100'}`}>
+                                                                    <div className="flex items-center justify-center h-full">
+                                                                         <Check className="h-8 w-8 text-white" />
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                    )
-                                                })}
-                                             </div>
-                                        </ScrollArea>
-                                         <Button onClick={() => setIsDialogOpen(false)}>Done</Button>
-                                    </DialogContent>
-                                </Dialog>
-                            </div>
-                             {form.formState.errors.heroProductIds && <p className="text-sm text-destructive">{form.formState.errors.heroProductIds.message}</p>}
-                            
-                            {selectedProducts.length > 0 ? (
+                                                        )
+                                                    })}
+                                                 </div>
+                                            </ScrollArea>
+                                             <Button onClick={() => setIsProductDialogOpen(false)}>Done</Button>
+                                        </DialogContent>
+                                    </Dialog>
+                                    
+                                     <Label htmlFor="newImages" className="cursor-pointer">
+                                        <div className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
+                                            <Upload className="mr-2 h-4 w-4"/> Upload Custom
+                                        </div>
+                                        <Input
+                                            id="newImages"
+                                            type="file"
+                                            multiple
+                                            accept="image/png, image/jpeg, image/webp"
+                                            className="sr-only"
+                                            {...imageRef}
+                                        />
+                                    </Label>
+                                </div>
+                             </div>
+                             
+                              {form.formState.errors.heroImageUrls && <p className="text-sm text-destructive">{form.formState.errors.heroImageUrls.message}</p>}
+                             
+                             {(heroImageFields.length > 0 || newImagePreviews.length > 0) ? (
                                 <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
-                                {selectedProducts.map(product => (
-                                    <div key={product.id} className="relative aspect-square rounded-md overflow-hidden border">
-                                        <Image src={product.images[0]} alt={product.name} fill className="object-cover" />
-                                         <Button type="button" size="icon" variant="destructive" className="absolute top-1 right-1 h-6 w-6" onClick={() => toggleHeroProduct(product.id)}>
-                                            <X className="h-4 w-4" />
-                                        </Button>
-                                    </div>
-                                ))}
+                                    {heroImageFields.map((field, index) => (
+                                        <div key={field.id} className="relative aspect-square rounded-md overflow-hidden border group">
+                                            <Image src={form.watch(`heroImageUrls.${index}`)} alt={`Custom hero image ${index + 1}`} fill className="object-cover"/>
+                                             <Button type="button" variant="destructive" size="icon" className="absolute top-1 right-1 h-6 w-6 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => removeHeroImage(index)}>
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                        </div>
+                                    ))}
+                                    {newImagePreviews.map((previewUrl, index) => (
+                                        <div key={index} className="relative aspect-square rounded-md overflow-hidden border">
+                                            <Image src={previewUrl} alt={`New image preview ${index + 1}`} fill className="object-cover opacity-70" />
+                                             <div className="absolute inset-0 flex items-center justify-center">
+                                                <Loader2 className="h-6 w-6 animate-spin text-foreground" />
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
-                            ) : (
+                             ) : (
                                 <div className="text-center py-10 border-dashed border-2 rounded-md">
-                                    <p className="text-muted-foreground">No product images selected.</p>
+                                    <p className="text-muted-foreground">No hero images added yet.</p>
                                 </div>
-                            )}
-
+                             )}
                         </div>
 
                         <div className="flex justify-end">
@@ -361,5 +359,3 @@ export default function HomepageContentPage() {
         </div>
     );
 }
-
-    

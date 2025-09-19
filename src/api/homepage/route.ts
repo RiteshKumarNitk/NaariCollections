@@ -6,7 +6,6 @@ import { NextResponse } from 'next/server';
 const fallbackContent = {
   headline: "Elegance Redefined",
   subheadline: "Discover our curated collection of exquisite women's ethnic wear.",
-  heroProductIds: [],
   heroImageUrls: []
 };
 
@@ -40,7 +39,9 @@ async function saveHomepageData(data: any) {
   }
   const homepageDocRef = db.collection('content').doc('homepage');
   try {
-    await homepageDocRef.set(data, { merge: true });
+    // We use `set` instead of `update` to completely overwrite the document,
+    // which is useful for managing the array of hero images.
+    await homepageDocRef.set(data);
   } catch (error) {
     console.error("Could not write to homepage data in Firestore:", error);
     throw new Error("Failed to save homepage data.");
@@ -63,11 +64,10 @@ export async function POST(request: Request) {
     const updatedData = await request.json();
 
     if (!updatedData.headline || !updatedData.subheadline) {
-        return NextResponse.json({ message: 'Invalid data format' }, { status: 400 });
+        return NextResponse.json({ message: 'Invalid data format: headline and subheadline are required.' }, { status: 400 });
     }
     
-    // Ensure arrays exist even if empty
-    updatedData.heroProductIds = updatedData.heroProductIds || [];
+    // Ensure heroImageUrls is always an array
     updatedData.heroImageUrls = updatedData.heroImageUrls || [];
 
     await saveHomepageData(updatedData);
@@ -79,5 +79,3 @@ export async function POST(request: Request) {
     return NextResponse.json({ message }, { status: 500 });
   }
 }
-
-

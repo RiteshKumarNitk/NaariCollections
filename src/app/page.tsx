@@ -16,7 +16,6 @@ import { AdBanner } from '@/components/AdBanner';
 interface HomepageContent {
   headline: string;
   subheadline: string;
-  heroProductIds: string[];
   heroImageUrls: string[];
 }
 
@@ -53,7 +52,6 @@ export async function getHomepageContent(): Promise<HomepageContent> {
     headline: "Elegance Redefined",
     subheadline:
       "Discover our curated collection of exquisite women's ethnic wear. Handcrafted with passion, designed for you.",
-    heroProductIds: [],
     heroImageUrls: [],
   };
 
@@ -83,13 +81,7 @@ export default async function Home() {
   const allProducts = await getProducts();
   const content = await getHomepageContent();
 
-  const productImages = content.heroProductIds
-    .map(id => allProducts.find(p => p.id === id)?.images[0])
-    .filter((img): img is string => !!img);
-    
-  const customImages = content.heroImageUrls || [];
-
-  const heroImages = [...customImages, ...productImages];
+  const heroImages = content.heroImageUrls || [];
 
   return (
     <>
