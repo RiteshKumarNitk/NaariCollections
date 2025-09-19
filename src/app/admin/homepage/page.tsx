@@ -3,7 +3,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { useForm, Controller, useFieldArray } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import Image from 'next/image';
@@ -16,9 +16,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Loader2, ImagePlus, X, Check, Upload, Trash2 } from 'lucide-react';
+import { ArrowLeft, Loader2, ImagePlus, X, Check, Upload, Trash2, Sparkles } from 'lucide-react';
 import type { Product } from '@/lib/types';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { generateSubheadline } from '@/ai/flows/generate-subheadline-flow';
 import {
   Dialog,
   DialogContent,
@@ -55,6 +56,7 @@ export default function HomepageContentPage() {
     const [isSaving, setIsSaving] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [newImagePreviews, setNewImagePreviews] = useState<string[]>([]);
+    const [isGenerating, setIsGenerating] = useState(false);
 
     const form = useForm<HomepageFormValues>({
         resolver: zodResolver(homepageSchema),
@@ -77,6 +79,7 @@ export default function HomepageContentPage() {
             setIsLoading(true);
             try {
                 const response = await fetch('/api/homepage');
+                if (!response.ok) throw new Error("Could not load content.");
                 const data = await response.json();
                 form.reset({
                     ...data,
@@ -120,7 +123,10 @@ export default function HomepageContentPage() {
                     method: 'POST',
                     body: formData,
                 });
-                if (!uploadResponse.ok) throw new Error('Failed to upload new images');
+                if (!uploadResponse.ok) {
+                    const errorData = await uploadResponse.json();
+                    throw new Error(errorData.message || 'Failed to upload new images');
+                }
                 const { urls } = await uploadResponse.json();
                 uploadedImageUrls = urls;
             }
@@ -138,7 +144,8 @@ export default function HomepageContentPage() {
             });
 
             if (!response.ok) {
-                throw new Error('Failed to save content');
+                 const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to save content');
             }
 
             toast({
@@ -150,8 +157,8 @@ export default function HomepageContentPage() {
         } catch (error) {
             console.error("Failed to save homepage content", error);
             toast({
-                title: 'Error',
-                description: 'Could not save homepage content. Please try again.',
+                title: 'Error Saving Content',
+                description: error instanceof Error ? error.message : 'An unknown error occurred.',
                 variant: 'destructive',
             });
         } finally {
@@ -165,6 +172,38 @@ export default function HomepageContentPage() {
             ? currentIds.filter(id => id !== productId)
             : [...currentIds, productId];
         form.setValue('heroProductIds', newIds, { shouldValidate: true, shouldDirty: true });
+    };
+
+    const handleGenerateSubheadline = async () => {
+        setIsGenerating(true);
+        try {
+            const headline = form.getValues('headline');
+            if (!headline) {
+                toast({
+                    title: 'Headline Needed',
+                    description: 'Please enter a headline first to generate a subheadline.',
+                    variant: 'destructive',
+                });
+                return;
+            }
+            const result = await generateSubheadline({ headline });
+            if (result.subheadline) {
+                form.setValue('subheadline', result.subheadline, { shouldValidate: true });
+                toast({
+                    title: 'Subheadline Generated',
+                    description: 'AI has created a new subheadline for you.',
+                });
+            }
+        } catch (error) {
+            console.error('Failed to generate subheadline', error);
+            toast({
+                title: 'Error',
+                description: 'Could not generate subheadline. Please try again.',
+                variant: 'destructive',
+            });
+        } finally {
+            setIsGenerating(false);
+        }
     };
 
     if (isLoading) {
@@ -198,7 +237,13 @@ export default function HomepageContentPage() {
                                 {form.formState.errors.headline && <p className="text-sm text-destructive">{form.formState.errors.headline.message}</p>}
                             </div>
                             <div>
-                                <Label htmlFor="subheadline">Sub-headline</Label>
+                                 <div className="flex justify-between items-center mb-2">
+                                    <Label htmlFor="subheadline">Sub-headline</Label>
+                                     <Button type="button" variant="outline" size="sm" onClick={handleGenerateSubheadline} disabled={isGenerating}>
+                                        {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                                        {isGenerating ? 'Generating...' : 'Generate with AI'}
+                                    </Button>
+                                </div>
                                 <Textarea id="subheadline" {...form.register('subheadline')} rows={3}/>
                                 {form.formState.errors.subheadline && <p className="text-sm text-destructive">{form.formState.errors.subheadline.message}</p>}
                             </div>
@@ -312,3 +357,5 @@ export default function HomepageContentPage() {
         </div>
     );
 }
+
+    
