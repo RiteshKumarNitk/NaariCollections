@@ -16,7 +16,6 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Filter } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import type { Product } from '@/lib/types';
-import { AddToCartDialog } from './AddToCartDialog';
 
 
 const CATEGORIES: Product['category'][] = ['suits', 'sarees', 'kurtis', 'dresses', 'kaftans', 'anarkali', 'indo-western', 'coord-sets'];
@@ -118,8 +117,8 @@ export function ShopPageClient({ allProducts }: ShopPageClientProps) {
             onValueChange={handlePriceChange}
           />
           <div className="flex justify-between mt-2 text-sm text-muted-foreground">
-            <span>₹{filters.price[0]}</span>
-            <span>₹{filters.price[1]}</span>
+            <span><span className="font-rupee">₹</span>{filters.price[0]}</span>
+            <span><span className="font-rupee">₹</span>{filters.price[1]}</span>
           </div>
         </AccordionContent>
       </AccordionItem>
@@ -151,7 +150,7 @@ export function ShopPageClient({ allProducts }: ShopPageClientProps) {
   const { openDialog } = useAddToCartDialog();
 
   return (
-    <AddToCartDialog>
+    
       <div className="py-8">
         <div className="mb-8 text-center">
           <h1 className="text-4xl font-headline">Our Collection</h1>
@@ -222,6 +221,5 @@ export function ShopPageClient({ allProducts }: ShopPageClientProps) {
           </main>
         </div>
       </div>
-    </AddToCartDialog>
   );
 }

@@ -167,7 +167,7 @@ export default function AdminProductsPage() {
                       <Badge variant="outline">{product.code}</Badge>
                     </TableCell>
                     <TableCell className="hidden md:table-cell">
-                      ₹{product.price.toLocaleString()}
+                      <span className="font-rupee">₹</span>{product.price.toLocaleString()}
                     </TableCell>
                     <TableCell className="hidden md:table-cell">
                       {format(new Date(product.creationDate), 'dd MMM yyyy')}
@@ -229,5 +229,3 @@ export default function AdminProductsPage() {
     </>
   );
 }
-
-    

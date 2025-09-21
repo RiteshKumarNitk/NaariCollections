@@ -230,7 +230,7 @@ export default function EditProductPage() {
                                 {form.formState.errors.name && <p className="text-sm text-destructive">{form.formState.errors.name.message}</p>}
                             </div>
                              <div className="space-y-2">
-                                <Label htmlFor="price">Price (₹)</Label>
+                                <Label htmlFor="price">Price (<span className="font-rupee">₹</span>)</Label>
                                 <Input id="price" type="number" {...form.register('price')} />
                                 {form.formState.errors.price && <p className="text-sm text-destructive">{form.formState.errors.price.message}</p>}
                             </div>
@@ -342,5 +342,3 @@ export default function EditProductPage() {
         </div>
     )
 }
-
-    

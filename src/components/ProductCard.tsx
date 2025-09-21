@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from 'next/image';
@@ -40,7 +41,7 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
               {product.name}
             </CardTitle>
           <p className="mt-2 text-lg font-semibold text-foreground">
-            ₹{product.price.toLocaleString()}
+            <span className="font-rupee">₹</span>{product.price.toLocaleString()}
           </p>
         </CardContent>
       </Link>

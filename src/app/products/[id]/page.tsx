@@ -150,7 +150,7 @@ export default function ProductPage() {
 
                 <div className="space-y-6">
                     <h1 className="text-3xl lg:text-4xl font-headline font-bold">{product.name}</h1>
-                    <p className="text-3xl font-semibold text-foreground">₹{product.price.toLocaleString()}</p>
+                    <p className="text-3xl font-semibold text-foreground"><span className="font-rupee">₹</span>{product.price.toLocaleString()}</p>
                     
                     <Separator />
                     

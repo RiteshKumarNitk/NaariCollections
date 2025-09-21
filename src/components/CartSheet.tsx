@@ -53,7 +53,7 @@ export function CartSheet() {
                   <div className="flex-1">
                     <h3 className="font-medium">{item.name}</h3>
                     <p className="text-sm text-muted-foreground">Size: {item.size}</p>
-                    <p className="text-sm font-semibold">₹{item.price.toFixed(2)}</p>
+                    <p className="text-sm font-semibold"><span className="font-rupee">₹</span>{item.price.toFixed(2)}</p>
                     <div className="mt-2 flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => updateQuantity(item.id, item.size, item.quantity - 1)}>
@@ -79,17 +79,17 @@ export function CartSheet() {
                 <div className="space-y-1 text-sm">
                     <div className="flex justify-between">
                         <span>Subtotal</span>
-                        <span>₹{subtotal.toFixed(2)}</span>
+                        <span><span className="font-rupee">₹</span>{subtotal.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between">
                         <span>Shipping</span>
-                        <span>₹{shippingCost.toFixed(2)}</span>
+                        <span><span className="font-rupee">₹</span>{shippingCost.toFixed(2)}</span>
                     </div>
                 </div>
                  <Separator />
                 <div className="flex justify-between font-semibold text-lg">
                     <span>Total</span>
-                    <span>₹{totalPrice.toFixed(2)}</span>
+                    <span><span className="font-rupee">₹</span>{totalPrice.toFixed(2)}</span>
                 </div>
                 <CheckoutDialog>
                     <Button className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white">

@@ -112,7 +112,7 @@ export default function BulkPricingPage() {
                     <CardContent>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                             <div className="space-y-2">
-                                <Label htmlFor="amount">Amount to Add or Subtract (₹)</Label>
+                                <Label htmlFor="amount">Amount to Add or Subtract (<span className="font-rupee">₹</span>)</Label>
                                 <Input 
                                     id="amount" 
                                     type="number" 
@@ -143,7 +143,7 @@ export default function BulkPricingPage() {
                     </AlertDialogTitle>
                     <AlertDialogDescription>
                         This will permanently <strong className={`font-bold ${isIncrease ? 'text-green-600' : 'text-red-600'}`}>{actionText}</strong> the price of all products in your store by 
-                        <strong className="font-bold text-foreground"> ₹{absAmount}</strong>. 
+                        <strong className="font-bold text-foreground"> <span className="font-rupee">₹</span>{absAmount}</strong>. 
                         This action cannot be undone.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
