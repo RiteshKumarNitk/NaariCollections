@@ -25,9 +25,11 @@ export function HeroSlider({ images, children, interval = 5000 }: HeroSliderProp
   };
 
   useEffect(() => {
-    const timer = setTimeout(nextSlide, interval);
-    return () => clearTimeout(timer);
-  }, [currentIndex, interval]);
+    if (images.length > 1) {
+      const timer = setTimeout(nextSlide, interval);
+      return () => clearTimeout(timer);
+    }
+  }, [currentIndex, interval, images.length]);
 
   return (
     <section className="relative w-full h-[calc(100vh-4rem)] overflow-hidden">
@@ -52,27 +54,31 @@ export function HeroSlider({ images, children, interval = 5000 }: HeroSliderProp
         </motion.div>
       </AnimatePresence>
       
-      <div className="relative h-full flex flex-col justify-center items-center">
+      <div className="relative h-full">
         {children}
       </div>
 
-      {/* <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-8">
-        <Button onClick={prevSlide} variant="outline" size="icon" className="bg-white/20 hover:bg-white/30 border-white/50 text-white rounded-full">
-            <ChevronLeft className="h-6 w-6" />
-        </Button>
-        <div className="flex gap-2">
-            {images.map((_, index) => (
-                <button
-                key={index}
-                onClick={() => setCurrentIndex(index)}
-                className={`h-2 rounded-full transition-all duration-300 ${currentIndex === index ? 'w-8 bg-white' : 'w-2 bg-white/50 hover:bg-white/75'}`}
-                />
-            ))}
+      {/* Navigation Controls */}
+      {images.length > 1 && (
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-8">
+            <Button onClick={prevSlide} variant="outline" size="icon" className="bg-white/20 hover:bg-white/30 border-white/50 text-white rounded-full">
+                <ChevronLeft className="h-6 w-6" />
+            </Button>
+            <div className="flex gap-2">
+                {images.map((_, index) => (
+                    <button
+                    key={index}
+                    onClick={() => setCurrentIndex(index)}
+                    className={`h-2 rounded-full transition-all duration-300 ${currentIndex === index ? 'w-8 bg-white' : 'w-2 bg-white/50 hover:bg-white/75'}`}
+                    aria-label={`Go to slide ${index + 1}`}
+                    />
+                ))}
+            </div>
+            <Button onClick={nextSlide} variant="outline" size="icon" className="bg-white/20 hover:bg-white/30 border-white/50 text-white rounded-full">
+                <ChevronRight className="h-6 w-6" />
+            </Button>
         </div>
-        <Button onClick={nextSlide} variant="outline" size="icon" className="bg-white/20 hover:bg-white/30 border-white/50 text-white rounded-full">
-            <ChevronRight className="h-6 w-6" />
-        </Button>
-      </div> */}
+      )}
 
     </section>
   );

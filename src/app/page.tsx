@@ -87,8 +87,8 @@ export default async function Home() {
   return (
     <AddToCartDialog>
       <HeroSlider images={heroImages.length > 0 ? heroImages : ['https://res.cloudinary.com/di2f6s7a7/image/upload/v1/naari-eshop/hero_fallback.jpg']}>
-         <div className="relative z-10 flex flex-col items-center justify-center h-full text-center text-foreground p-4">
-          <h1 className="font-headline text-4xl md:text-6xl lg:text-7xl font-bold drop-shadow-md text-white">
+         <div className="relative z-10 flex flex-col items-center justify-center h-full text-center text-white p-4">
+          <h1 className="font-headline text-4xl md:text-6xl lg:text-7xl font-bold drop-shadow-md">
             {content.headline}
           </h1>
           <p className="mt-4 max-w-2xl text-lg md:text-xl text-white/90">
