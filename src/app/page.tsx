@@ -111,10 +111,14 @@ export default async function Home() {
         <ProductSliders allProducts={allProducts} />
       </section>
       
-      <section className="bg-muted/30 py-16 md:py-24">
+      <section className="bg-muted/30 py-16 md:py-24 w-full overflow-hidden">
         <div className="container">
-          <DealsOfTheDay allProducts={allProducts} />
+          <h2 className="text-3xl font-headline mb-6 text-center">Deals of the Day</h2>
+          <p className="mt-3 mb-8 text-muted-foreground text-lg text-center">
+              Don't miss out on these limited-time offers!
+          </p>
         </div>
+        <DealsOfTheDay allProducts={allProducts} />
       </section>
 
       <section className="py-16 md:py-24 bg-secondary/30">

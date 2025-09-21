@@ -22,30 +22,24 @@ export function DealsOfTheDay({ allProducts }: DealsOfTheDayProps) {
     }
 
     return (
-        <div>
-            <h2 className="text-3xl font-headline mb-6 text-center">Deals of the Day</h2>
-            <p className="mt-3 mb-8 text-muted-foreground text-lg text-center">
-                Don't miss out on these limited-time offers!
-            </p>
-             <Carousel
-                opts={{
-                    align: "start",
-                    loop: dealProducts.length > 4,
-                }}
-                className="w-full"
-            >
-                <CarouselContent>
-                    {dealProducts.map((product) => (
-                        <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 lg:basis-1/4">
-                            <div className="p-1">
-                                <ProductCard product={product} onAddToCart={() => openDialog(product)} />
-                            </div>
-                        </CarouselItem>
-                    ))}
-                </CarouselContent>
-                <CarouselPrevious className="left-0" />
-                <CarouselNext className="right-0" />
-            </Carousel>
-        </div>
+        <Carousel
+            opts={{
+                align: "start",
+                loop: dealProducts.length > 5,
+            }}
+            className="w-full"
+        >
+            <CarouselContent className="-ml-4">
+                {dealProducts.map((product) => (
+                    <CarouselItem key={product.id} className="basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5 pl-4">
+                        <div className="p-1">
+                            <ProductCard product={product} onAddToCart={() => openDialog(product)} />
+                        </div>
+                    </CarouselItem>
+                ))}
+            </CarouselContent>
+            <CarouselPrevious className="left-4" />
+            <CarouselNext className="right-4" />
+        </Carousel>
     );
 }
