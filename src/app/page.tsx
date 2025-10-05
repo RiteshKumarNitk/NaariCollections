@@ -111,7 +111,7 @@ export default async function Home() {
         <ProductSliders allProducts={allProducts} />
       </section>
       
-      <section className="bg-muted/30 py-16 md:py-24 w-full overflow-hidden">
+      <section className="bg-secondary/20 py-16 md:py-24 w-full overflow-hidden">
         <div className="container">
           <h2 className="text-3xl font-headline mb-6 text-center">Deals of the Day</h2>
           <p className="mt-3 mb-8 text-muted-foreground text-lg text-center">
@@ -121,7 +121,7 @@ export default async function Home() {
         <DealsOfTheDay allProducts={allProducts} />
       </section>
 
-      <section className="py-16 md:py-24 bg-secondary/30">
+      <section className="py-16 md:py-24 bg-background">
         <div className="container">
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-headline font-bold">Our Promise</h2>
@@ -131,9 +131,9 @@ export default async function Home() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 md:gap-6">
                 {ourPromise.map((promise) => (
-                     <div key={promise.title} className="flex flex-col items-center text-center">
-                        <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-background shadow-md">
-                            <promise.icon className="h-8 w-8 text-primary" />
+                     <div key={promise.title} className="flex flex-col items-center text-center p-4 rounded-lg hover:bg-secondary/20 transition-colors">
+                        <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-secondary/30 text-primary">
+                            <promise.icon className="h-8 w-8" />
                         </div>
                         <h3 className="text-lg font-semibold mb-2">{promise.title}</h3>
                         <p className="text-muted-foreground text-sm leading-relaxed">

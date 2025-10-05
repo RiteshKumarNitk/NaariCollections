@@ -22,7 +22,7 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
   };
 
   return (
-    <Card className="group relative w-full overflow-hidden rounded-lg border-0 shadow-sm transition-all hover:shadow-xl">
+    <Card className="group relative w-full overflow-hidden rounded-lg border bg-card shadow-sm transition-all hover:shadow-md">
       <Link href={`/products/${product.id}`} className="block">
         <CardHeader className="p-0">
           <div className="aspect-[3/4] w-full overflow-hidden">
