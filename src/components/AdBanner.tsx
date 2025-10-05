@@ -45,8 +45,8 @@ export function AdBanner() {
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
                     data-ai-hint={item.aiHint}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-                <div className="absolute bottom-0 left-0 p-4 md:p-6 text-white">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" />
+                <div className="absolute inset-0 flex flex-col items-center justify-end p-4 md:p-6 text-white text-center">
                     <h3 className="font-medium text-sm text-white/90">{item.title}</h3>
                     <p className="text-xl lg:text-2xl font-headline font-bold">{item.subtitle}</p>
                     <p className="text-md font-semibold mt-1">{item.price}</p>
@@ -58,5 +58,3 @@ export function AdBanner() {
     </section>
   );
 }
-
-    
