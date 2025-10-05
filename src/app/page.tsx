@@ -1,5 +1,4 @@
 
-
 import Link from 'next/link';
 import { ArrowRight, Leaf, HeartHandshake, Scissors, Ruler, Shirt } from 'lucide-react';
 
@@ -10,7 +9,6 @@ import { HeroSlider } from '@/components/HeroSlider';
 import { DealsOfTheDay } from '@/components/DealsOfTheDay';
 import { Testimonials } from '@/components/Testimonials';
 import { getDb } from '@/lib/firebase-admin';
-import { PromotionalGrid } from '@/components/PromotionalGrid';
 import { AdBanner } from '@/components/AdBanner';
 import { AddToCartDialog } from '@/components/AddToCartDialog';
 
@@ -105,10 +103,10 @@ export default async function Home() {
       
       <AdBanner />
 
-      {/* <PromotionalGrid /> */}
-
-      <section className="py-12 md:py-20 container">
-        <ProductSliders allProducts={allProducts} />
+      <section className="py-12 md:py-20">
+        <div className="container">
+          <ProductSliders allProducts={allProducts} />
+        </div>
       </section>
       
       <section className="bg-secondary/20 py-16 md:py-24 w-full overflow-hidden">

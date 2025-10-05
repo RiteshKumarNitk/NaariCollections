@@ -22,8 +22,8 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
   };
 
   return (
-    <Card className="group relative w-full overflow-hidden rounded-lg border bg-card shadow-sm transition-all hover:shadow-md">
-      <Link href={`/products/${product.id}`} className="block">
+    <Card className="group relative w-full h-full flex flex-col overflow-hidden rounded-lg border bg-card shadow-sm transition-all hover:shadow-md">
+      <Link href={`/products/${product.id}`} className="block flex flex-col flex-grow">
         <CardHeader className="p-0">
           <div className="aspect-[3/4] w-full overflow-hidden">
             <Image
@@ -36,8 +36,8 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
             />
           </div>
         </CardHeader>
-        <CardContent className="p-4 bg-card">
-            <CardTitle className="text-base font-medium leading-tight tracking-normal">
+        <CardContent className="p-4 bg-card flex-grow flex flex-col">
+            <CardTitle className="text-base font-medium leading-tight tracking-normal flex-grow">
               {product.name}
             </CardTitle>
           <p className="mt-2 text-lg font-semibold text-foreground">
@@ -45,7 +45,7 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
           </p>
         </CardContent>
       </Link>
-      <CardFooter className="p-4 pt-0">
+      <CardFooter className="p-4 pt-0 mt-auto">
          <Button className="w-full" onClick={handleAddToCart} aria-label={`Add ${product.name} to cart`}>
             <ShoppingBag className="mr-2 h-4 w-4" />
             Add to Cart

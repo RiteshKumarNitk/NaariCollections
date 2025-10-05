@@ -30,7 +30,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
-        <div className="md:hidden">
+        <div className="flex items-center md:hidden">
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon" aria-label="Open menu">
@@ -78,10 +78,12 @@ export function Header() {
                 </div>
               </SheetContent>
             </Sheet>
-          </div>
-        <Link href="/" className="mr-6 flex items-center space-x-2">
-          <Logo className="h-8 w-auto" />
-        </Link>
+        </div>
+        <div className="flex flex-1 items-center justify-start">
+            <Link href="/" className="flex items-center space-x-2">
+            <Logo className="h-8 w-auto" />
+            </Link>
+        </div>
 
         <nav className="hidden md:flex flex-1 items-center justify-center space-x-6 text-sm font-medium">
             {navLinks.map((link) => (
@@ -98,7 +100,7 @@ export function Header() {
                 {link.label}
               </Link>
             ))}
-          </nav>
+        </nav>
 
         <div className="flex flex-1 items-center justify-end space-x-2">
           <Button variant="ghost" size="icon" className="hidden md:inline-flex" asChild>

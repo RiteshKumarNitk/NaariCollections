@@ -54,30 +54,34 @@ export function HeroSlider({ images, children, interval = 5000 }: HeroSliderProp
         </motion.div>
       </AnimatePresence>
       
-      <div className="relative h-full">
+      <div className="relative h-full flex items-center justify-center">
         {children}
       </div>
 
       {/* Navigation Controls */}
       {images.length > 1 && (
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-8">
-            <Button onClick={prevSlide} variant="outline" size="icon" className="bg-white/20 hover:bg-white/30 border-white/50 text-white rounded-full">
-                <ChevronLeft className="h-6 w-6" />
+        <>
+          <div className="absolute inset-y-0 left-0 flex items-center">
+            <Button onClick={prevSlide} variant="ghost" size="icon" className="text-white hover:bg-white/10 hover:text-white h-12 w-12 rounded-full m-4">
+              <ChevronLeft className="h-6 w-6" />
             </Button>
-            <div className="flex gap-2">
-                {images.map((_, index) => (
-                    <button
-                    key={index}
-                    onClick={() => setCurrentIndex(index)}
-                    className={`h-2 rounded-full transition-all duration-300 ${currentIndex === index ? 'w-8 bg-white' : 'w-2 bg-white/50 hover:bg-white/75'}`}
-                    aria-label={`Go to slide ${index + 1}`}
-                    />
-                ))}
-            </div>
-            <Button onClick={nextSlide} variant="outline" size="icon" className="bg-white/20 hover:bg-white/30 border-white/50 text-white rounded-full">
-                <ChevronRight className="h-6 w-6" />
+          </div>
+          <div className="absolute inset-y-0 right-0 flex items-center">
+            <Button onClick={nextSlide} variant="ghost" size="icon" className="text-white hover:bg-white/10 hover:text-white h-12 w-12 rounded-full m-4">
+              <ChevronRight className="h-6 w-6" />
             </Button>
-        </div>
+          </div>
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2">
+            {images.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentIndex(index)}
+                className={`h-2 rounded-full transition-all duration-300 ${currentIndex === index ? 'w-6 bg-white' : 'w-2 bg-white/50 hover:bg-white/75'}`}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
+          </div>
+        </>
       )}
 
     </section>

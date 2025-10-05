@@ -12,8 +12,8 @@ const socialLinks = [
 
 const footerLinks = [
   { title: 'Shop', links: [{ href: '/shop', label: 'All Products' }, { href: '/shop?category=sarees', label: 'Sarees' }, { href: '/shop?category=suits', label: 'Suits' }, { href: '/shop?category=kurtis', label: 'Kurtis' }] },
-  { title: 'About Us', links: [{ href: '/about-us', label: 'Our Story' }, { href: '#', label: 'Contact Us' }, { href: '/gallery', label: 'Gallery' }, { href: '/login', label: 'Admin' }] },
-  { title: 'Support', links: [{ href: '/faq', label: 'FAQ' }, { href: '#', label: 'Shipping & Returns' }, { href: '/terms-and-conditions', label: 'Terms & Conditions' }, { href: '#', label: 'Privacy Policy' }] },
+  { title: 'About Us', links: [{ href: '/about-us', label: 'Our Story' }, { href: '/faq', label: 'FAQ' }, { href: '/gallery', label: 'Gallery' }, { href: '/login', label: 'Admin' }] },
+  { title: 'Support', links: [{ href: '#', label: 'Contact Us' }, { href: '#', label: 'Shipping & Returns' }, { href: '/terms-and-conditions', label: 'Terms & Conditions' }, { href: '#', label: 'Privacy Policy' }] },
 ];
 
 export function Footer() {
@@ -21,9 +21,9 @@ export function Footer() {
     <footer className="border-t bg-secondary/30">
       <div className="container py-12">
         {/* Top Section */}
-        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-12 md:grid-cols-3 lg:grid-cols-5">
           {/* Brand + Description */}
-          <div className="flex flex-col items-start col-span-full lg:col-span-1">
+          <div className="flex flex-col items-start col-span-full md:col-span-1 lg:col-span-2">
             <Link href="/" className="flex items-center space-x-2 mb-4">
               <Logo className="h-10 w-auto" />
             </Link>
